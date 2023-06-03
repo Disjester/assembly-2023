@@ -1,23 +1,15 @@
 /**
- * @file changes.c
- * @author your name (you@domain.com)
- * @brief 
+ * @file assembler.c
+ * @author David Veng , Boris Feyman 
+ * @brief Main file of the Assembler project
  * @version 0.1
  * @date 2023-06-03
  * 
  * @copyright Copyright (c) 2023
  * 
  */
-
 #include <stdio.h>
 
-/**
- * @brief 
- * 
- * @param argc 
- * @param argv 
- * @return int 
- */
 int main(int argc, char const *argv[])
 {
     printf("something\n");
