@@ -1,6 +1,6 @@
 #include <stdio.h>
 
 int main () {
-    SHINUI EHAD GADOL
+    printf("OMG WTF IS THIS ? ");
 }
 
