@@ -1,5 +1,7 @@
-#include <POSHEL_NAHUI.h>
+#include <stdio.h>
 
 int main () {
     SHINUI EHAD GADOL
 }
+
+
