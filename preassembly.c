@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "headers/nodes.h"
 #include "headers/constants.h"
 #include "headers/errors.h"
 
-
+CodeNode* createLinkedListFromFile(FILE* file, Error* error);
 
 
 
@@ -14,7 +15,7 @@ int main () {
     Error* error;
 
     file = fopen("test", "r");
-
+    printf("Hello");
     cn = createLinkedListFromFile(file, error);
     while (cn) {
         printf("%s\n", cn->code_row);
