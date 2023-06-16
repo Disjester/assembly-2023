@@ -13,6 +13,8 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
     char buffer[MAX_LINE_LENGTH + 1];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
     
+    getLine(buffer, error, file);
+
     while(fgets(buffer, MAX_LINE_LENGTH + 1, file) != NULL) {
         /*Create a new node*/
         node = (CodeNode*)malloc(sizeof(CodeNode));
@@ -55,15 +57,15 @@ void freeLinkedList(CodeNode* head) {
     }
 }
 
-int getLine(char* line, Error* error) {
+int getLine(char* line, Error* error, FILE* file) {
     char x; /*current symbol in the input stream*/
     int i = 0;
     clean_line(line);
-    while ((x = getchar()) != '\n' && x != EOF) {
+    while ((x = fgetc(file)) != '\n' && x != EOF) {
         if (i == MAX_LINE_LENGTH) {
             *error = ERROR_MAXED_OUT_LINE_LENGTH;
             /*skipping to the next line*/
-            while ((x = getchar()) != '\n' && x != EOF) {
+            while ((x = fgetc(file)) != '\n' && x != EOF) {
                 continue;
             }
             return i;
