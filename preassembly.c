@@ -3,6 +3,12 @@
 #include "headers/nodes.h"
 #include "headers/constants.h"
 
+/**
+ * @brief Create a Linked List From File object
+ * 
+ * @param file 
+ * @return CodeNode* 
+ */
 CodeNode* createLinkedListFromFile(FILE* file) {
     char buffer[MAX_LINE_LEN + 1];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
