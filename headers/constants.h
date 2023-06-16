@@ -1,1 +1,1 @@
-#define MAX_LINE_LEN 80
+#define MAX_LINE_LENGTH 80

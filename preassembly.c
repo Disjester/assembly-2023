@@ -10,10 +10,10 @@
  * @return CodeNode* 
  */
 CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
-    char buffer[MAX_LINE_LEN + 1];
+    char buffer[MAX_LINE_LENGTH + 1];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
     
-    while(fgets(buffer, MAX_LINE_LEN + 1, file) != NULL) {
+    while(fgets(buffer, MAX_LINE_LENGTH + 1, file) != NULL) {
         /*Create a new node*/
         node = (CodeNode*)malloc(sizeof(CodeNode));
         if(node == NULL) {
@@ -22,7 +22,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
         }
         
         /* Copy the string from buffer to the new node*/
-        strncpy(node->code_row, buffer, MAX_LINE_LEN + 1);
+        strncpy(node->code_row, buffer, MAX_LINE_LENGTH + 1);
         node->next = NULL;
         
         /* If this is the first node, it is the head of the list*/
