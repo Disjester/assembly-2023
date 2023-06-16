@@ -34,8 +34,7 @@ int main () {
 CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
     char buffer[MAX_LINE_LENGTH + 1];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
-    
-    
+
 
     while(getLine(buffer, error, file) != 0) {
         /*Create a new node*/
