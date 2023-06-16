@@ -60,7 +60,7 @@ int GetLine(char* line, Error* error) {
     int i = 0;
     clean_line(line);
     while ((x = getchar()) != '\n' && x != EOF) {
-        if (i == MAX_LINE_LEN) {
+        if (i == MAX_LINE_LENGTH) {
             *error = ERROR_MAXED_OUT_LINE_LENGTH;
             /*skipping to the next line*/
             while ((x = getchar()) != '\n' && x != EOF) {
