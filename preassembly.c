@@ -46,5 +46,9 @@ void freeLinkedList(CodeNode* head) {
         tmp = head;
         head = head->next;
         free(tmp);
-     }
+    }
+}
+
+MacroNode* scanCodeForMacros(CodeNode* code) {
+    
 }
