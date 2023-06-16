@@ -35,9 +35,9 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
     char buffer[MAX_LINE_LENGTH + 1];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
     
-    getLine(buffer, error, file);
+    
 
-    while(fgets(buffer, MAX_LINE_LENGTH + 1, file) != NULL) {
+    while(getLine(buffer, error, file) != 0) {
         /*Create a new node*/
         node = (CodeNode*)malloc(sizeof(CodeNode));
         if(node == NULL) {
