@@ -9,6 +9,19 @@
  * @param file 
  * @return CodeNode* 
  */
+
+int main () {
+    FILE* file;
+    CodeNode* cn;
+    Error* error;
+
+    file = fopen("test", "r");
+
+    cn = createLinkedListFromFile(file, error);
+    print(cn->code_row);
+    return 1;
+}
+
 CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
     char buffer[MAX_LINE_LENGTH + 1];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
@@ -89,6 +102,13 @@ int getLine(char* line, Error* error, FILE* file) {
         return 1;
     }
     return i;
+}
+
+void clean_line(char* line) {
+    int i;
+    for (i = 0; i < MAX_LINE_LENGTH; i++) {
+        line[i] = '\0';
+    }
 }
 
 MacroNode* scanCodeForMacros(CodeNode* code) {
