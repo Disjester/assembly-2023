@@ -15,7 +15,7 @@ int main () {
     Error* error;
 
     file = fopen("test", "r");
-    printf("Hello");
+    printf("Test");
     cn = createLinkedListFromFile(file, error);
     while (cn) {
         printf("%s\n", cn->code_row);
