@@ -55,6 +55,40 @@ void freeLinkedList(CodeNode* head) {
     }
 }
 
+int get_line(char* line, Error* error) {
+    char x; /*current symbol in the input stream*/
+    int i = 0;
+    clean_line(line);
+    while ((x = getchar()) != '\n' && x != EOF) {
+        if (i == MAX_LINE_LENGTH) {
+            *error = ERROR_MAXED_OUT_LINE_LENGTH;
+            /*skipping to the next line*/
+            while ((x = getchar()) != '\n' && x != EOF) {
+                continue;
+            }
+            return i;
+        }
+        /*substitution of whitespaces instead of tabs*/
+        x = (x == '\t') ? ' ' : x;
+        /*removing whitespaces at the beggining of the line*/
+        if (i == 0 && x == ' ') {
+            continue;
+        }
+        /*removing of duplications of whitespaces*/
+        if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
+            continue;
+        }
+        /*putting a char to the string*/
+        line[i++] = x;
+    }
+    /*The case where the line is empty*/
+    if (i == 0 && x == '\n') {
+        line[0] = '\n';
+        return 1;
+    }
+    return i;
+}
+
 MacroNode* scanCodeForMacros(CodeNode* code) {
-    
+
 }
