@@ -9,7 +9,7 @@
  * @param file 
  * @return CodeNode* 
  */
-CodeNode* createLinkedListFromFile(FILE* file) {
+CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
     char buffer[MAX_LINE_LEN + 1];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
     
@@ -55,11 +55,12 @@ void freeLinkedList(CodeNode* head) {
     }
 }
 
-int get_line(char* line, Error* error) {
+int GetLine(char* line, Error* error) {
     char x; /*current symbol in the input stream*/
-    int i;
-    for (i = 0; i < strlen(line) && line[i] != '\n' && line[i] != EOF; i++) {
-        if (i == MAX_LINE_LEN) {
+    int i = 0;
+    clean_line(line);
+    while ((x = getchar()) != '\n' && x != EOF) {
+        if (i == MAX_LINE_LENGTH) {
             *error = ERROR_MAXED_OUT_LINE_LENGTH;
             /*skipping to the next line*/
             while ((x = getchar()) != '\n' && x != EOF) {
