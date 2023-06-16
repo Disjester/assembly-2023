@@ -55,7 +55,7 @@ void freeLinkedList(CodeNode* head) {
     }
 }
 
-int GetLine(char* line, Error* error) {
+int getLine(char* line, Error* error) {
     char x; /*current symbol in the input stream*/
     int i = 0;
     clean_line(line);
