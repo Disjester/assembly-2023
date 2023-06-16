@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "headers/nodes.h"
 #include "headers/constants.h"
-
+#include "headers/errors.h"
 /**
  * @brief Create a Linked List From File object
  * 
@@ -57,10 +57,9 @@ void freeLinkedList(CodeNode* head) {
 
 int get_line(char* line, Error* error) {
     char x; /*current symbol in the input stream*/
-    int i = 0;
-    clean_line(line);
-    while ((x = getchar()) != '\n' && x != EOF) {
-        if (i == MAX_LINE_LENGTH) {
+    int i;
+    for (i = 0; i < strlen(line) && line[i] != '\n' && line[i] != EOF; i++) {
+        if (i == MAX_LINE_LEN) {
             *error = ERROR_MAXED_OUT_LINE_LENGTH;
             /*skipping to the next line*/
             while ((x = getchar()) != '\n' && x != EOF) {
