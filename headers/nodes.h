@@ -8,3 +8,14 @@
  * @copyright Copyright (c) 2023
  * 
  */
+
+typedef struct MacroNode {
+    char* macro_name;
+    struct CodeNode* code_node;
+    struct MacroNode* macro_node;
+} MacroNode;
+
+typedef struct CodeNode {
+    char* code_row;
+    struct CodeNode* next;
+} CodeNode;
