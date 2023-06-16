@@ -45,7 +45,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
         }
         
         /* Copy the string from buffer to the new node*/
-        strcpy(node->code_row, buffer, MAX_LINE_LENGTH + 1);
+        strcpy(node->code_row, buffer);
         node->next = NULL;
         
         /* If this is the first node, it is the head of the list*/
