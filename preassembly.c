@@ -6,12 +6,7 @@
 
 
 
-/**
- * @brief Create a Linked List From File object
- * 
- * @param file 
- * @return CodeNode* 
- */
+
 
 int main () {
     FILE* file;
@@ -21,10 +16,19 @@ int main () {
     file = fopen("test", "r");
 
     cn = createLinkedListFromFile(file, error);
-    print(cn->code_row);
+    while (cn) {
+        printf("%s\n", cn->code_row);
+        cn = cn->next;
+    }
     return 1;
 }
 
+/**
+ * @brief Create a Linked List From File object
+ * 
+ * @param file 
+ * @return CodeNode* 
+ */
 CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
     char buffer[MAX_LINE_LENGTH + 1];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
