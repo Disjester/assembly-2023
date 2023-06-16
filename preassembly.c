@@ -6,13 +6,15 @@
 #include "headers/errors.h"
 
 CodeNode* createLinkedListFromFile(FILE* file, Error* error);
-
+void freeLinkedList(CodeNode* head);
+int getLine(char* line, Error* error, FILE* file);
+void clean_line(char* line);
 
 
 int main () {
     FILE* file;
     CodeNode* cn;
-    Error* error;
+    Error* error = NO_ERROR;
 
     file = fopen("test", "r");
     printf("Test");
@@ -120,5 +122,5 @@ void clean_line(char* line) {
 }
 
 MacroNode* scanCodeForMacros(CodeNode* code) {
-
+    return NULL;
 }
