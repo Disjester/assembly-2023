@@ -33,3 +33,18 @@ CodeNode* createLinkedListFromFile(FILE* file) {
     
     return head;
 }
+
+/**
+ * @brief frees all the memmory allocated to the linked list ( code rows)
+ * 
+ * @param head 
+ */
+void freeLinkedList(CodeNode* head) {
+    CodeNode* tmp;
+
+    while (head != NULL) {
+        tmp = head;
+        head = head->next;
+        free(tmp);
+     }
+}
