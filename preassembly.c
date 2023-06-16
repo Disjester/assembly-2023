@@ -89,5 +89,5 @@ int get_line(char* line, Error* error) {
 }
 
 MacroNode* scanCodeForMacros(CodeNode* code) {
-
+    
 }
