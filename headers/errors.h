@@ -1,3 +1,6 @@
+#ifndef ERRORS_H
+#define ERRORS_H
+
 typedef enum error {
     NO_ERROR,
     ERROR_MISSING_VARIABLE,
@@ -10,3 +13,5 @@ typedef enum error {
     ERROR_NO_MEMORY,
     ERROR_WRONG_ARGUMENT_FORMAT
 } Error;
+
+#endif

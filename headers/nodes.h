@@ -1,3 +1,6 @@
+#ifndef NODES_H
+#define NODES_H
+
 typedef struct MacroNode {
     char* macro_name;
     struct CodeNode* code_node;
@@ -8,3 +11,5 @@ typedef struct CodeNode {
     char* code_row;
     struct CodeNode* next;
 } CodeNode;
+
+#endif
