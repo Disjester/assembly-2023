@@ -1,5 +1,6 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
+#include "constants.h"
 
 int num_tokens;
 char *tokens[MAX_TOKENS];
