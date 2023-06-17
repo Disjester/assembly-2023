@@ -23,7 +23,10 @@ int main () {
     }
 
     cn = createLinkedListFromFile(file, error);
-    printf("%s\n", cn->code_row);
+    while(cn) {
+        printf("%s\n", cn->code_row);
+        cn = cn->next;
+    }
     return 1;
 }
 
