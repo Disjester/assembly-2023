@@ -16,12 +16,18 @@ int main () {
     CodeNode* cn;
     Error* error = NO_ERROR;
 
-    file = fopen("test", "r");
+    file = fopen("assembly-2023/test.txt", "r");
+
+    if (file == NULL) {
+        perror("Error opening file\n");
+    }
+
     cn = createLinkedListFromFile(file, error);
     while (cn) {
         printf("%s\n", cn->code_row);
         cn = cn->next;
     }
+    printf("finished\n");
     return 1;
 }
 
@@ -43,9 +49,13 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
             printf("Error allocating memory for new node.\n");
             return NULL;
         }
-        
+
+        /*printing the contents of the buffer, to see what's inside*/
+        node->code_row = (char*) malloc(strlen(buffer) + 1);
+
         /* Copy the string from buffer to the new node*/
         strcpy(node->code_row, buffer);
+        printf("The node code row is: %s\n",node->code_row);
         node->next = NULL;
         
         /* If this is the first node, it is the head of the list*/
