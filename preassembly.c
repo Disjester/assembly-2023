@@ -16,10 +16,10 @@ int main () {
     CodeNode* cn;
     Error* error = NO_ERROR;
 
-    file = fopen("test.txt", "r");
+    file = fopen("assembly-2023/test.txt", "r");
 
     if (file == NULL) {
-    perror("Error opening file\n");
+        perror("Error opening file\n");
     }
 
     cn = createLinkedListFromFile(file, error);
