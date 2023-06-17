@@ -1,1 +1,2 @@
 #define MAX_LINE_LENGTH 80
+#define MAX_TOKENS 10
