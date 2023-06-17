@@ -57,7 +57,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
         strcpy(node->code_row, buffer);
         node->next = NULL;
 
-        tokenize_input(node->code_row, tokens, num_tokens);
+        tokenize_input(node->code_row, tokens, &num_tokens);
         if (strcmp(tokens[0], "MAIN:") == 0)
         {
             printf("correct\n");
