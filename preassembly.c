@@ -129,7 +129,9 @@ void clean_line(char* line) {
 
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error) {
     while (code_node) {
-        if (!strcmp(code_node->code_row, ""))
+        if (tokenizeInput(code_node->code_row)) {
+            
+        }
         code_node = code_node->next;
     }
 }
