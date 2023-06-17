@@ -9,7 +9,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error);
 void freeLinkedList(CodeNode* head);
 int getLine(char* line, Error* error, FILE* file);
 void clean_line(char* line);
-
+void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error);
 
 int main () {
     FILE* file;
@@ -127,6 +127,9 @@ void clean_line(char* line) {
     }
 }
 
-MacroNode* scanCodeForMacros(CodeNode* code) {
-    return NULL;
+void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error) {
+    while (code_node) {
+        if (!strcmp(code_node->code_row, ""))
+        code_node = code_node->next;
+    }
 }
