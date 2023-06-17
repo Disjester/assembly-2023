@@ -49,7 +49,10 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
             printf("Error allocating memory for new node.\n");
             return NULL;
         }
-        
+
+        /*printing the contents of the buffer, to see what's inside*/
+        node->code_row = (char*) malloc(strlen(buffer) + 1);
+
         /* Copy the string from buffer to the new node*/
         strcpy(node->code_row, buffer);
         printf("The node code row is: %s\n",node->code_row);
@@ -128,4 +131,13 @@ void clean_line(char* line) {
 
 MacroNode* scanCodeForMacros(CodeNode* code) {
     return NULL;
+}
+
+void printArr(char* buffer){
+    int i = 0;
+    for (; buffer[i] != '\0'; i++)
+    {
+        printf("%c",buffer[i]);
+    }
+    
 }
