@@ -17,6 +17,11 @@ int main () {
     Error* error = NO_ERROR;
 
     file = fopen("test.txt", "r");
+
+    if (file == NULL) {
+    perror("Error opening file\n");
+    }
+
     cn = createLinkedListFromFile(file, error);
     while (cn) {
         printf("%s\n", cn->code_row);
