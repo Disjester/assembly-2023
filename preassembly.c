@@ -132,12 +132,3 @@ void clean_line(char* line) {
 MacroNode* scanCodeForMacros(CodeNode* code) {
     return NULL;
 }
-
-void printArr(char* buffer){
-    int i = 0;
-    for (; buffer[i] != '\0'; i++)
-    {
-        printf("%c",buffer[i]);
-    }
-    
-}
