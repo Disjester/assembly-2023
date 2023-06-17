@@ -16,18 +16,17 @@ int main () {
     CodeNode* cn;
     Error* error = NO_ERROR;
 
-    file = fopen("assembly-2023/test.txt", "r");
+    file = fopen("test.txt", "r");
 
     if (file == NULL) {
         perror("Error opening file\n");
     }
 
     cn = createLinkedListFromFile(file, error);
-    while (cn) {
+    while(cn) {
         printf("%s\n", cn->code_row);
         cn = cn->next;
     }
-    printf("finished\n");
     return 1;
 }
 
@@ -38,7 +37,7 @@ int main () {
  * @return CodeNode* 
  */
 CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
-    char buffer[MAX_LINE_LENGTH + 1];
+    char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
 
 
@@ -55,7 +54,6 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
 
         /* Copy the string from buffer to the new node*/
         strcpy(node->code_row, buffer);
-        printf("The node code row is: %s\n",node->code_row);
         node->next = NULL;
         
         /* If this is the first node, it is the head of the list*/
