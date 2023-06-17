@@ -132,3 +132,6 @@ MacroNode* scanCodeForMacros(CodeNode* code) {
 }
 
 
+void macrosToValues(CodeNode* code, MacroNode* macros){
+    return;
+}
