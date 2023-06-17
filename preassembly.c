@@ -133,3 +133,8 @@ void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Err
         code_node = code_node->next;
     }
 }
+
+
+void macrosToValues(CodeNode* code, MacroNode* macros){
+    return;
+}
