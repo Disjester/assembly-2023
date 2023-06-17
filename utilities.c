@@ -1,9 +1,11 @@
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "headers/nodes.h"
 #include "headers/constants.h"
 #include "headers/errors.h"
+#include "headers/functions.h"
 
 int num_tokens;
 char *tokens[MAX_TOKENS];

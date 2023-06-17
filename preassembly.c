@@ -4,6 +4,7 @@
 #include "headers/nodes.h"
 #include "headers/constants.h"
 #include "headers/errors.h"
+#include "headers/functions.h"
 
 CodeNode* createLinkedListFromFile(FILE* file, Error* error);
 void freeLinkedList(CodeNode* head);
@@ -55,6 +56,12 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
         /* Copy the string from buffer to the new node*/
         strcpy(node->code_row, buffer);
         node->next = NULL;
+
+        tokenize_input(node->code_row, tokens, num_tokens);
+        if (strcmp(tokens[0], "MAIN:") == 0)
+        {
+            printf("correct\n");
+        }
         
         /* If this is the first node, it is the head of the list*/
         if(head == NULL) {
@@ -128,13 +135,17 @@ void clean_line(char* line) {
 }
 
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error) {
+    /*
     while (code_node) {
         if (tokenizeInput(code_node->code_row)) {
-            
+            return;   
         }
         code_node = code_node->next;
     }
+    */
+    return;
 }
+
 
 
 void macrosToValues(CodeNode* code, MacroNode* macros){
