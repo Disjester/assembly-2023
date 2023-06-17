@@ -10,7 +10,7 @@ CC = gcc
 CFLAGS = -g -Wall -pedantic -ansi
 
 # Source files to compile
-SRC = preassembly.c
+SRC = preassembly.c utilities.c
 
 all: $(PROG)
 
