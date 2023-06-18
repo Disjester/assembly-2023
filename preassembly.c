@@ -16,6 +16,7 @@ void preproccessor(char* file_name);
 
 int main (int argc, char** argv) {
     preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
+    
     return 1;
 }
 
