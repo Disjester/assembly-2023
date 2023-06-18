@@ -6,14 +6,14 @@
 #include "headers/errors.h"
 #include "headers/functions.h"
 
-CodeNode* createLinkedListFromFile(FILE* file, Error* error);
+CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int num_tokens);
 void freeLinkedList(CodeNode* head);
 int getLine(char* line, Error* error, FILE* file);
 void clean_line(char* line);
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error);
 
 int main () {
-    
+
     int num_tokens;
     char *tokens[MAX_TOKENS];
 
@@ -27,7 +27,7 @@ int main () {
         perror("Error opening file\n");
     }
 
-    cn = createLinkedListFromFile(file, error);
+    cn = createLinkedListFromFile(file, error, tokens, &num_tokens);
     while(cn) {
         printf("%s\n", cn->code_row);
         cn = cn->next;
@@ -41,7 +41,7 @@ int main () {
  * @param file 
  * @return CodeNode* 
  */
-CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
+CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int *num_tokens) {
     char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
 
