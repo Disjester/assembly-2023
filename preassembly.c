@@ -6,7 +6,7 @@
 #include "headers/errors.h"
 #include "headers/functions.h"
 
-CodeNode* createLinkedListFromFile(FILE* file, Error* error);
+CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens);
 void freeLinkedList(CodeNode* head);
 int getLine(char* line, Error* error, FILE* file);
 void clean_line(char* line);
@@ -14,7 +14,7 @@ void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Err
 void preproccessor(char* file_name);
 
 
-int main (int argc, char* argv) {
+int main (int argc, char** argv) {
     preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
     return 1;
 }
@@ -22,8 +22,11 @@ int main (int argc, char* argv) {
 void preproccessor(char* file_name) {
     CodeNode* cn;
     Error* error = NO_ERROR;
-    MacroNode* mn;
+    /*MacroNode* mn;*/
     FILE* file;
+
+    char** tokens;
+    int num_tokens = 0;
 
     file = fopen("file_name", "r");
 
@@ -144,7 +147,7 @@ void clean_line(char* line) {
 
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error) {
     MacroNode* new_macro_node;
-    tokenize_input(...);
+    /*tokenize_input(...);
     while (code_node) {
         if (num_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (macro_node) {
@@ -159,8 +162,7 @@ void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Err
         }
         code_node = code_node->next;
     }
-
-    return;
+    */
 }
 
 
