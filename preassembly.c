@@ -9,7 +9,7 @@
 
 int main () {
 
-    int num_tokens;
+    int num_tokens = 0;
     char *tokens[MAX_TOKENS];
 
     FILE* file;
@@ -36,7 +36,7 @@ int main () {
  * @param file 
  * @return CodeNode* 
  */
-CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int *num_tokens) {
+CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens) {
     char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
 
@@ -56,7 +56,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
         strcpy(node->code_row, buffer);
         node->next = NULL;
 
-        tokenize_input(node->code_row, tokens, &num_tokens);
+        tokenize_input(node->code_row, tokens, pnum_tokens);
         if (strcmp(tokens[0], "MAIN:") == 0)
         {
             printf("correct\n");
