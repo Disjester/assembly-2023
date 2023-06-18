@@ -26,7 +26,7 @@ void preproccessor(char* file_name) {
     char** tokens;
     int num_tokens = 0;
 
-    file = fopen("file_name", "r");
+    file = fopen(file_name, "r");
 
     if (file == NULL) {
         perror("Error opening file\n");
@@ -50,11 +50,10 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
     char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
 
-
     while(getLine(buffer, error, file) != 0) {
         /*Create a new node*/
         node = (CodeNode*)malloc(sizeof(CodeNode));
-        if(node == NULL) {
+        if(!node) {
             printf("Error allocating memory for new node.\n");
             return NULL;
         }
@@ -66,14 +65,14 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
         strcpy(node->code_row, buffer);
         node->next = NULL;
 
-        tokenizeInput(node->code_row, tokens, pnum_tokens);
-        if (strcmp(tokens[0], "MAIN:") == 0)
+        /*tokenizeInput(node->code_row, tokens, pnum_tokens);
+        if (!strcmp(tokens[0], "MAIN:"))
         {
             printf("correct\n");
-        }
-        
+        }*/
+
         /* If this is the first node, it is the head of the list*/
-        if(head == NULL) {
+        if(!head) {
             head = node;
         } else {
             /* Otherwise, add the new node to the end of the list*/
@@ -162,7 +161,6 @@ void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Err
     }
     */
 }
-
 
 
 void macrosToValues(CodeNode* code, MacroNode* macros, char *tokens[], int* pnum_tokens){
