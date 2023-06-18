@@ -11,13 +11,21 @@ void freeLinkedList(CodeNode* head);
 int getLine(char* line, Error* error, FILE* file);
 void clean_line(char* line);
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error);
+void preproccessor(char* file_name);
 
-int main () {
-    FILE* file;
+
+int main (int argc, char* argv) {
+    preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
+    return 1;
+}
+
+void preproccessor(char* file_name) {
     CodeNode* cn;
     Error* error = NO_ERROR;
+    MacroNode* mn;
+    FILE* file;
 
-    file = fopen("test.txt", "r");
+    file = fopen("file_name", "r");
 
     if (file == NULL) {
         perror("Error opening file\n");
@@ -28,7 +36,7 @@ int main () {
         printf("%s\n", cn->code_row);
         cn = cn->next;
     }
-    return 1;
+    
 }
 
 /**
@@ -135,14 +143,23 @@ void clean_line(char* line) {
 }
 
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error) {
-    /*
+    MacroNode* new_macro_node;
+    tokenize_input(...);
     while (code_node) {
-        if (tokenizeInput(code_node->code_row)) {
-            return;   
+        if (num_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
+            if (macro_node) {
+                while (macro_node->next) {
+                    macro_node = macro_node->next;
+                }
+                new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
+
+            } else {
+                
+            }
         }
         code_node = code_node->next;
     }
-    */
+
     return;
 }
 
