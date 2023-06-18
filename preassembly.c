@@ -13,6 +13,10 @@ void clean_line(char* line);
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error);
 
 int main () {
+    
+    int num_tokens;
+    char *tokens[MAX_TOKENS];
+
     FILE* file;
     CodeNode* cn;
     Error* error = NO_ERROR;

@@ -7,8 +7,6 @@
 #include "headers/errors.h"
 #include "headers/functions.h"
 
-int num_tokens;
-char *tokens[MAX_TOKENS];
 
 void tokenize_input(char *input, char **tokens, int *num_tokens) {
     char *token = strtok(input, " \t"); /* tokenize input using space and tab characters as delimiters*/
