@@ -47,7 +47,7 @@ int getLine(char* line, Error* error, FILE* file);
  * 
  * @param line 
  */
-void clean_line(char* line);
+void cleanLine(char* line);
 
 /**
  * @brief 

@@ -6,7 +6,7 @@
 CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens);
 void freeLinkedList(CodeNode* head);
 int getLine(char* line, Error* error, FILE* file);
-void clean_line(char* line);
+void cleanLine(char* line);
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error);
 void preproccessor(char* file_name);
 
@@ -105,7 +105,7 @@ void freeLinkedList(CodeNode* head) {
 int getLine(char* line, Error* error, FILE* file) {
     char x; /*current symbol in the input stream*/
     int i = 0;
-    clean_line(line);
+    cleanLine(line);
     while ((x = fgetc(file)) != '\n' && x != EOF) {
         if (i == MAX_LINE_LENGTH) {
             *error = ERROR_MAXED_OUT_LINE_LENGTH;
@@ -136,7 +136,7 @@ int getLine(char* line, Error* error, FILE* file) {
     return i;
 }
 
-void clean_line(char* line) {
+void cleanLine(char* line) {
     int i;
     for (i = 0; i < MAX_LINE_LENGTH; i++) {
         line[i] = '\0';
@@ -144,8 +144,8 @@ void clean_line(char* line) {
 }
 
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error) {
-    MacroNode* new_macro_node;
-    /*tokenizeInput(...);
+    /*MacroNode* new_macro_node;
+    tokenizeInput(...);
     while (code_node) {
         if (num_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (macro_node) {
