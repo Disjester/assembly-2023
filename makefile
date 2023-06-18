@@ -7,15 +7,21 @@ PROG = preassembly
 CC = gcc
 
 # Flags to pass to the compiler -g adds debug symbols
-CFLAGS = -g -Wall -pedantic -ansi
+CFLAGS = -g -Wall -pedantic
 
 # Source files to compile
-SRC = preassembly.c
+SRC = preassembly.c utilities.c
+
+# Object files to generate
+OBJ = $(SRC:.c=.o)
 
 all: $(PROG)
 
-$(PROG): $(SRC)
-	$(CC) $(CFLAGS) -o $(PROG) $(SRC)
+$(PROG): $(OBJ)
+	$(CC) $(CFLAGS) -o $(PROG) $(OBJ)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(PROG)
+	rm -f $(PROG) $(OBJ)

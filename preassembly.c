@@ -31,7 +31,7 @@ void preproccessor(char* file_name) {
         perror("Error opening file\n");
     }
 
-    cn = createLinkedListFromFile(file, error);
+    cn = createLinkedListFromFile(file, error, tokens, &num_tokens);
     while(cn) {
         printf("%s\n", cn->code_row);
         cn = cn->next;
@@ -45,7 +45,7 @@ void preproccessor(char* file_name) {
  * @param file 
  * @return CodeNode* 
  */
-CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
+CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens) {
     char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
 
@@ -65,7 +65,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error) {
         strcpy(node->code_row, buffer);
         node->next = NULL;
 
-        tokenize_input(node->code_row, tokens, num_tokens);
+        tokenize_input(node->code_row, tokens, pnum_tokens);
         if (strcmp(tokens[0], "MAIN:") == 0)
         {
             printf("correct\n");
