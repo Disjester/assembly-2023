@@ -1,6 +1,10 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
+
+#include "constants.h"
+#include "nodes.h"
 #include <stdio.h>
+
 /**
  * @brief 
  * 
@@ -8,18 +12,18 @@
  * @param tokens 
  * @param num_tokens 
  */
-void tokenize_input(char *input, char **tokens, int *num_tokens);
+void tokenizeInput(char *input, char **tokens, int *num_tokens);
 
 /**
  * @brief Create a Linked List From File object
  * 
- * @param file 
+ * @param file the file to be opened and read
  * @param error 
- * @param tokens 
- * @param num_tokens 
+ * @param tokens pointer to an array of tokens, that will be used in the future with the tokenizeInput function()
+ * @param pnum_tokens pointer to the number of num_tokens
  * @return CodeNode* 
  */
-CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* num_tokens);
+CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens);
 
 /**
  * @brief 
@@ -53,4 +57,7 @@ void clean_line(char* line);
  * @param error 
  */
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error);
+
+
+void macrosToValues(CodeNode* code, MacroNode* macros, char *tokens[], int* pnum_tokens);
 #endif

@@ -13,6 +13,7 @@ void preproccessor(char* file_name);
 
 int main (int argc, char** argv) {
     preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
+    
     return 1;
 }
 
@@ -65,7 +66,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
         strcpy(node->code_row, buffer);
         node->next = NULL;
 
-        tokenize_input(node->code_row, tokens, pnum_tokens);
+        tokenizeInput(node->code_row, tokens, pnum_tokens);
         if (strcmp(tokens[0], "MAIN:") == 0)
         {
             printf("correct\n");
@@ -144,7 +145,7 @@ void clean_line(char* line) {
 
 void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error) {
     MacroNode* new_macro_node;
-    /*tokenize_input(...);
+    /*tokenizeInput(...);
     while (code_node) {
         if (num_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (macro_node) {
@@ -164,6 +165,6 @@ void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Err
 
 
 
-void macrosToValues(CodeNode* code, MacroNode* macros){
+void macrosToValues(CodeNode* code, MacroNode* macros, char *tokens[], int* pnum_tokens){
     return;
 }
