@@ -8,7 +8,7 @@
 #include "headers/functions.h"
 
 
-void tokenize_input(char *input, char **tokens, int *num_tokens) {
+void tokenizeInput(char *input, char **tokens, int *num_tokens) {
     char *token = strtok(input, " \t"); /* tokenize input using space and tab characters as delimiters*/
     *num_tokens = 0; /* initialize number of tokens to zero*/
     while (token != NULL && *num_tokens < MAX_TOKENS) { /* iterate over tokens until no more tokens or maximum number of tokens is reached */
