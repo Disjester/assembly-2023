@@ -2,10 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "headers/nodes.h"
-#include "headers/constants.h"
-#include "headers/errors.h"
-#include "headers/functions.h"
+#include "libs.h"
 
 
 void tokenize_input(char *input, char **tokens, int *num_tokens) {
