@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "libs.h"
 
+void tokenizeInput(char *input, char **tokens, int *num_tokens);
 
 void tokenizeInput(char *input, char **tokens, int *num_tokens) {
     size_t length = strlen(input);
