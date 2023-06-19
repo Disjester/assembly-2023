@@ -56,7 +56,7 @@ void cleanLine(char* line);
  * @param macro_node 
  * @param error 
  */
-void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int num_tokens, char** tokens);
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens);
 
 
 void macrosToValues(CodeNode* code, MacroNode* macros, char *tokens[], int* pnum_tokens);
