@@ -160,9 +160,9 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     MacroNode* new_macro_node;
     int num_tokens;
     char** tokens;
-    
 
-    while (code_node) {
+
+    while (*code_node) {
         if (num_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (macro_node) {
                 while ((*macro_node)->next) {
