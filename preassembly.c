@@ -7,7 +7,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
 void freeLinkedList(CodeNode* head);
 int getLine(char* line, Error* error, FILE* file);
 void cleanLine(char* line);
-void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error);
+void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error, int num_tokens, char** tokens);
 void preproccessor(char* file_name);
 
 
@@ -94,7 +94,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
 void freeLinkedList(CodeNode* head) {
     CodeNode* tmp;
 
-    while (head != NULL) {
+    while (!head) {
         tmp = head;
         head = head->next;
         free(tmp);
@@ -122,14 +122,11 @@ int getLine(char* line, Error* error, FILE* file) {
         }
 
         if (i != 0 && x == ',') {
-            if (line[i-1] == ' ') {
-                line[i++] = x;
-                line[i++] = ' ';
-            } else {
-                line[i++] = ' ';
-                line[i++] = x;
+            if (line[i-1] != ' ') {
                 line[i++] = ' ';
             }
+            line[i++] = x;
+            line[i++] = ' ';
             continue;
         }
         /*removing of duplications of whitespaces*/
@@ -154,9 +151,9 @@ void cleanLine(char* line) {
     }
 }
 
-void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error) {
-    /*MacroNode* new_macro_node;
-    tokenizeInput(...);
+void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error, int num_tokens, char** tokens) {
+    MacroNode* new_macro_node;
+    /*tokenizeInput();*/
     while (code_node) {
         if (num_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (macro_node) {
@@ -166,12 +163,12 @@ void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Err
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
 
             } else {
-                
+                new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
+
             }
         }
         code_node = code_node->next;
     }
-    */
 }
 
 
