@@ -29,6 +29,7 @@ void preproccessor(char* file_name) {
     char** tokens;
     int num_tokens = 0;
 
+    tokens = malloc(MAX_TOKENS * sizeof(char *));
     file = fopen(file_name, "r");
 
     if (file == NULL) {
@@ -69,11 +70,11 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
         strcpy(node->code_row, buffer);
         node->next = NULL;
 
-        /*tokenizeInput(node->code_row, tokens, pnum_tokens);
+        tokenizeInput(node->code_row, tokens, pnum_tokens);
         if (!strcmp(tokens[0], "MAIN:"))
         {
             printf("correct\n");
-        }*/
+        }
 
         /* If this is the first node, it is the head of the list*/
         if(!head) {
