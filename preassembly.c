@@ -158,7 +158,10 @@ void cleanLine(char* line) {
 
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* num_tokens, char** tokens) {
     MacroNode* new_macro_node;
+    int num_tokens;
+    char** tokens;
     
+
     while (code_node) {
         tokenizeInput((*code_node)->code_row, tokens, num_tokens);
         if (num_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
