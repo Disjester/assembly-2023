@@ -160,7 +160,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     MacroNode* new_macro_node;
 
 
-    while (code_node) {
+    while (*code_node) {
         tokenizeInput((*code_node)->code_row, tokens, pnum_tokens);
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (macro_node) {
