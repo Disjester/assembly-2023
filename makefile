@@ -1,2 +1,21 @@
-preassembly: libs.h preassembly.c utilities.c
-	gcc -ansi -Wall -pedantic libs.h preassembly.c utilities.c -o preassembly
+# This is a simple Makefile for a C project
+
+# Name of your executable
+PROG = preassembly
+
+# Compiler to use
+CC = gcc
+
+# Flags to pass to the compiler -g adds debug symbols
+CFLAGS = -g -Wall -pedantic -ansi
+
+# Source files to compile
+SRC = libs.h preassembly.c utilities.c 
+
+all: $(PROG)
+
+$(PROG): $(SRC)
+	$(CC) $(CFLAGS) -o $(PROG) $(SRC)
+
+clean:
+	rm -f $(PROG)
