@@ -7,7 +7,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
 void freeLinkedList(CodeNode* head);
 int getLine(char* line, Error* error, FILE* file);
 void cleanLine(char* line);
-void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error, int num_tokens, char** tokens);
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int num_tokens, char** tokens);
 void preproccessor(char* file_name);
 
 
@@ -18,9 +18,12 @@ int main (int argc, char** argv) {
 }
 
 void preproccessor(char* file_name) {
-    CodeNode* cn;
+    CodeNode code;
+    CodeNode* p_code;
     Error* error = NO_ERROR;
-    /*MacroNode* mn;*/
+    MacroNode macros;
+    MacroNode* p_macros = &macros;
+
     FILE* file;
 
     char** tokens;
@@ -33,10 +36,11 @@ void preproccessor(char* file_name) {
         perror("Error opening file\n");
     }
 
-    cn = createLinkedListFromFile(file, error, tokens, &num_tokens);
-    while(cn) {
-        printf("%s\n", cn->code_row);
-        cn = cn->next;
+    p_code = createLinkedListFromFile(file, error, tokens, &num_tokens);
+    code = *p_code;
+    while(p_code) {
+        printf("%s\n", p_code->code_row);
+        p_code = p_code->next;
     }
     
 }
@@ -152,24 +156,25 @@ void cleanLine(char* line) {
     }
 }
 
-void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Error* error, int* num_tokens, char** tokens) {
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* num_tokens, char** tokens) {
     MacroNode* new_macro_node;
-    /*tokenizeInput();*/
+    
     while (code_node) {
-        tokenizeInput(code_node->code_row, tokens, num_tokens);
+        tokenizeInput((*code_node)->code_row, tokens, num_tokens);
         if (num_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (macro_node) {
-                while (macro_node->next) {
-                    macro_node = macro_node->next;
+                while ((*macro_node)->next) {
+                    macro_node = (*macro_node)->next;
                 }
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
 
             } else {
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
-
+                new_macro_node->code_node = (CodeNode*) malloc(sizeof(CodeNode));
+                macro_node = new_macro_node;
             }
         }
-        code_node = code_node->next;
+        code_node = (*code_node)->next;
     }
 }
 
