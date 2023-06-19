@@ -156,7 +156,7 @@ void cleanLine(char* line) {
     }
 }
 
-void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int num_tokens, char** tokens) {
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* num_tokens, char** tokens) {
     MacroNode* new_macro_node;
     int num_tokens;
     char** tokens;
