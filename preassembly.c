@@ -94,7 +94,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
 void freeLinkedList(CodeNode* head) {
     CodeNode* tmp;
 
-    while (head != NULL) {
+    while (!head) {
         tmp = head;
         head = head->next;
         free(tmp);
@@ -164,7 +164,7 @@ void scanCodeForMacroDefinitions(CodeNode* code_node, MacroNode* macro_node, Err
 
             } else {
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
-                
+
             }
         }
         code_node = code_node->next;
