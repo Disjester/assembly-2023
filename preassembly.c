@@ -57,7 +57,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
     char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
 
-    while(!getLine(buffer, error, file)) {
+    while(getLine(buffer, error, file)) {
         /*Create a new node*/
         node = (CodeNode*)malloc(sizeof(CodeNode));
         if(!node) {
