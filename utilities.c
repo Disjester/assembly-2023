@@ -6,7 +6,8 @@
 
 
 void tokenizeInput(char *input, char **tokens, int *num_tokens) {
-    char *token = strtok(input, " \t"); /* tokenize input using space and tab characters as delimiters*/
+    char *copy = input;
+    char *token = strtok(copy, " \t"); /* tokenize input using space and tab characters as delimiters*/
     *num_tokens = 0; /* initialize number of tokens to zero*/
     while (token != NULL && *num_tokens < MAX_TOKENS) { /* iterate over tokens until no more tokens or maximum number of tokens is reached */
         tokens[(*num_tokens)++] = token; /* add token to array and increment number of tokens*/
