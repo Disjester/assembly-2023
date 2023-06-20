@@ -18,15 +18,15 @@ int main (int argc, char** argv) {
 }
 
 void preproccessor(char* file_name) {
-    CodeNode code;
-    CodeNode* p_code;
+    CodeNode* code;
     Error* error = NO_ERROR;
-    MacroNode macros;
-    MacroNode* p_macros = &macros;
+    MacroNode* macros;
 
     FILE* file;
 
     char** tokens;
+
+    macros = (MacroNode*) malloc(sizeof(MacroNode));
     int num_tokens = 0;
 
     tokens = malloc(MAX_TOKENS * sizeof(char *));
@@ -36,14 +36,9 @@ void preproccessor(char* file_name) {
         perror("Error opening file\n");
     }
 
-    p_code = createLinkedListFromFile(file, error, tokens, &num_tokens);
-    code = *p_code;
-    while(p_code) {
-        printf("%s\n", p_code->code_row);
-        p_code = p_code->next;
-    }
-    /*scanCodeForMacroDefinitions(&p_code, &p_macros, error, &num_tokens, tokens);*/
-    printf("%s\n", p_macros->macro_name);
+    code = createLinkedListFromFile(file, error, tokens, &num_tokens);
+    scanCodeForMacroDefinitions(&code, &macros, error, &num_tokens, tokens);
+    printf("%s\n", macros->macro_name);
 }
 
 /**
