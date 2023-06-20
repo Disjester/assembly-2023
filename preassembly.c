@@ -42,9 +42,8 @@ void preproccessor(char* file_name) {
         printf("%s\n", p_code->code_row);
         p_code = p_code->next;
     }
-    scanCodeForMacroDefinitions(&p_code, &p_macros, error, &num_tokens, tokens);
-
-
+    /*scanCodeForMacroDefinitions(&p_code, &p_macros, error, &num_tokens, tokens);*/
+    printf("%s\n", p_macros->macro_name);
 }
 
 /**
@@ -57,7 +56,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
     char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
 
-    while(!getLine(buffer, error, file)) {
+    while(getLine(buffer, error, file)) {
         /*Create a new node*/
         node = (CodeNode*)malloc(sizeof(CodeNode));
         if(!node) {
