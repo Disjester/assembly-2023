@@ -71,12 +71,12 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
         strcpy(node->code_row, buffer);
         node->next = NULL;
 
-        /*tokenizeInput(node->code_row, tokens, pnum_tokens);
+        tokenizeInput(node->code_row, tokens, pnum_tokens);
         if (!strcmp(tokens[0], "MAIN:"))
         {
             printf("correct\n");
         }
-        */
+        
         /* If this is the first node, it is the head of the list*/
         if(!head) {
             head = node;
