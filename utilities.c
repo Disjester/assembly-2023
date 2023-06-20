@@ -15,6 +15,7 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens) {
         tokens[(*num_tokens)++] = token; /* add token to array and increment number of tokens*/
         token = strtok(NULL, " \t"); /* get next token using the same delimiters*/
     }
+    free(temp);
 }
 
 /*tokenize_input(updatedInputString, tokens, &num_tokens);*/
