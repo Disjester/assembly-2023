@@ -10,13 +10,15 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens) {
     size_t length = strlen(input);
     char *temp = malloc((length + 1) * sizeof(char));
     strcpy(temp, input);  /* Copy input string into temp */
-    char *token = strtok(temp, " "); /* tokenize input using space and tab characters as delimiters*/
-    *num_tokens = 0; /* initialize number of tokens to zero*/
-    while (token != NULL && *num_tokens < MAX_TOKENS) { /* iterate over tokens until no more tokens or maximum number of tokens is reached */
-        tokens[(*num_tokens)++] = token; /* add token to array and increment number of tokens*/
-        token = strtok(NULL, " "); /* get next token using the same delimiters*/
+
+    char *token = strtok(temp, " ");
+    *num_tokens = 0;
+    while (token != NULL && *num_tokens < MAX_TOKENS) {
+        tokens[*num_tokens] = strdup(token);  /* Duplicate and store token */
+        (*num_tokens)++;
+        token = strtok(NULL, " ");
     }
+
     free(temp);
 }
-
 /*tokenize_input(updatedInputString, tokens, &num_tokens);*/
