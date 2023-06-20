@@ -8,10 +8,12 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens);
 
 void tokenizeInput(char *input, char **tokens, int *num_tokens) {
     size_t length = strlen(input);
-    char *temp = malloc((length + 1) * sizeof(char));
+    char *token;
+    char *temp;
+    temp = malloc((length + 1) * sizeof(char));
     strcpy(temp, input);  /* Copy input string into temp */
 
-    char *token = strtok(temp, " ");
+    token = strtok(temp, " ");
     *num_tokens = 0;
     while (token != NULL && *num_tokens < MAX_TOKENS) {
         tokens[*num_tokens] = strdup(token);  /* Duplicate and store token */
