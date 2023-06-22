@@ -26,9 +26,9 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens) {
 
 char *my_strdup(const char *str) {
     size_t length = strlen(str);
-    char *duplicate = malloc(length + 1);  // Allocate memory for the duplicate string
+    char *duplicate = malloc(length + 1);  /* Allocate memory for the duplicate string*/
     if (duplicate != NULL) {
-        strcpy(duplicate, str);  // Copy the string into the allocated memory
+        strcpy(duplicate, str);  /* Copy the string into the allocated memory*/
     }
     return duplicate;
 }
