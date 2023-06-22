@@ -14,6 +14,8 @@
  */
 void tokenizeInput(char *input, char **tokens, int *num_tokens);
 
+char *my_strdup(const char *str);
+
 /**
  * @brief Create a Linked List From File object
  * 
