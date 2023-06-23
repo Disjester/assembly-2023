@@ -37,7 +37,15 @@ void preproccessor(char* file_name) {
 
     code = createLinkedListFromFile(file, error, tokens, &num_tokens);
     scanCodeForMacroDefinitions(&code, &macros, error, &num_tokens, tokens);
-    printf("%s\n", macros->macro_name);
+
+    while (macros) {
+        printf("Macro: %s\nCode: \n", macros->macro_name);
+        while (macros->code_node) {
+            printf("%s\n", macros->code_node->code_row);
+            macros->code_node = macros->code_node->next;
+        }
+        macros = macros->next;
+    }
 }
 
 /**
@@ -212,7 +220,7 @@ void macrosToValues(CodeNode* code, MacroNode* macros, char *tokens[], int* pnum
         if (*pnum_tokens == 1) {
             current_macro = macros;
             while (current_macro) {
-                if (strcmp(current_macro->macro_name, tokens[0]) == 0) {
+                if (!strcmp(current_macro->macro_name, tokens[0])) {
                     /*Replace the macro name with the code lines*/
                     current_macro_code = current_macro->code_node;
                     while (current_macro_code) {
