@@ -176,6 +176,10 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                     *macro_node = (*macro_node)->next;
                 }
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
+                /*David added this*/
+                new_macro_node->next = NULL;
+                new_macro_node->code_node = NULL;  /* Initialize the code_node field*/
+                new_macro_node->macro_name = NULL; /* Initialize the macro_name field*/
                 /*TBD*/
             } else {
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
@@ -231,7 +235,7 @@ void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pn
                     /* Replace the macro name with the code lines */
                     current_macro_code = current_macro->code_node;
 
-                    while (current_macro->code_node) {
+                    while (current_macro_code) {
                         printf("%s\n", current_macro_code->code_row); /* Print the code line */
                         current_macro_code = current_macro_code->next;
                         
