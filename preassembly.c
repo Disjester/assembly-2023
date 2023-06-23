@@ -37,8 +37,16 @@ void preproccessor(char* file_name) {
 
     code = createLinkedListFromFile(file, error, tokens, &num_tokens);
     scanCodeForMacroDefinitions(&code, &macros, error, &num_tokens, tokens);
-    printf("%s\n", macros->macro_name);
-    macrosToValues( &code, &macros, tokens,  &num_tokens);
+
+    while (macros) {
+        printf("Macro name: %s\nCode: \n", macros->macro_name);
+        while (macros->code_node) {
+            printf("%s\n", macros->code_node->code_row);
+            macros->code_node = macros->code_node->next;
+        }
+        macros = macros->next;
+        printf("\n");
+    }
 }
 
 /**
@@ -65,12 +73,6 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
         /* Copy the string from buffer to the new node*/
         strcpy(node->code_row, buffer);
         node->next = NULL;
-
-        tokenizeInput(node->code_row, tokens, pnum_tokens);
-        if (!strcmp(tokens[0], "MAIN:"))
-        {
-            printf("correct\n");
-        }
         
         /* If this is the first node, it is the head of the list*/
         if(!head) {
@@ -170,6 +172,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                 /*TBD*/
             } else {
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
+                new_macro_node->next = NULL;
                 new_macro_node->code_node = (CodeNode*) malloc(sizeof(CodeNode));
                 new_macro_node->macro_name = (char*) malloc(sizeof(char)*(strlen(tokens[1])));
 
