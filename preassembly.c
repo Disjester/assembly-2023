@@ -38,6 +38,7 @@ void preproccessor(char* file_name) {
     code = createLinkedListFromFile(file, error, tokens, &num_tokens);
     scanCodeForMacroDefinitions(&code, &macros, error, &num_tokens, tokens);
     printf("%s\n", macros->macro_name);
+    macrosToValues( &code, &macros, tokens,  &num_tokens);
 }
 
 /**
