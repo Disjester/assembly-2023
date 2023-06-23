@@ -192,6 +192,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                 while(temp_code_node && strcmp(tokens[0], "endmcro")) {
                     if (new_code_node->code_row) {
                         new_code_node2 = (CodeNode*) malloc(sizeof(CodeNode));
+                        new_code_node2->next = NULL;
                         new_code_node->next = new_code_node2;
                         new_code_node = new_code_node->next;
                     }
