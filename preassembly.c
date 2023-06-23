@@ -47,6 +47,8 @@ void preproccessor(char* file_name) {
         macros = macros->next;
         printf("\n");
     }
+    
+    macrosToValues(&code, &macros, tokens, &num_tokens);
 }
 
 /**
@@ -205,8 +207,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     }
 }
 
-
-void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens) {
+voidacrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens) {
     MacroNode* current_macro;
     CodeNode* current_code;
     CodeNode* current_macro_code;
