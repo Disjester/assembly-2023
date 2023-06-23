@@ -210,28 +210,36 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
 }
 
 
-void macrosToValues(CodeNode* code, MacroNode* macros, char *tokens[], int* pnum_tokens) {
+void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens) {
     MacroNode* current_macro;
     CodeNode* current_code;
     CodeNode* current_macro_code;
-    current_code = code;
+
+    current_code = *code;
+
     while (current_code) {
         tokenizeInput(current_code->code_row, tokens, pnum_tokens);
+
         if (*pnum_tokens == 1) {
-            current_macro = macros;
+            current_macro = *macros;
+
             while (current_macro) {
                 if (!strcmp(current_macro->macro_name, tokens[0])) {
-                    /*Replace the macro name with the code lines*/
+                    /* Replace the macro name with the code lines */
                     current_macro_code = current_macro->code_node;
+
                     while (current_macro_code) {
-                        printf("%s\n", current_macro_code->code_row); /* print the code line*/
+                        printf("%s\n", current_macro_code->code_row); /* Print the code line */
                         current_macro_code = current_macro_code->next;
                     }
-                    break; /* Exit the loop if the macro is found*/
+
+                    break; /* Exit the loop if the macro is found */
                 }
+
                 current_macro = current_macro->next;
             }
         }
+
         current_code = current_code->next;
     }
 }
