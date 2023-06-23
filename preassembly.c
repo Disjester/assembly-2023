@@ -38,6 +38,9 @@ void preproccessor(char* file_name) {
     code = createLinkedListFromFile(file, error, tokens, &num_tokens);
     scanCodeForMacroDefinitions(&code, &macros, error, &num_tokens, tokens);
 
+
+    macrosToValues(&code, &macros, tokens, &num_tokens);
+
     while (macros) {
         printf("Macro name: %s\nCode: \n", macros->macro_name);
         while (macros->code_node) {
@@ -47,8 +50,6 @@ void preproccessor(char* file_name) {
         macros = macros->next;
         printf("\n");
     }
-    
-    macrosToValues(&code, &macros, tokens, &num_tokens);
 }
 
 /**
@@ -163,11 +164,12 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     CodeNode* new_code_node2;
     CodeNode* new_code_node_head;
     CodeNode* temp_code_node;
+    CodeNode* curr_code_node;
 
     temp_macro_node = *macro_node;
-
-    while (*code_node) {
-        tokenizeInput((*code_node)->code_row, tokens, pnum_tokens);
+    curr_code_node = *code_node;
+    while (curr_code_node) {
+        tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (*macro_node) {
                 while ((*macro_node)->next) {
@@ -207,7 +209,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                 *macro_node = new_macro_node;
             }
         }
-        *code_node = (*code_node)->next;
+        curr_code_node = curr_code_node->next;
     }
 }
 
