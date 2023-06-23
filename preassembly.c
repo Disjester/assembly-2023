@@ -158,10 +158,13 @@ void cleanLine(char* line) {
 
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens) {
     MacroNode* new_macro_node;
+    MacroNode* temp_macro_node;
     CodeNode* new_code_node;
     CodeNode* new_code_node2;
     CodeNode* new_code_node_head;
-    CodeNode* temp;
+    CodeNode* temp_code_node;
+
+    temp_macro_node = *macro_node;
 
     while (*code_node) {
         tokenizeInput((*code_node)->code_row, tokens, pnum_tokens);
@@ -179,25 +182,25 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                 new_macro_node->macro_name = (char*) malloc(sizeof(char)*(strlen(tokens[1])));
 
                 strcpy(new_macro_node->macro_name, tokens[1]);
-                temp = (*code_node)->next;
-                tokenizeInput(temp->code_row, tokens, pnum_tokens);
+                temp_code_node = (*code_node)->next;
+                tokenizeInput(temp_code_node->code_row, tokens, pnum_tokens);
 
                 new_code_node = (CodeNode*) malloc(sizeof(CodeNode));
                 new_code_node->code_row = NULL;
                 new_code_node_head = new_code_node;
 
-                while(temp && strcmp(tokens[0], "endmcro")) {
+                while(temp_code_node && strcmp(tokens[0], "endmcro")) {
                     if (new_code_node->code_row) {
                         new_code_node2 = (CodeNode*) malloc(sizeof(CodeNode));
                         new_code_node->next = new_code_node2;
                         new_code_node = new_code_node->next;
                     }
-                    new_code_node->code_row = (char*) malloc(sizeof(char)*(strlen(temp->code_row)));
-                    strcpy(new_code_node->code_row, temp->code_row);
+                    new_code_node->code_row = (char*) malloc(sizeof(char)*(strlen(temp_code_node->code_row)));
+                    strcpy(new_code_node->code_row, temp_code_node->code_row);
 
 
-                    temp = temp->next;
-                    tokenizeInput(temp->code_row, tokens, pnum_tokens);
+                    temp_code_node = temp_code_node->next;
+                    tokenizeInput(temp_code_node->code_row, tokens, pnum_tokens);
                 }
                 new_macro_node->code_node = new_code_node_head;
                 *macro_node = new_macro_node;
