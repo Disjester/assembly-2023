@@ -208,31 +208,33 @@ void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pn
     CodeNode* current_code;
     CodeNode* current_macro_code;
 
-    current_code = *code;
+    /*current_code = *code;*/
 
-    while (current_code) {
-        tokenizeInput(current_code->code_row, tokens, pnum_tokens);
+    while (/*current_*/*code) {
+        tokenizeInput(/*current_*/(*code)->code_row, tokens, pnum_tokens);
 
         if (*pnum_tokens == 1) {
-            current_macro = *macros;
+            /*current_macro = *macros;*/
 
-            while (current_macro) {
-                if (!strcmp(current_macro->macro_name, tokens[0])) {
+            while (/*current_*/*macros) {
+                if (!strcmp(/*current_*/(*macros)->macro_name, tokens[0])) {
                     /* Replace the macro name with the code lines */
-                    current_macro_code = current_macro->code_node;
+                    /*current_macro_code = current_macro->code_node;*/
 
-                    while (current_macro_code) {
-                        printf("%s\n", current_macro_code->code_row); /* Print the code line */
-                        current_macro_code = current_macro_code->next;
+                    while (/*current_*/(*macros)->code_node) {
+                        printf("%s\n", /*current_(*macro_code->code_row)*/(*macros)->code_node->code_row); /* Print the code line */
+                        /*current_*macro_code = current_macro_code->next;*/
+                        (*macros)->code_node = (*macros)->code_node->next;
                     }
 
                     break; /* Exit the loop if the macro is found */
                 }
 
-                current_macro = current_macro->next;
+                /*current_*/*macros = /*current_*/(*macros)->next;
             }
         }
 
-        current_code = current_code->next;
+        /*current_code = current_code->next;*/
+        (*macros)->code_node = (*macros)->next;
     }
 }
