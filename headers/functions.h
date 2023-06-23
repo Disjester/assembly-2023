@@ -61,5 +61,5 @@ void cleanLine(char* line);
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens);
 
 
-void macrosToValues(CodeNode* code, MacroNode* macros, char *tokens[], int* pnum_tokens);
+void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens);
 #endif
