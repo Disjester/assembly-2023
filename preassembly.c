@@ -210,7 +210,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     }
 }
 
-voidacrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens) {
+void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens) {
     MacroNode* current_macro;
     CodeNode* current_code;
     CodeNode* current_macro_code;
