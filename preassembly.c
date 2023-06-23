@@ -203,10 +203,10 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
 
 
 void macrosToValues(CodeNode* code, MacroNode* macros, char *tokens[], int* pnum_tokens){
-    while (0/*there is code */)
+    while (code)
     {
-        /*tokenize the line*/
-        if (0/*there is 1 word and its a macro name*/)
+        tokenizeInput(code->code_row, tokens, pnum_tokens);
+        if (*pnum_tokens == 1 && tokens[0] == true/*there is 1 word and its a macro name*/)
         {
             /*change the macro name with all of the macro code lines*/
         }
