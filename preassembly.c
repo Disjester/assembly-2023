@@ -3,44 +3,47 @@
 #include <stdlib.h>
 #include "libs.h"
 
+CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens);
+void freeLinkedList(CodeNode* head);
+int getLine(char* line, Error* error, FILE* file);
+void cleanLine(char* line);
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens);
+void preproccessor(char* file_name);
 
-int main(int argc, char **argv)
-{
+
+int main (int argc, char** argv) {
     preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
-
+    
     return 1;
 }
 
-void preproccessor(char *file_name)
-{
-    CodeNode *code;
-    Error *error = NO_ERROR;
-    MacroNode *macros;
+void preproccessor(char* file_name) {
+    CodeNode* code;
+    Error* error = NO_ERROR;
+    MacroNode* macros;
 
-    FILE *file;
+    FILE* file;
 
-    char **tokens;
+    char** tokens;
 
     int num_tokens = 0;
 
     tokens = malloc(MAX_TOKENS * sizeof(char *));
     file = fopen(file_name, "r");
 
-    if (file == NULL)
-    {
+    if (file == NULL) {
         perror("Error opening file\n");
     }
 
     code = createLinkedListFromFile(file, error, tokens, &num_tokens);
     scanCodeForMacroDefinitions(&code, &macros, error, &num_tokens, tokens);
 
+
     macrosToValues(&code, &macros, tokens, &num_tokens);
 
-    while (macros)
-    {
+    while (macros) {
         printf("Macro name: %s\nCode: \n", macros->macro_name);
-        while (macros->code_node)
-        {
+        while (macros->code_node) {
             printf("%s\n", macros->code_node->code_row);
             macros->code_node = macros->code_node->next;
         }
@@ -51,57 +54,55 @@ void preproccessor(char *file_name)
 
 /**
  * @brief Create a Linked List From File object
- *
- * @param file
- * @return CodeNode*
+ * 
+ * @param file 
+ * @return CodeNode* 
  */
-CodeNode *createLinkedListFromFile(FILE *file, Error *error, char *tokens[], int *pnum_tokens)
-{
+CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens) {
     char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
 
-    while (getLine(buffer, error, file))
-    {
+    while(getLine(buffer, error, file)) {
         /*Create a new node*/
-        node = (CodeNode *)malloc(sizeof(CodeNode));
-        if (!node)
-        {
+        node = (CodeNode*)malloc(sizeof(CodeNode));
+        if(!node) {
             printf("Error allocating memory for new node.\n");
             return NULL;
         }
 
         /*printing the contents of the buffer, to see what's inside*/
-        node->code_row = (char *)malloc(strlen(buffer) + 1);
+        node->code_row = (char*) malloc(strlen(buffer) + 1);
 
         /* Copy the string from buffer to the new node*/
         strcpy(node->code_row, buffer);
         node->next = NULL;
-
+        
         /* If this is the first node, it is the head of the list*/
+<<<<<<< HEAD
         if (!head) {
+=======
+        if(!head) {
+>>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
             head = node;
-        }
-        else
-        {
+        } else {
             /* Otherwise, add the new node to the end of the list*/
             temp->next = node;
         }
-
+        
         /* Move the temporary pointer to the new node*/
         temp = node;
     }
-
+    
     return head;
 }
 
 /**
  * @brief frees all the memmory allocated to the linked list ( code rows)
- *
- * @param head
+ * 
+ * @param head 
  */
-void freeLinkedList(CodeNode *head)
-{
-    CodeNode *tmp;
+void freeLinkedList(CodeNode* head) {
+    CodeNode* tmp;
 
     while (!head) {
         tmp = head;
@@ -110,8 +111,7 @@ void freeLinkedList(CodeNode *head)
     }
 }
 
-int getLine(char *line, Error *error, FILE *file)
-{
+int getLine(char* line, Error* error, FILE* file) {
     char x; /*current symbol in the input stream*/
     int i = 0;
     cleanLine(line);
@@ -132,7 +132,11 @@ int getLine(char *line, Error *error, FILE *file)
         }
 
         if (i != 0 && x == ',') {
+<<<<<<< HEAD
             if (line[i - 1] != ' ') {
+=======
+            if (line[i-1] != ' ') {
+>>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
                 line[i++] = ' ';
             }
             line[i++] = x;
@@ -140,7 +144,11 @@ int getLine(char *line, Error *error, FILE *file)
             continue;
         }
         /*removing of duplications of whitespaces*/
+<<<<<<< HEAD
         if ((i != 0) && line[i - 1] == ' ' && (x == ' ')) {
+=======
+        if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
+>>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
             continue;
         }
         /*putting a char to the string*/
@@ -154,65 +162,82 @@ int getLine(char *line, Error *error, FILE *file)
     return i;
 }
 
-void cleanLine(char *line)
-{
+void cleanLine(char* line) {
     int i;
-    for (i = 0; i < MAX_LINE_LENGTH; i++)
-    {
+    for (i = 0; i < MAX_LINE_LENGTH; i++) {
         line[i] = '\0';
     }
 }
 
-void scanCodeForMacroDefinitions(CodeNode **code_node, MacroNode **macro_node, Error *error, int *pnum_tokens, char **tokens)
-{
-    MacroNode *new_macro_node;
-    MacroNode *temp_macro_node;
-    CodeNode *new_code_node;
-    CodeNode *new_code_node2;
-    CodeNode *new_code_node_head;
-    CodeNode *temp_code_node;
-    CodeNode *curr_code_node;
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens) {
+    MacroNode* new_macro_node;
+    MacroNode* temp_macro_node;
+    CodeNode* new_code_node;
+    CodeNode* new_code_node2;
+    CodeNode* new_code_node_head;
+    CodeNode* temp_code_node;
+    CodeNode* curr_code_node;
 
     temp_macro_node = *macro_node;
     curr_code_node = *code_node;
     while (curr_code_node) {
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
+<<<<<<< HEAD
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro")) {
+=======
+        if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
+>>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
             if (*macro_node) {
                 while ((*macro_node)->next) {
                     *macro_node = (*macro_node)->next;
                 }
-                new_macro_node = (MacroNode *)malloc(sizeof(MacroNode));
+                new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
                 /*David added this*/
                 new_macro_node->next = NULL;
                 new_macro_node->code_node = NULL;  /* Initialize the code_node field*/
                 new_macro_node->macro_name = NULL; /* Initialize the macro_name field*/
                 /*TBD*/
+<<<<<<< HEAD
             }
             else {
                 new_macro_node = (MacroNode *)malloc(sizeof(MacroNode));
+=======
+            } else {
+                new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
+>>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
                 new_macro_node->next = NULL;
-                new_macro_node->code_node = (CodeNode *)malloc(sizeof(CodeNode));
-                new_macro_node->macro_name = (char *)malloc(sizeof(char) * (strlen(tokens[1])));
+                new_macro_node->code_node = (CodeNode*) malloc(sizeof(CodeNode));
+                new_macro_node->macro_name = (char*) malloc(sizeof(char)*(strlen(tokens[1])));
 
                 strcpy(new_macro_node->macro_name, tokens[1]);
                 temp_code_node = (*code_node)->next;
                 tokenizeInput(temp_code_node->code_row, tokens, pnum_tokens);
 
-                new_code_node = (CodeNode *)malloc(sizeof(CodeNode));
+                new_code_node = (CodeNode*) malloc(sizeof(CodeNode));
                 new_code_node->code_row = NULL;
                 new_code_node_head = new_code_node;
 
+<<<<<<< HEAD
                 while (temp_code_node && strcmp(tokens[0], "endmcro")) {
                     if (new_code_node->code_row) {
                         new_code_node2 = (CodeNode *)malloc(sizeof(CodeNode));
+=======
+                while(temp_code_node && strcmp(tokens[0], "endmcro")) {
+                    if (new_code_node->code_row) {
+                        new_code_node2 = (CodeNode*) malloc(sizeof(CodeNode));
+>>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
                         new_code_node2->next = NULL;
                         new_code_node->next = new_code_node2;
                         new_code_node = new_code_node->next;
                     }
-                    new_code_node->code_row = (char *)malloc(sizeof(char) * (strlen(temp_code_node->code_row)));
+                    new_code_node->code_row = (char*) malloc(sizeof(char)*(strlen(temp_code_node->code_row)));
                     strcpy(new_code_node->code_row, temp_code_node->code_row);
+<<<<<<< HEAD
                 
+=======
+
+
+>>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
                     temp_code_node = temp_code_node->next;
                     tokenizeInput(temp_code_node->code_row, tokens, pnum_tokens);
                 }
