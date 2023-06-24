@@ -36,7 +36,7 @@ void preproccessor(char* file_name) {
     macrosToValues(&code, &macros, tokens, &num_tokens);
 
     while (macros) {
-        printf("Macro name: %s\nCode: \n", macros->macro_name);
+        printf("\nMacro name: %s\nCode: \n", macros->macro_name);
         while (macros->code_node) {
             printf("%s\n", macros->code_node->code_row);
             macros->code_node = macros->code_node->next;
@@ -157,7 +157,6 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     CodeNode* new_code_node;
     CodeNode* new_code_node2;
     CodeNode* new_code_node_head;
-    CodeNode* temp_code_node;
     CodeNode* curr_code_node;
 
     temp_macro_node = *macro_node;
@@ -165,9 +164,9 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     while (curr_code_node) {
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
-            if (*macro_node) {
-                while ((*macro_node)->next) {
-                    *macro_node = (*macro_node)->next;
+            if (temp_macro_node) {
+                while ((temp_macro_node)->next) {
+                    temp_macro_node = temp_macro_node->next;
                 }
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
                 /*David added this*/
@@ -182,26 +181,25 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                 new_macro_node->macro_name = (char*) malloc(sizeof(char)*(strlen(tokens[1])));
 
                 strcpy(new_macro_node->macro_name, tokens[1]);
-                temp_code_node = (*code_node)->next;
-                tokenizeInput(temp_code_node->code_row, tokens, pnum_tokens);
+                curr_code_node = curr_code_node->next;
+                tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
 
                 new_code_node = (CodeNode*) malloc(sizeof(CodeNode));
                 new_code_node->code_row = NULL;
                 new_code_node_head = new_code_node;
 
-                while(temp_code_node && strcmp(tokens[0], "endmcro")) {
+                while(curr_code_node && strcmp(tokens[0], "endmcro")) {
                     if (new_code_node->code_row) {
                         new_code_node2 = (CodeNode*) malloc(sizeof(CodeNode));
                         new_code_node2->next = NULL;
                         new_code_node->next = new_code_node2;
                         new_code_node = new_code_node->next;
                     }
-                    new_code_node->code_row = (char*) malloc(sizeof(char)*(strlen(temp_code_node->code_row)));
-                    strcpy(new_code_node->code_row, temp_code_node->code_row);
+                    new_code_node->code_row = (char*) malloc(sizeof(char)*(strlen(curr_code_node->code_row)));
+                    strcpy(new_code_node->code_row, curr_code_node->code_row);
 
-
-                    temp_code_node = temp_code_node->next;
-                    tokenizeInput(temp_code_node->code_row, tokens, pnum_tokens);
+                    curr_code_node = curr_code_node->next;
+                    tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
                 }
                 new_macro_node->code_node = new_code_node_head;
                 *macro_node = new_macro_node;

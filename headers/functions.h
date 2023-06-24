@@ -5,7 +5,7 @@
 #include "nodes.h"
 #include <stdio.h>
 
-preproccessor(char *file_name);
+void preproccessor(char *file_name);
 
 /**
  * @brief 
