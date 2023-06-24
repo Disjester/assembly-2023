@@ -165,7 +165,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             if (temp_macro_node) {
-                while ((temp_macro_node)->next) {
+                while (temp_macro_node->next) {
                     temp_macro_node = temp_macro_node->next;
                 }
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
