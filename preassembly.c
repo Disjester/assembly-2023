@@ -78,11 +78,7 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
         node->next = NULL;
         
         /* If this is the first node, it is the head of the list*/
-<<<<<<< HEAD
-        if (!head) {
-=======
         if(!head) {
->>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
             head = node;
         } else {
             /* Otherwise, add the new node to the end of the list*/
@@ -132,11 +128,7 @@ int getLine(char* line, Error* error, FILE* file) {
         }
 
         if (i != 0 && x == ',') {
-<<<<<<< HEAD
-            if (line[i - 1] != ' ') {
-=======
             if (line[i-1] != ' ') {
->>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
                 line[i++] = ' ';
             }
             line[i++] = x;
@@ -144,11 +136,7 @@ int getLine(char* line, Error* error, FILE* file) {
             continue;
         }
         /*removing of duplications of whitespaces*/
-<<<<<<< HEAD
-        if ((i != 0) && line[i - 1] == ' ' && (x == ' ')) {
-=======
         if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
->>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
             continue;
         }
         /*putting a char to the string*/
@@ -182,11 +170,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     curr_code_node = *code_node;
     while (curr_code_node) {
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
-<<<<<<< HEAD
-        if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro")) {
-=======
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
->>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
             if (*macro_node) {
                 while ((*macro_node)->next) {
                     *macro_node = (*macro_node)->next;
@@ -197,14 +181,8 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                 new_macro_node->code_node = NULL;  /* Initialize the code_node field*/
                 new_macro_node->macro_name = NULL; /* Initialize the macro_name field*/
                 /*TBD*/
-<<<<<<< HEAD
-            }
-            else {
-                new_macro_node = (MacroNode *)malloc(sizeof(MacroNode));
-=======
             } else {
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
->>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
                 new_macro_node->next = NULL;
                 new_macro_node->code_node = (CodeNode*) malloc(sizeof(CodeNode));
                 new_macro_node->macro_name = (char*) malloc(sizeof(char)*(strlen(tokens[1])));
@@ -217,27 +195,17 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                 new_code_node->code_row = NULL;
                 new_code_node_head = new_code_node;
 
-<<<<<<< HEAD
-                while (temp_code_node && strcmp(tokens[0], "endmcro")) {
-                    if (new_code_node->code_row) {
-                        new_code_node2 = (CodeNode *)malloc(sizeof(CodeNode));
-=======
                 while(temp_code_node && strcmp(tokens[0], "endmcro")) {
                     if (new_code_node->code_row) {
                         new_code_node2 = (CodeNode*) malloc(sizeof(CodeNode));
->>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
                         new_code_node2->next = NULL;
                         new_code_node->next = new_code_node2;
                         new_code_node = new_code_node->next;
                     }
                     new_code_node->code_row = (char*) malloc(sizeof(char)*(strlen(temp_code_node->code_row)));
                     strcpy(new_code_node->code_row, temp_code_node->code_row);
-<<<<<<< HEAD
-                
-=======
 
 
->>>>>>> 5ffe980a6aea8582e1c50e953cb95e1220578189
                     temp_code_node = temp_code_node->next;
                     tokenizeInput(temp_code_node->code_row, tokens, pnum_tokens);
                 }
