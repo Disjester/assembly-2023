@@ -271,6 +271,22 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 current_code = prev_code;
             }
         }
+        else if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro"))
+        {
+            while (true)
+            {
+                current_code = current_code->next;
+                tokenizeInput(current_code->code_row, tokens, pnum_tokens);
+                if (*pnum_tokens == 1 && !strcmp(tokens[0], "endmcro"))
+                {
+                    prev_code->next = current_code->next;
+                    break;
+                }
+                
+            }
+            
+        }
+        
 
         prev_code = current_code;
         current_code = current_code->next;
