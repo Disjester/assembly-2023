@@ -258,7 +258,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 if (!strcmp(current_macro->macro_name, tokens[0]))
                 {
                     /* Replace the macro name with the code lines */
-                    current_macro_code = current_macro->code_node;
+                    current_code->code_row = current_macro->code_node;
 
                     while (current_macro_code)
                     {
