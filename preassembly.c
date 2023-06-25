@@ -203,6 +203,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
         curr_code_node = curr_code_node->next;
     }
 }
+
 void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens)
 {
     /* Declare variables */
