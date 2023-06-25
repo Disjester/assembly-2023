@@ -156,7 +156,6 @@ void cleanLine(char* line) {
 
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens) {
     MacroNode* new_macro_node;
-    MacroNode* temp_macro_node;
     CodeNode* new_code_node;
     CodeNode* new_code_node2;
     CodeNode* new_code_node_head;
