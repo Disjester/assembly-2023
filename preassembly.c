@@ -238,7 +238,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                     {
                         /* Create a new code node and copy the code row */
                         CodeNode *new_code_node = (CodeNode *)malloc(sizeof(CodeNode));
-                        new_code_node->code_row = strdup(current_macro_code->code_row);
+                        new_code_node->code_row = my_strdup(current_macro_code->code_row);
                         new_code_node->next = NULL;
 
                         /* Append the new code node to the linked list */
