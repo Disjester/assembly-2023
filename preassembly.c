@@ -40,7 +40,6 @@ void preproccessor(char* file_name) {
             macros->code_node = macros->code_node->next;
         }
         macros = macros->next;
-        printf("\n");
     }
 
     printf("FINAL CODE:\n\n");
