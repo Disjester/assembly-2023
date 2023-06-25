@@ -244,7 +244,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     CodeNode *current_macro_code;
     CodeNode *prev_code;
 
-    int macro_replaced; /* Flag to track if a macro is replaced */
+    bool macro_replaced = false; /* Flag to track if a macro is replaced */
 
     /* Initialize variables */
     current_code = *code;
@@ -258,7 +258,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
         if (*pnum_tokens == 1)
         {
             current_macro = *macros;
-            macro_replaced = 0;
+            macro_replaced = false;
 
             /*going throught all the macros*/
             while (current_macro)
@@ -289,7 +289,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                         current_macro_code = current_macro_code->next;
                     }
 
-                    macro_replaced = 1;
+                    macro_replaced = true;
                 }
 
                 current_macro = current_macro->next;
