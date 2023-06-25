@@ -158,7 +158,6 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     MacroNode* new_macro_node;
     MacroNode* temp_macro_node;
     CodeNode* new_code_node;
-    CodeNode* new_code_node2;
     CodeNode* new_code_node_head;
     CodeNode* curr_code_node;
 
@@ -181,10 +180,9 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
 
             while(curr_code_node && strcmp(tokens[0], "endmcro")) {
                 if (new_code_node->code_row) {
-                    new_code_node2 = (CodeNode*) malloc(sizeof(CodeNode));
-                    new_code_node2->next = NULL;
-                    new_code_node->next = new_code_node2;
+                    new_code_node->next = (CodeNode*) malloc(sizeof(CodeNode));
                     new_code_node = new_code_node->next;
+                    new_code_node->next = NULL;
                 }
                 new_code_node->code_row = my_strdup(curr_code_node->code_row);
                 curr_code_node = curr_code_node->next;
@@ -205,6 +203,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
         curr_code_node = curr_code_node->next;
     }
 }
+
 void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens)
 {
     /* Declare variables */
