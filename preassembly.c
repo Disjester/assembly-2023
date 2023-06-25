@@ -238,7 +238,6 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
 
 void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens)
 {
-    /* Declare variables */
     MacroNode *current_macro;
     CodeNode *current_code;
     CodeNode *current_macro_code;
@@ -248,67 +247,36 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     /*test comments*/
     /* Initialize variables */
     current_code = *code;
-    prev_code = NULL;
 
     while (current_code)
     {
         tokenizeInput(current_code->code_row, tokens, pnum_tokens);
 
-        /*if its 1 word*/
         if (*pnum_tokens == 1)
         {
             current_macro = *macros;
-            macro_replaced = false;
 
-            /*going throught all the macros*/
             while (current_macro)
             {
-                /*if the word is a macro name*/
                 if (!strcmp(current_macro->macro_name, tokens[0]))
                 {
                     /* Replace the macro name with the code lines */
-                    current_macro_code = current_macro->code_node;
+                    current_code->code_row = current_macro->code_node;
 
-                    /* Traverse the macro code lines and insert them into the linked list*/
                     while (current_macro_code)
                     {
-                        /* Create a new code node and copy the code row */
-                        CodeNode *new_code_node = (CodeNode *)malloc(sizeof(CodeNode));
-                        new_code_node->code_row = my_strdup(current_macro_code->code_row);
-                        new_code_node->next = NULL;
-
-                        /* Append the new code node to the linked list */
-                        if (prev_code)
-                            prev_code->next = new_code_node;
-                        else
-                            *code = new_code_node;
-
-                        /* Update the previous code node to the current one*/
-                        prev_code = new_code_node;
-
+                        printf("%s\n", current_macro_code->code_row); /* Print the code line */
                         current_macro_code = current_macro_code->next;
                     }
 
-                    macro_replaced = true;
+                    break; /* Exit the loop if the macro is found */
                 }
 
                 current_macro = current_macro->next;
             }
-
-            /* Remove the current code node if a macro was replaced */
-            if (macro_replaced)
-            {
-                if (prev_code)
-                    prev_code->next = current_code->next;
-                else
-                    *code = current_code->next;
-
-                free(current_code);
-                current_code = prev_code;
-            }
         }
 
-        prev_code = current_code;
         current_code = current_code->next;
+        /*(*macros)->code_node = (*macros)->next;*/
     }
 }
