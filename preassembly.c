@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include "libs.h"
 
-
-
 int main (int argc, char** argv) {
     preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
     
@@ -43,6 +41,12 @@ void preproccessor(char* file_name) {
         }
         macros = macros->next;
         printf("\n");
+    }
+
+    printf("FINAL CODE:\n\n");
+    while (code) {
+        printf("%s\n", code->code_row);
+        code = code->next;
     }
 }
 
@@ -153,6 +157,7 @@ void cleanLine(char* line) {
 
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens) {
     MacroNode* new_macro_node;
+    MacroNode* new_macro_node2;
     MacroNode* temp_macro_node;
     CodeNode* new_code_node;
     CodeNode* new_code_node2;
@@ -169,11 +174,34 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                     temp_macro_node = temp_macro_node->next;
                 }
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
-                /*David added this*/
                 new_macro_node->next = NULL;
-                new_macro_node->code_node = NULL;  /* Initialize the code_node field*/
-                new_macro_node->macro_name = NULL; /* Initialize the macro_name field*/
-                /*TBD*/
+                new_macro_node->code_node = (CodeNode*) malloc(sizeof(CodeNode));
+                new_macro_node->macro_name = (char*) malloc(sizeof(char)*(strlen(tokens[1])));
+
+                strcpy(new_macro_node->macro_name, tokens[1]);
+                curr_code_node = curr_code_node->next;
+                tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
+
+                new_code_node = (CodeNode*) malloc(sizeof(CodeNode));
+                new_code_node->code_row = NULL;
+                new_code_node_head = new_code_node;
+
+                while(curr_code_node && strcmp(tokens[0], "endmcro")) {
+                    if (new_code_node->code_row) {
+                        new_code_node2 = (CodeNode*) malloc(sizeof(CodeNode));
+                        new_code_node2->next = NULL;
+                        new_code_node->next = new_code_node2;
+                        new_code_node = new_code_node->next;
+                    }
+                    new_code_node->code_row = (char*) malloc(sizeof(char)*(strlen(curr_code_node->code_row)));
+                    strcpy(new_code_node->code_row, curr_code_node->code_row);
+
+                    curr_code_node = curr_code_node->next;
+                    tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
+                }
+                new_macro_node->code_node = new_code_node_head;
+                temp_macro_node->next = new_macro_node;
+                temp_macro_node = temp_macro_node->next;
             } else {
                 new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
                 new_macro_node->next = NULL;
@@ -203,6 +231,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                 }
                 new_macro_node->code_node = new_code_node_head;
                 *macro_node = new_macro_node;
+                temp_macro_node = *macro_node;
             }
         }
         curr_code_node = curr_code_node->next;
