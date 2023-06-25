@@ -42,6 +42,12 @@ void preproccessor(char* file_name) {
         macros = macros->next;
         printf("\n");
     }
+
+    printf("FINAL CODE:\n\n");
+    while (code) {
+        printf("%s\n", code->code_row);
+        code = code->next;
+    }
 }
 
 /**
