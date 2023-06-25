@@ -42,7 +42,7 @@ void preproccessor(char* file_name) {
         macros = macros->next;
     }
 
-    printf("FINAL CODE:\n\n");
+    printf("\nFINAL CODE:\n\n");
     while (code) {
         printf("%s\n", code->code_row);
         code = code->next;
@@ -124,7 +124,7 @@ int getLine(char* line, Error* error, FILE* file) {
             continue;
         }
 
-        if (i != 0 && x == ',') {
+        if (i != 0 && (x == ',' || x == ':')) {
             if (line[i-1] != ' ') {
                 line[i++] = ' ';
             }
