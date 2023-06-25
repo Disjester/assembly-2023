@@ -235,9 +235,9 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
         curr_code_node = curr_code_node->next;
     }
 }
-
 void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens)
 {
+    /* Declare variables */
     MacroNode *current_macro;
     CodeNode *current_code;
     CodeNode *current_macro_code;
@@ -247,6 +247,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     /*test comments*/
     /* Initialize variables */
     current_code = *code;
+    prev_code = NULL;
 
     while (current_code)
     {
@@ -255,28 +256,53 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
         if (*pnum_tokens == 1)
         {
             current_macro = *macros;
+            macro_replaced = false;
 
             while (current_macro)
             {
                 if (!strcmp(current_macro->macro_name, tokens[0]))
                 {
                     /* Replace the macro name with the code lines */
-                    current_code->code_row = current_macro->code_node;
+                    current_macro_code = current_macro->code_node;
 
                     while (current_macro_code)
                     {
-                        printf("%s\n", current_macro_code->code_row); /* Print the code line */
+                        /* Create a new code node and copy the code row */
+                        CodeNode *new_code_node = (CodeNode *)malloc(sizeof(CodeNode));
+                        new_code_node->code_row = strdup(current_macro_code->code_row);
+                        new_code_node->next = NULL;
+
+                        /* Append the new code node to the linked list */
+                        if (prev_code)
+                            prev_code->next = new_code_node;
+                        else
+                            *code = new_code_node;
+
+                        prev_code = new_code_node;
+
                         current_macro_code = current_macro_code->next;
                     }
 
-                    break; /* Exit the loop if the macro is found */
+                    macro_replaced = true;
                 }
 
                 current_macro = current_macro->next;
             }
+
+            /* Remove the current code node if a macro was replaced */
+            if (macro_replaced)
+            {
+                if (prev_code)
+                    prev_code->next = current_code->next;
+                else
+                    *code = current_code->next;
+
+                free(current_code);
+                current_code = prev_code;
+            }
         }
 
+        prev_code = current_code;
         current_code = current_code->next;
-        /*(*macros)->code_node = (*macros)->next;*/
     }
 }
