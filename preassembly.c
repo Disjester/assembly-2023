@@ -211,12 +211,14 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     CodeNode *current_code;
     CodeNode *current_macro_code;
     CodeNode *prev_code;
+    CodeNode *temp;
 
     bool macro_replaced = false; /* Flag to track if a macro is replaced */
     /*test comments*/
     /* Initialize variables */
     current_code = *code;
     prev_code = NULL;
+    temp = NULL;
 
     while (current_code)
     {
@@ -274,7 +276,9 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
         {
             while (true)
             {
+                temp = current_code;
                 current_code = current_code->next;
+                free(temp);
                 tokenizeInput(current_code->code_row, tokens, pnum_tokens);
                 if (*pnum_tokens == 1 && !strcmp(tokens[0], "endmcro"))
                 {
