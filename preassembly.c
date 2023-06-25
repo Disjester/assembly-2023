@@ -170,9 +170,8 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
             new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
             new_macro_node->next = NULL;
             new_macro_node->code_node = (CodeNode*) malloc(sizeof(CodeNode));
-            new_macro_node->macro_name = (char*) malloc(sizeof(char)*(strlen(tokens[1])));
+            new_macro_node->macro_name = my_strdup(tokens[1]);
 
-            strcpy(new_macro_node->macro_name, tokens[1]);
             curr_code_node = curr_code_node->next;
             tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
 
@@ -187,9 +186,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
                     new_code_node->next = new_code_node2;
                     new_code_node = new_code_node->next;
                 }
-                new_code_node->code_row = (char*) malloc(sizeof(char)*(strlen(curr_code_node->code_row)));
-                strcpy(new_code_node->code_row, curr_code_node->code_row);
-
+                new_code_node->code_row = my_strdup(curr_code_node->code_row);
                 curr_code_node = curr_code_node->next;
                 tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
             }
