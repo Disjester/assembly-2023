@@ -160,6 +160,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     CodeNode* new_code_node;
     CodeNode* new_code_node_head;
     CodeNode* curr_code_node;
+    bool is_correct_name;
 
     temp_macro_node = *macro_node;
     curr_code_node = *code_node;
@@ -169,6 +170,11 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), error);
             new_macro_node->next = NULL;
             new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
+            if (!validateVariableName(tokens[1])) {
+                is_correct_name = false;
+            } else {
+                is_correct_name = true;
+            }
             new_macro_node->macro_name = my_strdup(tokens[1]);
 
             curr_code_node = curr_code_node->next;
@@ -285,12 +291,10 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                     prev_code->next = current_code->next;
                     break;
                 }
-                
-            }
-            
+
+            }    
         }
         
-
         prev_code = current_code;
         current_code = current_code->next;
     }
