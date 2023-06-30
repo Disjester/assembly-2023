@@ -5,6 +5,7 @@
 #include "nodes.h"
 #include <stdio.h>
 
+bool validateVariableName (char *name);
 void preproccessor(char *file_name);
 
 /**
