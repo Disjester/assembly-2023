@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -32,4 +31,3 @@ char *my_strdup(const char *str) {
     }
     return duplicate;
 }
- 
