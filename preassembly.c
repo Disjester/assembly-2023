@@ -31,7 +31,7 @@ void preproccessor(char* file_name) {
     scanCodeForMacroDefinitions(&code, &macros, error, &num_tokens, tokens);
 
 
-    macrosToValues(&code, &macros, tokens, &num_tokens);
+    macrosToValues(&code, &macros, tokens, &num_tokens, error);
 
     while (macros) {
         printf("\nMacro name: %s\nCode: \n", macros->macro_name);
