@@ -49,12 +49,6 @@ void preproccessor(char* file_name) {
     }
 }
 
-/**
- * @brief Create a Linked List From File object
- * 
- * @param file 
- * @return CodeNode* 
- */
 CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens) {
     char buffer[MAX_LINE_LENGTH];
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
@@ -89,11 +83,6 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
     return head;
 }
 
-/**
- * @brief frees all the memmory allocated to the linked list ( code rows)
- * 
- * @param head 
- */
 void freeLinkedList(CodeNode* head) {
     CodeNode* tmp;
 
