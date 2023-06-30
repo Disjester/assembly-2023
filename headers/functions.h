@@ -5,6 +5,7 @@
 #include "nodes.h"
 #include <stdio.h>
 
+bool validateVariableName (char *name);
 void preproccessor(char *file_name);
 
 void tokenizeInput(char *input, char **tokens, int *num_tokens);
