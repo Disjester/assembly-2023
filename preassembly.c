@@ -20,7 +20,7 @@ void preproccessor(char* file_name) {
 
     int num_tokens = 0;
 
-    tokens = malloc(MAX_TOKENS * sizeof(char *));
+    tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     file = fopen(file_name, "r");
 
     if (file == NULL) {
@@ -61,14 +61,14 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
 
     while(getLine(buffer, error, file)) {
         /*Create a new node*/
-        node = (CodeNode*)malloc(sizeof(CodeNode));
+        node = (CodeNode*)allocateMemory(sizeof(CodeNode), error);
         if(!node) {
             printf("Error allocating memory for new node.\n");
             return NULL;
         }
 
         /*printing the contents of the buffer, to see what's inside*/
-        node->code_row = (char*) malloc(strlen(buffer) + 1);
+        node->code_row = (char*) allocateMemory(strlen(buffer) + 1, error);
 
         /* Copy the string from buffer to the new node*/
         strcpy(node->code_row, buffer);
@@ -166,21 +166,21 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     while (curr_code_node) {
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
-            new_macro_node = (MacroNode*) malloc(sizeof(MacroNode));
+            new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), error);
             new_macro_node->next = NULL;
-            new_macro_node->code_node = (CodeNode*) malloc(sizeof(CodeNode));
+            new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
             new_macro_node->macro_name = my_strdup(tokens[1]);
 
             curr_code_node = curr_code_node->next;
             tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
 
-            new_code_node = (CodeNode*) malloc(sizeof(CodeNode));
+            new_code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
             new_code_node->code_row = NULL;
             new_code_node_head = new_code_node;
 
             while(curr_code_node && strcmp(tokens[0], "endmcro")) {
                 if (new_code_node->code_row) {
-                    new_code_node->next = (CodeNode*) malloc(sizeof(CodeNode));
+                    new_code_node->next = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
                     new_code_node = new_code_node->next;
                     new_code_node->next = NULL;
                 }
@@ -239,7 +239,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                     while (current_macro_code)
                     {
                         /* Create a new code node and copy the code row */
-                        CodeNode *new_code_node = (CodeNode *)malloc(sizeof(CodeNode));
+                        CodeNode *new_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), error);
                         new_code_node->code_row = my_strdup(current_macro_code->code_row);
                         new_code_node->next = NULL;
 
