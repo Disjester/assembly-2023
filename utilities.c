@@ -31,3 +31,12 @@ char *my_strdup(const char *str) {
     }
     return duplicate;
 }
+
+void* allocateMemory(size_t size, Error* error) {
+    void* ptr = malloc(size);
+    if (ptr == NULL) {
+        *error = ERROR_NO_MEMORY;
+        handleError(error);
+    }
+    return ptr;
+}
