@@ -204,7 +204,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     }
 }
 
-void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens)
+void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens, Error* error)
 {
     /* Declare variables */
     MacroNode *current_macro;
