@@ -4,15 +4,17 @@
 #include "libs.h"
 
 int main (int argc, char** argv) {
-    preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
+    CodeNode* code;
+    code = preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
     
     short memory[1024];
-
-    firstIteration();
+    LabelNode* labels;
+    
+    firstIteration(memory, code, labels);
     return 1;
 }
 
-void preproccessor(char* file_name) {
+CodeNode* preproccessor(char* file_name) {
     CodeNode* code;
     Error* error = NO_ERROR;
     MacroNode* macros;
@@ -44,7 +46,7 @@ void preproccessor(char* file_name) {
         }
         macros = macros->next;
     }
-
+    return code;
     printf("\nFINAL CODE:\n\n");
     while (code) {
         printf("%s\n", code->code_row);

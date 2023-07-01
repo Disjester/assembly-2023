@@ -12,4 +12,9 @@ typedef struct CodeNode {
     struct CodeNode* next;
 } CodeNode;
 
+typedef struct LabelNode {
+    short memory_adress;
+    char* label_name;
+} LabelNode;
+
 #endif
