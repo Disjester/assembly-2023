@@ -8,7 +8,7 @@ int main (int argc, char** argv) {
     code = preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
     
     short memory[1024];
-    LabelNode* labels;
+    LabelNode* labels = (LabelNode*)malloc(sizeof(LabelNode*));
 
     firstIteration(memory, code, labels);
     return 1;
@@ -151,7 +151,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
     CodeNode* curr_code_node;
     bool is_correct_name;
 
-    temp_macro_node = *macro_node;
+    temp_macro_node = NULL;
     curr_code_node = *code_node;
     while (curr_code_node) {
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
