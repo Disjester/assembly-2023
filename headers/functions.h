@@ -1,6 +1,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
+#include "errors.h"
 #include "constants.h"
 #include "nodes.h"
 #include <stdio.h>
