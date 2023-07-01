@@ -13,7 +13,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
 
     while(temp_code) {
         if(strstr(temp_code->code_row, ":")) {
-            printf("%d\n", isLabel(temp_code->code_row, strstr(temp_code->code_row, ":")));
+            printf("%s  : %d\n",temp_code->code_row, isLabel(temp_code->code_row, strstr(temp_code->code_row, ":")));
         }
 
 
