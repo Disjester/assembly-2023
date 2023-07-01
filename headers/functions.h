@@ -6,8 +6,11 @@
 #include "nodes.h"
 #include <stdio.h>
 
+void firstIteration(short* memory, CodeNode* code, LabelNode* labels);
+
 bool validateVariableName (char *name);
-void preproccessor(char *file_name);
+
+CodeNode* preproccessor(char *file_name);
 
 void tokenizeInput(char *input, char **tokens, int *num_tokens);
 
@@ -29,5 +32,4 @@ void* allocateMemory(size_t size, Error* error);
 
 void handleError(Error* error);
 
-void firstIteration();
 #endif

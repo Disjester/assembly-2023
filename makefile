@@ -1,2 +1,2 @@
-preassembler: preassembler.c utilities.c
-	gcc -ansi -g -Wall -pedantic preassembler.c utilities.c -o preassembler
+assembler: preassembler.c utilities.c assembler.c
+	gcc -ansi -g -Wall -pedantic preassembler.c utilities.c assembler.c -o assembler
