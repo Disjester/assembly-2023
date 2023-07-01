@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/preassembly",
+            "program": "${workspaceFolder}/assembler",
             "args": ["test2.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

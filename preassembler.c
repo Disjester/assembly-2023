@@ -9,7 +9,7 @@ int main (int argc, char** argv) {
     
     short memory[1024];
     LabelNode* labels;
-    
+
     firstIteration(memory, code, labels);
     return 1;
 }
@@ -38,20 +38,15 @@ CodeNode* preproccessor(char* file_name) {
 
     macrosToValues(&code, &macros, tokens, &num_tokens, error);
 
-    while (macros) {
+    /*while (macros) {
         printf("\nMacro name: %s\nCode: \n", macros->macro_name);
         while (macros->code_node) {
             printf("%s\n", macros->code_node->code_row);
             macros->code_node = macros->code_node->next;
         }
         macros = macros->next;
-    }
+    }*/
     return code;
-    printf("\nFINAL CODE:\n\n");
-    while (code) {
-        printf("%s\n", code->code_row);
-        code = code->next;
-    }
 }
 
 CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens) {
@@ -118,7 +113,7 @@ int getLine(char* line, Error* error, FILE* file) {
             continue;
         }
 
-        if (i != 0 && (x == ',' || x == ':')) {
+        if (i != 0 && (x == ',')) {
             if (line[i-1] != ' ') {
                 line[i++] = ' ';
             }
