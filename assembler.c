@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "libs.h"
-#include <string.h>
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
     CodeNode* temp_code;
@@ -24,7 +23,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
 }
 
 
-bool isLabel(char* word){
+bool isLabel(char* word, char* end){
     bool flag = false;
     int i = 0;
     if (!isalpha(word[i]))
@@ -32,7 +31,7 @@ bool isLabel(char* word){
         return flag;
     }
     
-    for (; word[i] != '\0'; i++)
+    for (; &(word + i) != &end; i++)
     {
         if (!isalpha(word[i]) && !isdigit(word[i]))
         {
