@@ -26,4 +26,6 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
 void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, Error* error);
 
 void* allocateMemory(size_t size, Error* error);
+
+void handleError(Error* error);
 #endif

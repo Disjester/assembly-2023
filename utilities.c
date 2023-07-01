@@ -55,4 +55,9 @@ bool validateVariableName (char *name) {
             return false;
         }
     }
+    return true;
+}
+
+void handleError(Error* error) {
+
 }
