@@ -31,7 +31,7 @@ bool isLabel(char* word, char* end){
         return flag;
     }
     
-    for (; &(word + i) != &end; i++)
+    for (; &word[i] != end; i++)
     {
         if (!isalpha(word[i]) && !isdigit(word[i]))
         {
@@ -39,10 +39,7 @@ bool isLabel(char* word, char* end){
         }
         
     }
-    if (word[i-1] == ':')
-    {
-        flag = true;
-    }
+    flag = true;
 
     return flag;
 }
