@@ -24,7 +24,10 @@ bool isLabel(char* word){
         }
         
     }
-    flag = true;
+    if (word[i-1] == ':')
+    {
+        flag = true;
+    }
+
     return flag;
-    
 }
