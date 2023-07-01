@@ -1,4 +1,5 @@
-MAIN : mov @r3 ,LENGTH
+MAIN: mov @r3 ,LENGTH
+STR :    .string “abcdef”
 LOOP: jmp L1
         mcro m1
             sub @r1, @r4
