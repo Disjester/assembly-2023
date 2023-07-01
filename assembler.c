@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "libs.h"
-#include <string.h>
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
     CodeNode* temp_code;
