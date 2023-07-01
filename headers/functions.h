@@ -28,4 +28,6 @@ void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pn
 void* allocateMemory(size_t size, Error* error);
 
 void handleError(Error* error);
+
+void firstIteration();
 #endif

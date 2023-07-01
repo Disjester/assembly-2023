@@ -6,6 +6,9 @@
 int main (int argc, char** argv) {
     preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
     
+    short memory[1024];
+
+    firstIteration();
     return 1;
 }
 
