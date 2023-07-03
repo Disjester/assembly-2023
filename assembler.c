@@ -30,7 +30,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
         }
         
-
         token_counter = 0;
         label_flag = false;
         temp_code = temp_code->next;
