@@ -18,6 +18,26 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
             printf("%s\n",temp_code->code_row);
         }
 
+        if (isData(".data"))
+        {
+            printf("\nisData test1 good\n");
+        }
+
+        else
+        {
+            printf("\nisData test failed\n");
+        }
+        
+        if (isData("something"))
+        {
+            printf("\nisData test2 failed\n");    
+        }
+        
+        else
+        {
+            printf("\nisData test2 good\n");
+        }
+        
 
 
 
@@ -48,6 +68,16 @@ bool isLabel(char* word){
         }
         
     }
-    
+
     return flag;
+}
+
+bool isData(char* word){
+
+    if (!strcmp(word, ".data") || !strcmp(word, ".string"))
+    {
+        return true;
+    }
+    
+    return false;
 }
