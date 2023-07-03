@@ -24,29 +24,10 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
         }
         if(isData(tokens[token_counter])) {
             if (label_flag) {
-                saveLabel(labels, memory, &memory_counter); /*To be defined*/
+                /*saveLabel(labels, memory, &memory_counter);*/ /*To be defined*/
             }
             token_counter++;
-        }
-
-        if (isData(".data"))
-        {
-            printf("\nisData test1 good\n");
-        }
-
-        else
-        {
-            printf("\nisData test failed\n");
-        }
-        
-        if (isData("something"))
-        {
-            printf("\nisData test2 failed\n");    
-        }
-        
-        else
-        {
-            printf("\nisData test2 good\n");
+            printf("I SEE DATA HERE: %s\n", code->code_row);
         }
         
 
