@@ -48,7 +48,6 @@ bool isLabel(char* word){
         }
         
     }
-    flag = true;
-
+    
     return flag;
 }
