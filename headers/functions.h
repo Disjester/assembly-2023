@@ -8,7 +8,7 @@
 
 bool isLabel(char* word);
 
-void firstIteration(short* memory, CodeNode* code, LabelNode* labels);
+void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error);
 
 
 

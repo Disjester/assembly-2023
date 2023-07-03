@@ -4,10 +4,10 @@
 #include <ctype.h>
 #include "libs.h"
 
-void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
+void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error) {
     CodeNode* temp_code;
     bool label_flag = false;
-    char** tokens;
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int DC, IC;
     int num_tokens = 0;
     int token_counter = 0;
@@ -18,7 +18,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
     while(temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
         if(isLabel(tokens[token_counter])) {
-            printf("%s\n",temp_code->code_row);
+            printf("I SEE LABEL HERE: %s\n",temp_code->code_row);
             label_flag = true;
             token_counter++;
         }
@@ -27,7 +27,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
                 /*saveLabel(labels, memory, &memory_counter);*/ /*To be defined*/
             }
             token_counter++;
-            printf("I SEE DATA HERE: %s\n", temp_code->code_row);
+            printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
         }
         
 
