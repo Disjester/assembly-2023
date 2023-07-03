@@ -27,7 +27,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
                 /*saveLabel(labels, memory, &memory_counter);*/ /*To be defined*/
             }
             token_counter++;
-            printf("I SEE DATA HERE: %s\n", temp_code->code_row);
+            printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
         }
         
 
