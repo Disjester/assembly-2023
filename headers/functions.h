@@ -17,10 +17,11 @@ bool validateVariableName (char *name);
 CodeNode* preproccessor(char *file_name);
 
 /**
- * @brief 
+ * @brief takes a string , and splits it into words base on whiteSpaces.
+ *        Note: **tokens need to have allocated memmory - the function doesn't allocate it 
  * 
  * @param input the string you want to tokenize
- * @param tokens the array of string in which you would save your tokens
+ * @param tokens the array of strings in which you would save your tokens - need to have memory already allocated
  * @param num_tokens a pointer to where you save the number of tokens 
  */
 void tokenizeInput(char *input, char **tokens, int *num_tokens);
