@@ -36,7 +36,13 @@ bool isLabel(char* word){
     
     for (; word[i] != '\0'; i++)
     {
-        if (!isalpha(word[i]) && !isdigit(word[i]) && word[i] != ':')
+        if (word[i] == ':' && word[i+1] == '\0')
+        {
+            flag = true;
+            return flag;
+        }
+        
+        if (!isalpha(word[i]) && !isdigit(word[i]))
         {
             return flag;
         }
