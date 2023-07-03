@@ -6,21 +6,32 @@
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
     CodeNode* temp_code;
-    bool label_flag;
+    bool label_flag = false;
     char** tokens;
+    int DC, IC;
     int num_tokens = 0;
+    int token_counter = 0;
+    int memory_counter = 100;
 
+    DC = IC = 0;
     temp_code = code;
-
     while(temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
-        if(isLabel(tokens[0])) {
+        if(isLabel(tokens[token_counter])) {
             printf("%s\n",temp_code->code_row);
+            label_flag = true;
+            token_counter++;
+        }
+        if(isData(tokens[token_counter])) {
+            if (label_flag) {
+                saveLabel(labels, memory, &memory_counter); /*To be defined*/
+            }
+            token_counter++;
         }
 
 
-
-
+        token_counter = 0;
+        label_flag = false;
         temp_code = temp_code->next;
     }
 }
