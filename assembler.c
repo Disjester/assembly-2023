@@ -8,7 +8,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
     CodeNode* temp_code;
     bool label_flag;
 
-
     temp_code = code;
 
     while(temp_code) {
@@ -16,6 +15,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
             if (isLabel(temp_code->code_row, strstr(temp_code->code_row, ":"))) 
                 printf("%s\n",temp_code->code_row);
         }
+
 
 
 
