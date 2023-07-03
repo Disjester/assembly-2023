@@ -6,7 +6,7 @@
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
     CodeNode* temp_code;
-    char* label_flag;
+    bool label_flag;
 
 
     temp_code = code;
