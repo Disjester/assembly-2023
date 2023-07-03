@@ -66,10 +66,5 @@ bool isLabel(char* word){
 
 bool isData(char* word){
 
-    if (!strcmp(word, ".data") || !strcmp(word, ".string"))
-    {
-        return true;
-    }
-    
-    return false;
+    return (!strcmp(word, ".data") || !strcmp(word, ".string")) ? true:false;
 }
