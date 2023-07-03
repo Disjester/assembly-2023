@@ -113,13 +113,17 @@ int getLine(char* line, Error* error, FILE* file) {
             continue;
         }
 
-        if (i != 0 && (x == ',')) {
+        if (i != 0 && x == ',') {
             if (line[i-1] != ' ') {
                 line[i++] = ' ';
             }
             line[i++] = x;
             line[i++] = ' ';
             continue;
+        }
+        
+        if (i != 0 && line[i-1] == ':' && x != ' ') {
+            line[i++] = ' ';
         }
         /*removing of duplications of whitespaces*/
         if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
