@@ -7,13 +7,16 @@
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
     CodeNode* temp_code;
     bool label_flag;
+    char** tokens;
+    int num_tokens = 0;
+
 
     temp_code = code;
 
     while(temp_code) {
-        if(strstr(temp_code->code_row, ":")) {
-            if (isLabel(temp_code->code_row, strstr(temp_code->code_row, ":"))) 
-                printf("%s\n",temp_code->code_row);
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens);
+        if(isLabel(token[0])) {
+            printf("%s\n",temp_code->code_row);
         }
 
 
