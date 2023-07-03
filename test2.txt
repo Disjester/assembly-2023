@@ -17,4 +17,5 @@ L1:     inc K
 bne     LOOP
         m1
 END:    stop
+TEST:mov @r4,@r2
 3K:          .data 22
