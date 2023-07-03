@@ -8,8 +8,8 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens);
 
 void tokenizeInput(char *input, char **tokens, int *num_tokens) {
     size_t length = strlen(input);
-    char *token;
-    char *temp;
+    char *token = NULL;
+    char *temp = NULL;
     temp = malloc((length + 1) * sizeof(char));
     strcpy(temp, input);  /* Copy input string into temp */
 
