@@ -16,6 +16,13 @@ bool validateVariableName (char *name);
 
 CodeNode* preproccessor(char *file_name);
 
+/**
+ * @brief 
+ * 
+ * @param input the string you want to tokenize
+ * @param tokens the array of string in which you would save your tokens
+ * @param num_tokens a pointer to where you save the number of tokens 
+ */
 void tokenizeInput(char *input, char **tokens, int *num_tokens);
 
 char *my_strdup(const char *str);

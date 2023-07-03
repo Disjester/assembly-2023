@@ -24,7 +24,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
 }
 
 
-bool isLabel(char* word, char* end){
+bool isLabel(char* word){
     bool flag = false;
     int i = 0;
     if (!isalpha(word[i]))
@@ -32,7 +32,7 @@ bool isLabel(char* word, char* end){
         return flag;
     }
     
-    for (; &word[i] != end; i++)
+    for (; word[i] != '\0'; i++)
     {
         if (!isalpha(word[i]) && !isdigit(word[i]))
         {
