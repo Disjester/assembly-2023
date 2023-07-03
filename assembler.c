@@ -29,14 +29,14 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
 bool isLabel(char* word){
     bool flag = false;
     int i = 0;
-    if (!isalpha(word[i]))
+    if (!isalpha(word[i++]))
     {
         return flag;
     }
     
     for (; word[i] != '\0'; i++)
     {
-        if (!isalpha(word[i]) && !isdigit(word[i]))
+        if (!isalpha(word[i]) && !isdigit(word[i]) && word[i] != ':')
         {
             return flag;
         }
