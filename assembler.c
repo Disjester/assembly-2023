@@ -10,7 +10,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
     char** tokens;
     int num_tokens = 0;
 
-
     temp_code = code;
 
     while(temp_code) {
