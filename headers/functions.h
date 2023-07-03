@@ -6,7 +6,7 @@
 #include "nodes.h"
 #include <stdio.h>
 
-bool isLabel(char* word, char* end);
+bool isLabel(char* word);
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels);
 

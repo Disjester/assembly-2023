@@ -14,7 +14,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
 
     while(temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
-        if(isLabel(token[0])) {
+        if(isLabel(tokens[0])) {
             printf("%s\n",temp_code->code_row);
         }
 
