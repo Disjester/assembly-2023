@@ -5,12 +5,13 @@
 
 int main (int argc, char** argv) {
     CodeNode* code;
+    Error* error = NO_ERROR;
     code = preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
     
     short memory[1024];
     LabelNode* labels = (LabelNode*)malloc(sizeof(LabelNode*));
 
-    firstIteration(memory, code, labels);
+    firstIteration(memory, code, labels, error);
     return 1;
 }
 

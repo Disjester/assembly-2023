@@ -4,10 +4,10 @@
 #include <ctype.h>
 #include "libs.h"
 
-void firstIteration(short* memory, CodeNode* code, LabelNode* labels) {
+void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error) {
     CodeNode* temp_code;
     bool label_flag = false;
-    char** tokens;
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int DC, IC;
     int num_tokens = 0;
     int token_counter = 0;
