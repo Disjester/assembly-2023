@@ -69,9 +69,14 @@ bool isLabel(char* word){
     return flag;
 }
 
-bool isData(char* word){
+int isData(char* word){
+    if (!strcmp(word, ".data"))
+    {
+        return 1;
+    }
+    
 
-    return (!strcmp(word, ".data") || !strcmp(word, ".string")) ? true:false;
+    return (!strcmp(word, ".string")) ? 2:false;
 }
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField) {
