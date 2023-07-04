@@ -72,3 +72,64 @@ int isData(char* word){
 
     return (!strcmp(word, ".string")) ? 2:false;
 }
+
+bool checkData(char* line, Error* error){
+    int var = 0;
+    char** tokens;
+    int num_tokens = 0;
+    tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
+    bool label = false;
+
+    char* temp;
+    tokenizeInput(line, tokens, &num_tokens);
+
+    (isLabel(tokens[0])) ? true:false ; /*filler */
+    /* Check if no arguments are provided after the operation */
+    if (num_tokens == 1)
+    {
+        printf("Error: No arguments\n\n");
+        return false;
+    }
+
+
+    /* Check for valid arguments if arguments are provided */
+    if (num_tokens > 1)
+    {
+        if (isLabel(tokens[0]) && num_tokens == 2)
+        {
+            printf("Error: No arguments\n\n");
+            return false;
+        }
+        
+        /* If there's a comma directly after the operation name, it's an error */
+        if (tokens[1][0] == ',')
+        {
+            printf("Error: illegal comma after command\n\n");
+            return;
+        }
+
+        /* Check if the argument is a recognized complex variable */
+        var = check_complex_variable(tokens[1], complex_var_names);
+        if (var == -1)
+        {
+            printf("Error: Unrecognized Complex variable\n\n");
+            return;
+        }
+        /* If only one argument is provided and it's valid, execute the operation */
+        else if (num_tokens == 2)
+        {
+            func(&complex_vars[var]);
+            return;
+        }
+    }
+
+    /* If no arguments are provided, it's an error */
+    if (num_tokens < 2)
+    {
+        printf("Error: Missing complex variable\n\n");
+    }
+ 
+    /* If there's extra text after the command, it's an error */
+    printf("Error: Externous text at the end of command\n\n");
+    return;
+}
