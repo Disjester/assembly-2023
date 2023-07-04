@@ -7,11 +7,13 @@
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error) {
     CodeNode* temp_code;
     bool label_flag = false;
+    int i;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int DC, IC;
     int num_tokens = 0;
     int token_counter = 0;
     int memory_counter = 100;
+    short data[];
 
     DC = IC = 0;
     temp_code = code;
@@ -25,6 +27,10 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
         if(isData(tokens[token_counter])) {
             if (label_flag) {
                 /*saveLabel(labels, memory, &memory_counter);*/ /*To be defined*/
+            }
+            /*setData()*/
+            for (i = 0; i < i; i++) {
+                pushToMemory(&memory_counter, memory, data[i]);
             }
             token_counter++;
             printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
@@ -66,4 +72,8 @@ bool isLabel(char* word){
 bool isData(char* word){
 
     return (!strcmp(word, ".data") || !strcmp(word, ".string")) ? true:false;
+}
+
+void pushToMemory(int* memory_counter, short* memory, short memoryField) {
+    memory[(*memory_counter)++] = memoryField;
 }
