@@ -44,6 +44,6 @@ void* allocateMemory(size_t size, Error* error);
 
 void handleError(Error* error);
 
-bool isData(char* word);
+int isData(char* word);
 
 #endif
