@@ -54,9 +54,27 @@ void handleError(Error* error);
 
 bool checkData(char* line, Error* error);
 
+/**
+ * @brief checks if a line is a correct data line or not
+ * 
+ * @param tokens 
+ * @param num_tokens 
+ * @param label - a boolean that says if the 1st token is a label or not
+ * @return true - if it is a data line and its correct
+ * @return false - when its not a data line or an incorrect one 
+ */
 bool checkDataLine(char** tokens, int num_tokens, bool label);
 
 bool isNumber(char* word);
 
 bool isString(char* string);
+
+/**
+ * @brief checks if the word is .data or .string , returns false if neither
+ * 
+ * @param word 
+ * @return 2 - if its a .string 1 if it is a .data 0 if it neither of them 
+ */
+short isData(char* word);
+
 #endif
