@@ -138,23 +138,21 @@ bool isNumber(char* word){
 
 bool checkDataLine(char** tokens, int num_tokens, bool label){
     int token_index = 0;
-    if (num_tokens* < (2 + label))
+    if (num_tokens < (2 + label))
     {
         printf("The line is missing arguments\n");
-        free(tokens);
         return false;
     }
     if (!strcmp(tokens[0 + label], ".string"))
     {
-        if (num_tokens* > (2 + label))
+        if (num_tokens > (2 + label))
         {
             printf("too many arguments\n");
-            free(tokens);
+            
             return false;
         }
         if (isString(tokens[1 + label]))
         {
-            free(tokens);
             return true;
         }
         
@@ -162,10 +160,9 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
     
     if (!strcmp(tokens[0 + label], ".data"))
     {
-        if (num_tokens* % 2 == (0 + label))
+        if (num_tokens % 2 == (0 + label))
         {
             printf("wrong number of ',' \n");
-            free(tokens);
             return false;
         }
 
@@ -174,13 +171,11 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
             if (!isNumber(tokes[token_index]))
             {
                 printf("this: %s is not a number\n",tokens[token_index]);
-                free(tokens);
                 return false;
             }
             
         }
     }
-
 }
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField) {
