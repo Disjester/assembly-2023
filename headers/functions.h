@@ -6,6 +6,13 @@
 #include "nodes.h"
 #include <stdio.h>
 
+/**
+ * @brief checks if the string is a label
+ * 
+ * @param word 
+ * @return true 
+ * @return false 
+ */
 bool isLabel(char* word);
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error);
@@ -44,6 +51,12 @@ void* allocateMemory(size_t size, Error* error);
 
 void handleError(Error* error);
 
-int isData(char* word);
 
+bool checkData(char* line, Error* error);
+
+bool checkDataLine(char** tokens, int num_tokens, bool label);
+
+bool isNumber(char* word);
+
+bool isString(char* string);
 #endif

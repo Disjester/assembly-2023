@@ -69,6 +69,7 @@ bool isLabel(char* word){
     return flag;
 }
 
+/*
 int isData(char* word){
     if (!strcmp(word, ".data"))
     {
@@ -78,66 +79,108 @@ int isData(char* word){
 
     return (!strcmp(word, ".string")) ? 2:false;
 }
+*/
 
 bool checkData(char* line, Error* error){
-    int var = 0;
+
     char** tokens;
     int num_tokens = 0;
-    tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
-    bool label = false;
 
-    char* temp;
+    tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
+
     tokenizeInput(line, tokens, &num_tokens);
 
-    (isLabel(tokens[0])) ? true:false ; /*filler */
-    /* Check if no arguments are provided after the operation */
-    if (num_tokens == 1)
+    return (checkDataLine(tokens, *num_tokens, isLabel(tokens[0]))) ? true : false;
+}
+
+bool isString(char* string){
+    int i = 0;
+    if (string[i] != '"')
     {
-        printf("Error: No arguments\n\n");
         return false;
     }
-
-
-    /* Check for valid arguments if arguments are provided */
-    if (num_tokens > 1)
+    i++;
+    bool quote = false;
+    for ( ; i < strlen(string); i++)
     {
-        if (isLabel(tokens[0]) && num_tokens == 2)
+        if (quote)
         {
-            printf("Error: No arguments\n\n");
             return false;
         }
         
-        /* If there's a comma directly after the operation name, it's an error */
-        if (tokens[1][0] == ',')
+        if (string[i] == '"')
         {
-            printf("Error: illegal comma after command\n\n");
-            return;
+            quote = true;
         }
-
-        /* Check if the argument is a recognized complex variable */
-        var = check_complex_variable(tokens[1], complex_var_names);
-        if (var == -1)
-        {
-            printf("Error: Unrecognized Complex variable\n\n");
-            return;
-        }
-        /* If only one argument is provided and it's valid, execute the operation */
-        else if (num_tokens == 2)
-        {
-            func(&complex_vars[var]);
-            return;
-        }
+        
     }
 
-    /* If no arguments are provided, it's an error */
-    if (num_tokens < 2)
+    return quote;
+}
+
+bool isNumber(char* word){
+    int i = 0;
+    int len = strlen(word);
+    
+    
+    for ( ; i < len; i++)
     {
-        printf("Error: Missing complex variable\n\n");
+        if (!isdigit(word[i]))
+        {
+            printf("not a number: %c\n", word[i]);
+            return false;
+        }
+        
     }
- 
-    /* If there's extra text after the command, it's an error */
-    printf("Error: Externous text at the end of command\n\n");
-    return;
+    return true;
+    
+}
+
+bool checkDataLine(char** tokens, int num_tokens, bool label){
+    int token_index = 0;
+    if (num_tokens* < (2 + label))
+    {
+        printf("The line is missing arguments\n");
+        free(tokens);
+        return false;
+    }
+    if (!strcmp(tokens[0 + label], ".string"))
+    {
+        if (num_tokens* > (2 + label))
+        {
+            printf("too many arguments\n");
+            free(tokens);
+            return false;
+        }
+        if (isString(tokens[1 + label]))
+        {
+            free(tokens);
+            return true;
+        }
+        
+    }
+    
+    if (!strcmp(tokens[0 + label], ".data"))
+    {
+        if (num_tokens* % 2 == (0 + label))
+        {
+            printf("wrong number of ',' \n");
+            free(tokens);
+            return false;
+        }
+
+        for (; token_index + label < num_tokens; token_index++)
+        {
+            if (!isNumber(tokes[token_index]))
+            {
+                printf("this: %s is not a number\n",tokens[token_index]);
+                free(tokens);
+                return false;
+            }
+            
+        }
+    }
+
 }
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField) {
