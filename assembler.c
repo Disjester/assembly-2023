@@ -25,7 +25,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             label_flag = true;
             token_idx++;
         }
-        switch (isData(tokens[token_idx])) {
+        switch (isDotType(tokens[token_idx])) {
             case 0:
                 break;
             case 1:
@@ -96,7 +96,7 @@ bool isLabel(char* word){
 }
 
 
-short isData(char* word){
+short isDotType(char* word){
     if (!strcmp(word, ".data"))
     {
         return DAT;
@@ -178,7 +178,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
         return false;
     }
     
-    if (isData(tokens[0 + label]) == STRING)
+    if (isDotType(tokens[0 + label]) == STRING)
     {
         if (num_tokens > (2 + label))
         {
@@ -193,14 +193,14 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
         
     }
     
-    if (isData(tokens[0 + label]) == DAT)
+    if (isDotType(tokens[0 + label]) == DAT)
     {
         if (num_tokens % 2 == (1 + label))
         {
             printf("wrong number of ',' \n");
             return false;
         }
-        
+
         token_index += label;
 
         for (; token_index< num_tokens; token_index+=2)
