@@ -15,6 +15,8 @@
  */
 bool isLabel(char* word);
 
+void cleanMemory(short* memory);
+
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error);
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField);
