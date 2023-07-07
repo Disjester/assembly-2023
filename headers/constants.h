@@ -6,6 +6,8 @@
 
 #define DAT 1
 #define STRING 2
+
+#define MAX_MEMORY_SIZE 1024
 /**
  * @brief a boolean type , that can hold either true or false;
  * 

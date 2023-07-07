@@ -16,6 +16,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     short data[100];
 
     DC = IC = 0;
+    cleanMemory(memory);
     temp_code = code;
     while(temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
@@ -24,26 +25,39 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             label_flag = true;
             token_counter++;
         }
-        if(isData(tokens[token_counter])) {
-            if (label_flag) {
-                /*saveLabel(labels, memory, &memory_counter);*/ /*To be defined*/
-            }
-            if (checkDataLine(tokens, num_tokens, label_flag))
-            {
-                printf("correct line\n");
-            }
-            else
-            {
-                printf("incorrect data line\n");
-            }
-            
-            
-            /*setData()*/
-            for (i = 0; i < i; i++) {
-                pushToMemory(&memory_counter, memory, data[i]);
-            }
-            token_counter++;
-            printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
+        switch (isData(tokens[token_counter])) {
+            case 0:
+                break;
+            case 1:
+                if (checkDataLine(tokens, num_tokens, label_flag)) {
+                    printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
+                    token_counter++;
+                    for (i = token_counter; i < strlen(tokens); i += 2) {
+                        pushToMemory(&memory_counter, memory, tokens[token_counter]);
+                    }
+                }
+                for (i = 100; memory[i] != 0; i++) {
+                    printf("%d ", memory[i]);
+                }
+                printf("\n");
+                break;
+            case 2:
+                if (checkDataLine(tokens, num_tokens, label_flag)) {
+                    printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
+                    token_counter++;
+                    for (i = 1; i < (strlen(tokens[token_counter])-1); i++) {
+                        pushToMemory(&memory_counter, memory, tokens[token_counter][i]);
+                    }
+                }
+                for (i = 100; memory[i] != 0; i++) {
+                    printf("%d:%d ", i, memory[i]);
+                }
+                printf("\n");
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
         }
         /*if(isExternOrEntry(tokens[token_counter])) {
             
@@ -197,4 +211,12 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField) {
     memory[(*memory_counter)++] = memoryField;
+}
+
+void cleanMemory(short* memory) {
+    int i;
+
+    for (i = 0; i <= MAX_MEMORY_SIZE; i++) {
+        memory[i] = 0;
+    }
 }
