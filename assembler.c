@@ -37,7 +37,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     }
                 }
                 for (i = 100; memory[i] != 0; i++) {
-                    printf("%d ", memory[i]);
+                    printf("%d:%d ", i, memory[i]);
                 }
                 printf("\n");
                 break;
