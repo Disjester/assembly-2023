@@ -13,7 +13,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     int num_tokens = 0;
     int token_counter = 0;
     int memory_counter = 100;
-    short data[];
+    short data[100];
 
     DC = IC = 0;
     temp_code = code;
@@ -28,6 +28,16 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             if (label_flag) {
                 /*saveLabel(labels, memory, &memory_counter);*/ /*To be defined*/
             }
+            if (checkDataLine(tokens, num_tokens, label_flag))
+            {
+                printf("correct line\n");
+            }
+            else
+            {
+                printf("incorrect data line\n");
+            }
+            
+            
             /*setData()*/
             for (i = 0; i < i; i++) {
                 pushToMemory(&memory_counter, memory, data[i]);
@@ -71,7 +81,8 @@ bool isLabel(char* word){
     return flag;
 }
 
-int isData(char* word){
+
+short isData(char* word){
     if (!strcmp(word, ".data"))
     {
         return 1;
@@ -79,6 +90,109 @@ int isData(char* word){
     
 
     return (!strcmp(word, ".string")) ? 2:false;
+}
+
+/*
+bool checkData(char* line, Error* error){
+
+    char** tokens;
+    int num_tokens = 0;
+
+    tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
+
+    tokenizeInput(line, tokens, &num_tokens);
+
+    return (checkDataLine(tokens, *num_tokens, isLabel(tokens[0]))) ? true : false;
+}
+*/
+
+bool isString(char* string){
+    int i = 0;
+    if (string[i] != '"')
+    {
+        return false;
+    }
+    i++;
+    bool quote = false;
+    for ( ; i < strlen(string); i++)
+    {
+        if (quote)
+        {
+            return false;
+        }
+        
+        if (string[i] == '"')
+        {
+            quote = true;
+        }
+        
+    }
+
+    return quote;
+}
+
+bool isNumber(char* word){
+    int i = 0;
+    int len = strlen(word);
+    
+    
+    for ( ; i < len; i++)
+    {
+        if (!isdigit(word[i]))
+        {
+            printf("not a number: %c\n", word[i]);
+            return false;
+        }
+        
+    }
+    return true;
+    
+}
+
+bool checkDataLine(char** tokens, int num_tokens, bool label){
+    int token_index = 0;
+    
+    if (num_tokens < (2 + label))
+    {
+        printf("The line is missing arguments\n");
+        return false;
+    }
+    
+    if (isData(tokens[0 + label]) == STRING)
+    {
+        if (num_tokens > (2 + label))
+        {
+            printf("too many arguments\n");
+            
+            return false;
+        }
+        if (isString(tokens[1 + label]))
+        {
+            return true;
+        }
+        
+    }
+    
+    if (isData(tokens[0 + label]) == DAT)
+    {
+        if (num_tokens % 2 == (0 + label))
+        {
+            printf("wrong number of ',' \n");
+            return false;
+        }
+
+        for (; token_index + label < num_tokens; token_index++)
+        {
+            if (!isNumber(tokens[token_index]))
+            {
+                printf("this: %s is not a number\n",tokens[token_index]);
+                return false;
+            }
+            
+        }
+    }
+
+    return false;
 }
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField) {

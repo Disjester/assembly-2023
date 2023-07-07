@@ -4,6 +4,8 @@
 #define MAX_LINE_LENGTH 80
 #define MAX_TOKENS 10
 
+#define DAT 1
+#define STRING 2
 /**
  * @brief a boolean type , that can hold either true or false;
  * 
