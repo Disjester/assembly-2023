@@ -45,7 +45,9 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             token_counter++;
             printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
         }
-        
+        if(isExternOrEntry(tokens[token_counter])) {
+            
+        }
         token_counter = 0;
         label_flag = false;
         temp_code = temp_code->next;
