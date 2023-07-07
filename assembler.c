@@ -36,7 +36,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         pushToMemory(&memory_counter, memory, atoi(tokens[i]));
                     }
                 }
-                for (i = 100; memory[i] != 0; i++) {
+                for (i = 100; memory[i] != -1; i++) {
                     printf("%d:%d ", i, memory[i]);
                 }
                 printf("\n");
@@ -48,8 +48,9 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
                         pushToMemory(&memory_counter, memory, tokens[token_idx][i]);
                     }
+                    pushToMemory(&memory_counter, memory, '\0');
                 }
-                for (i = 100; memory[i] != 0; i++) {
+                for (i = 100; memory[i] != -1; i++) {
                     printf("%d:%d ", i, memory[i]);
                 }
                 printf("\n");
@@ -233,6 +234,6 @@ void cleanMemory(short* memory) {
     int i;
 
     for (i = 0; i <= MAX_MEMORY_SIZE; i++) {
-        memory[i] = 0;
+        memory[i] = -1;
     }
 }
