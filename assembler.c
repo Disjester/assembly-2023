@@ -201,8 +201,9 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
             printf("wrong number of ',' \n");
             return false;
         }
+        token_index += label;
 
-        for (; token_index + label < num_tokens; token_index+=2)
+        for (; token_index< num_tokens; token_index+=2)
         {
             if (!isNumber(tokens[token_index]))
             {
@@ -210,7 +211,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
             }
 
         }
-        for (; token_index + label + 1 < num_tokens; token_index+=2)
+        for (; token_index + 1 < num_tokens; token_index+=2)
         {
             if (strcmp(tokens[token_index], ","))
             {
