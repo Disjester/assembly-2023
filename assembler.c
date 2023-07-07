@@ -33,7 +33,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
-                        printf("\nTest: %s\n", tokens[i]);
                         pushToMemory(&memory_counter, memory, atoi(tokens[i]));
                     }
                 }
