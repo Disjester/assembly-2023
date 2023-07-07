@@ -172,7 +172,6 @@ bool isNumber(char* word){
 
 bool checkDataLine(char** tokens, int num_tokens, bool label){
     int token_index = 1;
-    bool even_flag = num_tokens % 2;
     if (num_tokens < (2 + label))
     {
         printf("The line is missing arguments\n");
