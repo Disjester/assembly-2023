@@ -85,11 +85,18 @@ bool isLabel(char* word){
 short isData(char* word){
     if (!strcmp(word, ".data"))
     {
-        return 1;
+        return DAT;
+    }
+    if (!strcmp(word, ".string"))
+    {
+        return STRING;
+    }
+    if (!strcmp(word, ".entry"))
+    {
+        return ENTRY;
     }
     
-
-    return (!strcmp(word, ".string")) ? 2:false;
+    return (!strcmp(word, ".extern")) ? EXTERN:false;
 }
 
 /*
@@ -150,8 +157,8 @@ bool isNumber(char* word){
 }
 
 bool checkDataLine(char** tokens, int num_tokens, bool label){
-    int token_index = 0;
-    
+    int token_index = 1;
+    bool even_flag = num_tokens % 2;
     if (num_tokens < (2 + label))
     {
         printf("The line is missing arguments\n");
@@ -175,21 +182,29 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
     
     if (isData(tokens[0 + label]) == DAT)
     {
-        if (num_tokens % 2 == (0 + label))
+        if (num_tokens % 2 == (1 + label))
         {
             printf("wrong number of ',' \n");
             return false;
         }
 
-        for (; token_index + label < num_tokens; token_index++)
+        for (; token_index + label < num_tokens; token_index+=2)
         {
             if (!isNumber(tokens[token_index]))
             {
-                printf("this: %s is not a number\n",tokens[token_index]);
                 return false;
             }
-            
+
         }
+        for (; token_index + label + 1 < num_tokens; token_index+=2)
+        {
+            if (strcmp(tokens[token_index], ","))
+            {
+                printf("Missing a ,");
+                return false;
+            }
+        }
+        return true;
     }
 
     return false;
