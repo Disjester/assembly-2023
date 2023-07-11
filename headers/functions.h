@@ -81,4 +81,6 @@ bool isString(char* string);
  */
 short isDotType(char* word);
 
+LabelType getLabelType(char* label, LabelNode* LabelNode);
+
 #endif

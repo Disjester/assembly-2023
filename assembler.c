@@ -133,6 +133,22 @@ short isDotType(char* word){
     return (!strcmp(word, ".extern")) ? DOT_EXTERN:false;
 }
 
+
+LabelType getLabelType(char* label, LabelNode* LabelNode){
+    while (LabelNode->next != NULL)
+    {
+        if (!strcmp(label, LabelNode->label_name))
+        {
+            printf("found Label %s is of type: %d\n", label, LabelNode->label_type);
+            return LabelNode->label_type;
+        }
+        
+    }
+    printf("error, haven't found the label\n");
+    return 0;
+    /*Error - haven't found label in the LabelNodes*/
+    
+}
 /*
 bool checkData(char* line, Error* error){
 
