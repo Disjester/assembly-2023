@@ -77,6 +77,6 @@ bool isString(char* string);
  * @param word 
  * @return 2 - if its a .string 1 if it is a .data 0 if it neither of them 
  */
-short isData(char* word);
+short isDotType(char* word);
 
 #endif

@@ -4,10 +4,10 @@
 #define MAX_LINE_LENGTH 80
 #define MAX_TOKENS 10
 
-#define DAT 1
-#define STRING 2 
-#define ENTRY 3
-#define EXTERN 4
+#define DOT_DATA 1
+#define DOT_STRING 2 
+#define DOT_ENTRY 3
+#define DOT_EXTERN 4
 
 #define MAX_MEMORY_SIZE 1024
 /**
