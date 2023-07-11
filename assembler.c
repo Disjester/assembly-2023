@@ -145,17 +145,20 @@ short isDotType(char* word){
 
 
 LabelType getLabelType(char* label, LabelNode* LabelNode){
-    do
+    if (LabelNode != NULL)
     {
-        if (!strcmp(label, LabelNode->label_name))
+        do
         {
-            printf("found Label %s is of type: %d\n", label, LabelNode->label_type);
-            return LabelNode->label_type;
-        }
-        
-    }
-    while (LabelNode->next != NULL);
+            if (!strcmp(label, LabelNode->label_name))
+            {
+                printf("found Label %s is of type: %d\n", label, LabelNode->label_type);
+                return LabelNode->label_type;
+            }
 
+        }
+        while (LabelNode->next != NULL);
+    }
+    
     printf("error, haven't found the label\n");
     return 0;
     /*Error - haven't found label in the LabelNodes*/
