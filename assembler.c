@@ -41,7 +41,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
-                        printf("%s ", test_label_node->label_name);
+                        printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
                     }
                     printf("\n");
@@ -65,7 +65,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
-                        printf("%s ", test_label_node->label_name);
+                        printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
                     }
                     printf("\n");
@@ -299,12 +299,14 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
         new_label = (LabelNode*) malloc(sizeof(LabelNode));
         new_label->label_name = label_name;
         new_label->label_type = label_type;
+        new_label->memory_adress = *memory_idx;
         new_label->next = NULL;
         temp_label->next = new_label;
     } else {
         *labels = (LabelNode*) malloc(sizeof(LabelNode));
         (*labels)->label_name = label_name;
         (*labels)->label_type = label_type;
+        (*labels)->memory_adress = *memory_idx;
         (*labels)->next = NULL;
     }
 }
