@@ -58,6 +58,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         printf("CURRENT LABEL TABLE:   %s", test_label_node->label_name);
                         test_label_node = test_label_node->next;
                     }
+                    getLabelType( test_label_node->label_name, test_label_node);
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
