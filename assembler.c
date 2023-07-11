@@ -88,7 +88,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
         label_flag = false;
         temp_code = temp_code->next;
     }
-    printf("LABEL TYPE OF DAN IS: %d", getLabelType('DAN', labels));
+    printf("LABEL TYPE OF DAN IS: %d", getLabelType("DAN", labels));
 }
 
 
