@@ -16,14 +16,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     int memory_idx = 100;
     short data[100];
 
-
-    test_label_node = (LabelNode*) allocateMemory(sizeof(LabelNode), error);
-    test_label_node->label_name = "something";
-    test_label_node->label_type = LABEL_TYPE_EXTERNAL;
-    test_label_node->next = NULL;
-    test_label_node->memory_adress = 103;
-    getLabelType("something", test_label_node);
-
     DC = IC = 0;
     cleanMemory(memory);
     temp_code = code;
@@ -96,6 +88,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
         label_flag = false;
         temp_code = temp_code->next;
     }
+    printf("LABEL TYPE OF DAN IS: %d", getLabelType('DAN', labels));
 }
 
 
