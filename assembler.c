@@ -6,13 +6,14 @@
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error) {
     CodeNode* temp_code;
+    LabelNode* test_label_node;
     bool label_flag = false;
     int i;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int DC, IC;
     int num_tokens = 0;
     int token_idx = 0;
-    int memory_counter = 100;
+    int memory_idx = 100;
     short data[100];
 
     DC = IC = 0;
@@ -26,39 +27,56 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             token_idx++;
         }
         switch (isDotType(tokens[token_idx])) {
-            case 0:
-                break;
-            case 1:
-                
+            case DOT_DATA:
+                if (label_flag) {
+                    insertNewLabel(labels, tokens[token_idx-1], LABEL_TYPE_CODE, &memory_idx);
+                    test_label_node = labels;
+                    while (test_label_node) {
+                        printf("CURRENT LABEL TABLE:   %s", test_label_node->label_name);
+                        test_label_node = test_label_node->next;
+                    }
+                    printf("\n");
+                }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
                     printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
-                        pushToMemory(&memory_counter, memory, atoi(tokens[i]));
+                        pushToMemory(&memory_idx, memory, atoi(tokens[i]));
                     }
                 }
-                for (i = 100; i < memory_counter; i++) {
+                printf("CURRENT   MEMORY: ");
+                for (i = 100; i < memory_idx; i++) {
                     printf("%d:%d ", i, memory[i]);
                 }
                 printf("\n");
                 break;
-            case 2:
+            case DOT_STRING:
+                if (label_flag) {
+                    insertNewLabel(labels, tokens[token_idx-1], LABEL_TYPE_CODE, &memory_idx);
+                    test_label_node = labels;
+                    while (test_label_node) {
+                        printf("CURRENT LABEL TABLE:   %s", test_label_node->label_name);
+                        test_label_node = test_label_node->next;
+                    }
+                    printf("\n");
+                }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
                     printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
-                        pushToMemory(&memory_counter, memory, tokens[token_idx][i]);
+                        pushToMemory(&memory_idx, memory, tokens[token_idx][i]);
                     }
-                    pushToMemory(&memory_counter, memory, '\0');
+                    pushToMemory(&memory_idx, memory, '\0');
                 }
-                for (i = 100; i < memory_counter; i++) {
+                printf("CURRENT   MEMORY: ");
+                for (i = 100; i < memory_idx; i++) {
                     printf("%d:%d ", i, memory[i]);
                 }
                 printf("\n");
                 break;
-            case 3:
+            case DOT_EXTERN:
                 break;
-            case 4:
+            case DOT_ENTRY:
                 break;
         }
         /*if(isExternOrEntry(tokens[token_counter])) {
@@ -227,8 +245,8 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
     return false;
 }
 
-void pushToMemory(int* memory_counter, short* memory, short memoryField) {
-    memory[(*memory_counter)++] = memoryField;
+void pushToMemory(int* memory_idx, short* memory, short memoryField) {
+    memory[(*memory_idx)++] = memoryField;
 }
 
 void cleanMemory(short* memory) {
@@ -236,5 +254,26 @@ void cleanMemory(short* memory) {
 
     for (i = 0; i <= MAX_MEMORY_SIZE; i++) {
         memory[i] = -1;
+    }
+}
+
+void insertNewLabel(LabelNode* label, char* label_name, LabelType label_type, short* memory_idx) {
+    LabelNode* temp_label;
+    LabelNode* new_label;
+    temp_label = label;
+    if (temp_label) {
+        while(temp_label->next) {
+            temp_label = temp_label->next;
+        }
+        new_label = (LabelNode*) malloc(sizeof(LabelNode));
+        new_label->label_name = label_name;
+        new_label->label_type = label_type;
+        new_label->next = NULL;
+        temp_label->next = new_label;
+    } else {
+        label = (LabelNode*) malloc(sizeof(LabelNode));
+        label->label_name = label_name;
+        label->label_type = label_type;
+        label->next = NULL;
     }
 }

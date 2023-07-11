@@ -9,7 +9,7 @@ int main (int argc, char** argv) {
     code = preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
     
     short memory[1024];
-    LabelNode* labels = (LabelNode*)malloc(sizeof(LabelNode*));
+    LabelNode* labels = NULL;
 
     firstIteration(memory, code, labels, error);
     return 1;
