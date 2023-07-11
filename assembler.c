@@ -10,12 +10,13 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     bool label_flag = false;
     int i;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
-    int DC, IC = 0;
+    int DC, IC;
     int num_tokens = 0;
     int token_idx = 0;
     int memory_idx = 100;
     short data[100];
 
+    DC = IC = 0;
     cleanMemory(memory);
     temp_code = code;
     while(temp_code) {
@@ -59,7 +60,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         printf("%s ", test_label_node->label_name);
                         test_label_node = test_label_node->next;
                     }
-                    getLabelType( test_label_node->label_name, test_label_node);
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
@@ -167,12 +167,12 @@ bool checkData(char* line, Error* error){
 
 bool isString(char* string){
     int i = 0;
-    bool quote = false;
     if (string[i] != '"')
     {
         return false;
     }
     i++;
+    bool quote = false;
     for ( ; i < strlen(string); i++)
     {
         if (quote)
