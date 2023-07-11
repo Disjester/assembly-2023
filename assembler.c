@@ -29,7 +29,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
         switch (isDotType(tokens[token_idx])) {
             case DOT_DATA:
                 if (label_flag) {
-                    insertNewLabel(&labels, tokens[token_idx-1], LABEL_TYPE_CODE, &memory_idx);
+                    insertNewLabel(&labels, removeSemicolon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
@@ -53,7 +53,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 break;
             case DOT_STRING:
                 if (label_flag) {
-                    insertNewLabel(&labels, tokens[token_idx-1], LABEL_TYPE_CODE, &memory_idx);
+                    insertNewLabel(&labels, removeSemicolon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
@@ -294,4 +294,9 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
         (*labels)->label_type = label_type;
         (*labels)->next = NULL;
     }
+}
+
+char* removeSemicolon(char* str) {
+    str[strlen(str)-1] = '\0';
+    return str;
 }
