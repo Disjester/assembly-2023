@@ -100,18 +100,18 @@ bool isLabel(char* word){
 short isDotType(char* word){
     if (!strcmp(word, ".data"))
     {
-        return DAT;
+        return DOT_DATA;
     }
     if (!strcmp(word, ".string"))
     {
-        return STRING;
+        return DOT_STRING;
     }
     if (!strcmp(word, ".entry"))
     {
-        return ENTRY;
+        return DOT_ENTRY;
     }
     
-    return (!strcmp(word, ".extern")) ? EXTERN:false;
+    return (!strcmp(word, ".extern")) ? DOT_EXTERN:false;
 }
 
 /*
@@ -179,7 +179,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
         return false;
     }
     
-    if (isDotType(tokens[0 + label]) == STRING)
+    if (isDotType(tokens[0 + label]) == DOT_STRING)
     {
         if (num_tokens > (2 + label))
         {
@@ -194,7 +194,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
         
     }
     
-    if (isDotType(tokens[0 + label]) == DAT)
+    if (isDotType(tokens[0 + label]) == DOT_DATA)
     {
         if (num_tokens % 2 == (1 + label))
         {
