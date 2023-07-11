@@ -147,7 +147,7 @@ LabelType getLabelType(char* label, LabelNode* LabelNode){
                 printf("found Label %s is of type: %d\n", label, LabelNode->label_type);
                 return LabelNode->label_type;
             }
-
+            LabelNode = LabelNode->next;
         }
         while (LabelNode->next != NULL);
     }
