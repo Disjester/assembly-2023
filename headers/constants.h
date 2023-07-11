@@ -19,4 +19,10 @@ typedef enum bool{
     true = 1
 }bool;
 
+typedef enum label_type {
+    LABEL_TYPE_CODE,
+    LABEL_TYPE_EXTERNAL,
+    LABEL_TYPE_ENTRY
+} LabelType;
+
 #endif

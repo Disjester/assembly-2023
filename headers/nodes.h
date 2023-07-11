@@ -15,6 +15,7 @@ typedef struct CodeNode {
 typedef struct LabelNode {
     short memory_adress;
     char* label_name;
+    LabelType label_type;
     struct LabelNode* next;
 } LabelNode;
 

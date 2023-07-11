@@ -29,6 +29,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             case 0:
                 break;
             case 1:
+                
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
                     printf("I SEE DATA  HERE: %s\n", temp_code->code_row);
                     token_idx++;
@@ -36,7 +37,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         pushToMemory(&memory_counter, memory, atoi(tokens[i]));
                     }
                 }
-                for (i = 100; memory[i] != -1; i++) {
+                for (i = 100; i < memory_counter; i++) {
                     printf("%d:%d ", i, memory[i]);
                 }
                 printf("\n");
@@ -50,7 +51,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     }
                     pushToMemory(&memory_counter, memory, '\0');
                 }
-                for (i = 100; memory[i] != -1; i++) {
+                for (i = 100; i < memory_counter; i++) {
                     printf("%d:%d ", i, memory[i]);
                 }
                 printf("\n");
