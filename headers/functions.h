@@ -17,7 +17,7 @@ bool isLabel(char* word);
 
 void cleanMemory(short* memory);
 
-void insertNewLabel(LabelNode* label, char* label_name, LabelType label_type, short* memory_idx);
+void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, short* memory_idx);
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error);
 
