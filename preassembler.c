@@ -18,7 +18,7 @@ int main (int argc, char** argv) {
 CodeNode* preproccessor(char* file_name) {
     CodeNode* code;
     Error* error = NO_ERROR;
-    MacroNode* macros;
+    MacroNode* macros = NULL;
 
     FILE* file;
 
