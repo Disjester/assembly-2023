@@ -85,6 +85,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     if (isLabel(tokens[place], false))
                     {
                         insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem);
+                        printf("I  SEE EXTERNAL  HERE: %s\n", tokens[place]);
                     }
                     else
                     {
