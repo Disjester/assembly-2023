@@ -83,7 +83,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 {
                     if (isLabel(tokens[place], false))
                     {
-                        insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, DEFAULT_EXTERNAL_MEMORY);
+                        insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, DEFAULT_EXTERN_MEMORY);
                         printf("correct label inserted: %s", tokens[place]);
                     }
                     else
