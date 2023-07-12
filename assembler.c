@@ -29,7 +29,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
         switch (isDotType(tokens[token_idx])) {
             case DOT_DATA:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeSemicolon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
+                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
@@ -53,7 +53,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 break;
             case DOT_STRING:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeSemicolon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
+                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
@@ -72,7 +72,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 }
                 printf("CURRENT      MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
-                    printf("%d:%d ", i, memory[i]);
+                    printf("%d:%d ", memory[i], i);
                 }
                 printf("\n");
                 break;
@@ -81,14 +81,11 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             case DOT_ENTRY:
                 break;
         }
-        /*if(isExternOrEntry(tokens[token_counter])) {
-            
-        }*/
+
         token_idx = 0;
         label_flag = false;
         temp_code = temp_code->next;
     }
-    printf("LABEL TYPE OF DAN IS: %d", getLabelType("DAN", labels));
 }
 
 
@@ -154,22 +151,8 @@ LabelType getLabelType(char* label, LabelNode* LabelNode){
     
     printf("error, haven't found the label\n");
     return 0;
-    /*Error - haven't found label in the LabelNodes*/
-    
+
 }
-/*
-bool checkData(char* line, Error* error){
-
-    char** tokens;
-    int num_tokens = 0;
-
-    tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
-
-    tokenizeInput(line, tokens, &num_tokens);
-
-    return (checkDataLine(tokens, *num_tokens, isLabel(tokens[0]))) ? true : false;
-}
-*/
 
 bool isString(char* string){
     int i = 0;
@@ -304,7 +287,7 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
     }
 }
 
-char* removeSemicolon(char* str) {
+char* removeColon(char* str) {
     str[strlen(str)-1] = '\0';
     return str;
 }
