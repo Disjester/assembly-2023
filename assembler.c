@@ -22,7 +22,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     temp_code = code;
     while(temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
-        if(isLabel(tokens[token_idx], false)) {
+        if(isLabel(tokens[token_idx], true)) {
             printf("I  SEE  LABEL  HERE: %s\n",temp_code->code_row);
             label_flag = true;
             token_idx++;
@@ -37,6 +37,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
                     }
+                    label_flag = false;
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
@@ -61,6 +62,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
                     }
+                    label_flag = false;
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
@@ -107,6 +109,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                 test_label_node = test_label_node->next;
             }
+            label_flag = false;
             printf("\n");
         }
 
