@@ -8,6 +8,7 @@
 #define DOT_STRING 2 
 #define DOT_ENTRY 3
 #define DOT_EXTERN 4
+#define DOT_OTHER 0
 
 #define DEFAULT_EXTERN_MEMORY -1
 

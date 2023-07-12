@@ -101,6 +101,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 break;
             case DOT_ENTRY:
                 break;
+            
         }
 
         token_idx = 0;
@@ -159,7 +160,7 @@ short isDotType(char* word){
         return DOT_ENTRY;
     }
     
-    return (!strcmp(word, ".extern")) ? DOT_EXTERN:false;
+    return (!strcmp(word, ".extern")) ? DOT_EXTERN:DOT_OTHER;
 }
 
 
@@ -267,7 +268,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
             }
 
         }
-        for (; token_index + 1 < num_tokens; token_index+=2)
+        for (; token_index + 1 < num_tokens; token_index += 2)
         {
             if (strcmp(tokens[token_index], ","))
             {
