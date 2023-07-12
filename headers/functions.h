@@ -13,7 +13,7 @@
  * @return true 
  * @return false 
  */
-bool isLabel(char* word);
+bool isLabel(char* word, bool colon);
 
 void cleanMemory(short* memory);
 

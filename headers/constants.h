@@ -9,7 +9,7 @@
 #define DOT_ENTRY 3
 #define DOT_EXTERN 4
 
-#define DEFAULT_EXTERNAL_MEMORY
+#define DEFAULT_EXTERNAL_MEMORY -1
 
 #define MAX_MEMORY_SIZE 1024
 /**
