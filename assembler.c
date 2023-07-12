@@ -85,19 +85,20 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     if (isLabel(tokens[place], false))
                     {
                         insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem);
-                        printf("correct label inserted: %s\n", tokens[place]);
                     }
                     else
                     {
-                        printf("Error, not good label name: %s\n", tokens[place]);
                         break;
                     }
                     
                 }
+                test_label_node = labels;
+                printf("CURRENT LABEL TABLE: ");
                 while (test_label_node) {
                     printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                     test_label_node = test_label_node->next;
                 }
+                printf("\n");
                 break;
             case DOT_ENTRY:
                 break;
