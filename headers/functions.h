@@ -9,7 +9,7 @@
 /**
  * @brief checks if the string is a label
  * 
- * @param word
+ * @param word 
  * @return true 
  * @return false 
  */
