@@ -21,7 +21,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     temp_code = code;
     while(temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
-        if(isLabel(tokens[token_idx])) {
+        if(isLabel(tokens[token_idx], true)) {
             printf("I  SEE  LABEL  HERE: %s\n",temp_code->code_row);
             label_flag = true;
             token_idx++;
@@ -92,7 +92,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
 }
 
 
-bool isLabel(char* word){
+bool isLabel(char* word, bool colon){
     bool flag = false;
     int i = 0;
     if (!isalpha(word[i++]))
@@ -102,7 +102,7 @@ bool isLabel(char* word){
     
     for (; word[i] != '\0'; i++)
     {
-        if (word[i] == ':' && word[i+1] == '\0')
+        if (colon == true && word[i] == ':' && word[i+1] == '\0')
         {
             flag = true;
             return flag;
@@ -114,7 +114,7 @@ bool isLabel(char* word){
         }
         
     }
-
+    flag = true;
     return flag;
 }
 

@@ -10,10 +10,11 @@
  * @brief checks if the string is a label
  * 
  * @param word 
+ * @param colon - if the end of label has to have ":" - put true, otherwise false
  * @return true 
  * @return false 
  */
-bool isLabel(char* word);
+bool isLabel(char* word, bool colon);
 
 void cleanMemory(short* memory);
 
