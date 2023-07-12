@@ -15,13 +15,14 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     int token_idx = 0;
     int memory_idx = 100;
     short data[100];
+    int place = 0;
 
     DC = IC = 0;
     cleanMemory(memory);
     temp_code = code;
     while(temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
-        if(isLabel(tokens[token_idx])) {
+        if(isLabel(tokens[token_idx], false)) {
             printf("I  SEE  LABEL  HERE: %s\n",temp_code->code_row);
             label_flag = true;
             token_idx++;
@@ -77,6 +78,22 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 printf("\n");
                 break;
             case DOT_EXTERN:
+                place = 1;
+                for (; place < num_tokens; place++)
+                {
+                    if (isLabel(tokens[place], false))
+                    {
+                        insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, DEFAULT_EXTERNAL_MEMORY);
+                        printf("correct label inserted: %s", tokens[place]);
+                    }
+                    else
+                    {
+                        printf("Error, not good label name: %s\n", tokens[place]);
+                        break;
+                    }
+                    
+                }
+                
                 break;
             case DOT_ENTRY:
                 break;
@@ -103,7 +120,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
 }
 
 
-bool isLabel(char* word){
+bool isLabel(char* word, bool colon){
     bool flag = false;
     int i = 0;
     if (!isalpha(word[i++]))
@@ -113,7 +130,7 @@ bool isLabel(char* word){
     
     for (; word[i] != '\0'; i++)
     {
-        if (word[i] == ':' && word[i+1] == '\0')
+        if (colon && word[i] == ':' && word[i+1] == '\0')
         {
             flag = true;
             return flag;
@@ -125,7 +142,7 @@ bool isLabel(char* word){
         }
         
     }
-
+    flag = true;
     return flag;
 }
 
@@ -168,19 +185,6 @@ LabelType getLabelType(char* label, LabelNode* LabelNode){
     /*Error - haven't found label in the LabelNodes*/
     
 }
-/*
-bool checkData(char* line, Error* error){
-
-    char** tokens;
-    int num_tokens = 0;
-
-    tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
-
-    tokenizeInput(line, tokens, &num_tokens);
-
-    return (checkDataLine(tokens, *num_tokens, isLabel(tokens[0]))) ? true : false;
-}
-*/
 
 bool isString(char* string){
     int i = 0;
