@@ -294,13 +294,8 @@ void cleanMemory(short* memory) {
         memory[i] = -1;
     }
 }
-<<<<<<< HEAD
 
 void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, short* memory_idx) {
-=======
-/*awefwaefwfe*/
-void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, short memory_idx) {
->>>>>>> eddc3bf7418f9d39eaea7335fa25b9419cccbdb0
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;
