@@ -5,9 +5,7 @@
 #define MAX_COMMAND_LENGTH 20
 typedef struct Command{
     char command[MAX_COMMAND_LENGTH];
-    char binaryValue[MAX_COMMAND_LENGTH];
+    short binaryValue[MAX_COMMAND_LENGTH];
 } Command;
-
-
 
 #endif

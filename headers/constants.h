@@ -9,6 +9,8 @@
 #define DOT_ENTRY 3
 #define DOT_EXTERN 4
 
+#define DEFAULT_EXTERN_MEMORY -1
+
 #define MAX_MEMORY_SIZE 1024
 /**
  * @brief a boolean type , that can hold either true or false;
