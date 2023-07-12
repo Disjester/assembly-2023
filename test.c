@@ -99,9 +99,9 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             case DOT_ENTRY:
                 break;
         }
-        /*if(isExternOrEntry(tokens[token_placeer])) {
+        if(isExternOrEntry(tokens[token_placeer])) {
             
-        }*/
+        }
         token_idx = 0;
         label_flag = false;
         temp_code = temp_code->next;

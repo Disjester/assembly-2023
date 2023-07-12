@@ -9,6 +9,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     LabelNode* test_label_node;
     bool label_flag = false;
     int i;
+    int def_extern_mem = -1;
+    int place = 0;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int DC, IC;
     int num_tokens = 0;
@@ -77,6 +79,21 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 printf("\n");
                 break;
             case DOT_EXTERN:
+                place = 1;
+                for (; place < num_tokens; place++)
+                {
+                    if (isLabel(tokens[place], false))
+                    {
+                        insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem);
+                        printf("correct label inserted: %s\n", tokens[place]);
+                    }
+                    else
+                    {
+                        printf("Error, not good label name: %s\n", tokens[place]);
+                        break;
+                    }
+                    
+                }
                 break;
             case DOT_ENTRY:
                 break;
