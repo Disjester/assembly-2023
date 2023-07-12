@@ -77,6 +77,22 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 printf("\n");
                 break;
             case DOT_EXTERN:
+                int count = 1;
+                for (; count < num_tokens; count++)
+                {
+                    if (isLabel(tokens[count]))
+                    {
+                        insertNewLabel(&labels, tokens[count], LABEL_TYPE_EXTERNAL, DEFAULT_EXTERNAL_MEMORY);
+                        printf("correct label inserted: %s",tokens[count]);
+                    }
+                    else
+                    {
+                        printf("Error, not good label name\n");
+                        break;
+                    }
+                    
+                }
+                
                 break;
             case DOT_ENTRY:
                 break;
