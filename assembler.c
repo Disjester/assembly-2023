@@ -111,7 +111,15 @@ bool isLabel(char* word, bool colon){
         }
         
     }
-    flag = true;
+    if (colon)
+    {
+        flag = false;
+    }
+    else
+    {
+        flag = true;
+    }
+    
     return flag;
 }
 
