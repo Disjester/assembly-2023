@@ -29,14 +29,13 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
         switch (isDotType(tokens[token_idx])) {
             case DOT_DATA:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, memory_idx);
+                    insertNewLabel(&labels, removeSemicolon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
                     }
-                    label_flag = false;
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
@@ -54,14 +53,13 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 break;
             case DOT_STRING:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
+                    insertNewLabel(&labels, removeSemicolon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
                     }
-                    label_flag = false;
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
@@ -90,6 +88,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
         label_flag = false;
         temp_code = temp_code->next;
     }
+    printf("LABEL TYPE OF DAN IS: %d", getLabelType("DAN", labels));
 }
 
 
@@ -281,8 +280,8 @@ void cleanMemory(short* memory) {
         memory[i] = -1;
     }
 }
-/*awefwaefwfe*/
-void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, short memory_idx) {
+
+void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, short* memory_idx) {
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;
@@ -293,19 +292,19 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
         new_label = (LabelNode*) malloc(sizeof(LabelNode));
         new_label->label_name = label_name;
         new_label->label_type = label_type;
-        new_label->memory_adress = memory_idx;
+        new_label->memory_adress = *memory_idx;
         new_label->next = NULL;
         temp_label->next = new_label;
     } else {
         *labels = (LabelNode*) malloc(sizeof(LabelNode));
         (*labels)->label_name = label_name;
         (*labels)->label_type = label_type;
-        (*labels)->memory_adress = memory_idx;
+        (*labels)->memory_adress = *memory_idx;
         (*labels)->next = NULL;
     }
 }
 
-char* removeColon(char* str) {
+char* removeSemicolon(char* str) {
     str[strlen(str)-1] = '\0';
     return str;
 }
