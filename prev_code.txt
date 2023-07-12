@@ -81,22 +81,9 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             case DOT_ENTRY:
                 break;
         }
-        
-        if (label_flag) {
-            insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, &memory_idx);
-            test_label_node = labels;
-            printf("CURRENT LABEL TABLE: ");
-            while (test_label_node) {
-                printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
-                test_label_node = test_label_node->next;
-            }
-            label_flag = false;
-            printf("\n");
-        }
-
-
-
-
+        /*if(isExternOrEntry(tokens[token_counter])) {
+            
+        }*/
         token_idx = 0;
         label_flag = false;
         temp_code = temp_code->next;
