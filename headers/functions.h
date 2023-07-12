@@ -9,8 +9,7 @@
 /**
  * @brief checks if the string is a label
  * 
- * @param word 
- * @param colon - a boolean , that says if there is expected a ":" in the end of the label name or not. True if yes false otherwise
+ * @param word
  * @return true 
  * @return false 
  */
@@ -18,7 +17,7 @@ bool isLabel(char* word);
 
 void cleanMemory(short* memory);
 
-char* removeColon(char* str);
+char* removeSemicolon(char* str);
 
 void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, short* memory_idx);
 
