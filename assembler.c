@@ -94,6 +94,10 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     }
                     
                 }
+                while (test_label_node) {
+                    printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
+                    test_label_node = test_label_node->next;
+                }
                 break;
             case DOT_ENTRY:
                 break;
