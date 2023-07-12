@@ -10,6 +10,7 @@
  * @brief checks if the string is a label
  * 
  * @param word 
+ * @param colon - a boolean , that says if there is expected a ":" in the end of the label name or not. True if yes false otherwise
  * @return true 
  * @return false 
  */
