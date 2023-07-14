@@ -5,6 +5,8 @@
 #include "libs.h"
 
 
+
+
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error) {
     CodeNode* temp_code;
     LabelNode* test_label_node;
