@@ -109,7 +109,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
             
         }
 
-        printf("Current DC and IC: %d, %d\n", IC, DC);
+        printf("CURRENT  IC  AND DC: %d, %d\n", IC, DC);
 
         token_idx = 0;
         label_flag = false;
