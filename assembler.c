@@ -31,7 +31,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
         switch (isDotType(tokens[token_idx])) {
             case DOT_DATA:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC);
+                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, &DC);
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
@@ -56,7 +56,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 break;
             case DOT_STRING:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC);
+                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, &DC);
                     test_label_node = labels;
                     printf("CURRENT LABEL TABLE: ");
                     while (test_label_node) {
@@ -64,15 +64,16 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         test_label_node = test_label_node->next;
                     }
                     printf("\n");
-                    DC += strlen(tokens[token_idx]);
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
                     printf("I  SEE STRING  HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
                         pushToMemory(&memory_idx, memory, tokens[token_idx][i]);
+                        DC++;
                     }
                     pushToMemory(&memory_idx, memory, '\0');
+                    DC++;
                 }
                 printf("CURRENT      MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
@@ -107,6 +108,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 break;
             
         }
+
+        printf("Current DC and IC: %d, %d\n", IC, DC);
 
         token_idx = 0;
         label_flag = false;
