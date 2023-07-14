@@ -4,6 +4,24 @@
 #include <ctype.h>
 #include "libs.h"
 
+static Command commands[MAX_COMMAND_LENGTH] = {
+    {"mov",  0x0000, 2, {1, 1, 1}, {0, 1, 1}},
+    {"cmp",  0x0001, 2, {1, 1, 1}, {1, 1, 1}},
+    {"add",  0x0010, 2, {1, 1, 1}, {0, 1, 1}},
+    {"sub",  0x0011, 2, {1, 1, 1}, {0, 1, 1}},
+    {"not",  0x0100, 1, {0, 0, 0}, {0, 1, 1}},
+    {"clr",  0x0101, 1, {0, 0, 0}, {0, 1, 1}},
+    {"lea",  0x0110, 2, {0, 1, 0}, {0, 1, 1}},
+    {"inc",  0x0111, 1, {0, 0, 0}, {0, 1, 1}},
+    {"dec",  0x1000, 1, {0, 0, 0}, {0, 1, 1}},
+    {"jmp",  0x1001, 1, {0, 0, 0}, {0, 1, 1}},
+    {"bne",  0x1010, 1, {0, 0, 0}, {0, 1, 1}},
+    {"red",  0x1011, 1, {0, 0, 0}, {0, 1, 1}},
+    {"prn",  0x1100, 1, {0, 0, 0}, {1, 1, 1}},
+    {"jsr",  0x1101, 1, {0, 0, 0}, {0, 1, 1}},
+    {"rts",  0x1110, 0, {0, 0, 0}, {0, 0, 0}},
+    {"stop", 0x1111, 0, {0, 0, 0}, {0, 0, 0}}
+};
 
 
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error) {
@@ -19,7 +37,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     int token_idx = 0;
     int memory_idx = 100;
     short data[100];
-    bool code_flag = false;
 
     DC = IC = 0;
     cleanMemory(memory);
@@ -127,7 +144,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
 
         token_idx = 0;
         label_flag = false;
-        code_flag = false;
         temp_code = temp_code->next;
     }
 }
