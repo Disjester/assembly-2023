@@ -17,6 +17,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     int token_idx = 0;
     int memory_idx = 100;
     short data[100];
+    bool code_flag = false;
 
     DC = IC = 0;
     cleanMemory(memory);
@@ -106,13 +107,25 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 break;
             case DOT_ENTRY:
                 break;
-            
+            case DOT_OTHER:
+                if (label_flag) {
+                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, &IC);
+                    test_label_node = labels;
+                    printf("CURRENT LABEL TABLE: ");
+                    while (test_label_node) {
+                        printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
+                        test_label_node = test_label_node->next;
+                    }
+                    printf("\n");
+                }            
+                break;
         }
 
         printf("CURRENT  IC  AND DC: %d, %d\n", IC, DC);
 
         token_idx = 0;
         label_flag = false;
+        code_flag = false;
         temp_code = temp_code->next;
     }
 }
