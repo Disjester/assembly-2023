@@ -364,10 +364,10 @@ short checkCommand(char* word){
     int i = 0;
     for (; i < NUM_OF_COMMANDS; i++)
     {
-        if (!strcmp(commands[i], word))
+        if (!strcmp((char*)commands[i].command, word))
         {
-            printf("found the right command %s!\n",commands[i]->command);
-            return commands[i]->opCode;
+            printf("found the right command %s!\n", (char*)commands[i].command);
+            return commands[i].opcode;
         }
         
     }
