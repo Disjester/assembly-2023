@@ -4,11 +4,13 @@
 #define MAX_LINE_LENGTH 80
 #define MAX_TOKENS 10
 
-#define DOT_DATA 1
-#define DOT_STRING 2 
-#define DOT_ENTRY 3
-#define DOT_EXTERN 4
-#define DOT_OTHER 0
+enum dot_type{
+    DOT_OTHER,
+    DOT_DATA,
+    DOT_STRING, 
+    DOT_ENTRY, 
+    DOT_EXTERN, 
+};      
 
 #define DEFAULT_EXTERN_MEMORY -1
 
