@@ -343,3 +343,18 @@ char* removeColon(char* str) {
     str[strlen(str)-1] = '\0';
     return str;
 }
+
+short checkCommand(char* word){
+    int i = 0;
+    for (; i < NUM_OF_COMMANDS; i++)
+    {
+        if (!strcmp(commands[i], word))
+        {
+            printf("found the right command %s!\n",commands[i]->command);
+            return commands[i]->opCode;
+        }
+        
+    }
+    printf("Error, command unrecognized command: %s\n", word);
+    return -1;
+}
