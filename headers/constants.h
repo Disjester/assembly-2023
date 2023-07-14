@@ -3,6 +3,7 @@
 
 #define MAX_LINE_LENGTH 80
 #define MAX_TOKENS 10
+#define NUMBER_OF_COMMANDS 16
 
 enum dot_type{
     DOT_OTHER,
