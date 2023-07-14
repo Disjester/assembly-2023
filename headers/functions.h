@@ -80,7 +80,7 @@ bool isString(char* string);
  * @brief checks if the word is .data or .string , returns false if neither
  * 
  * @param word 
- * @return 2 - if its a .string 1 if it is a .data 0 if it neither of them 
+ * @return 4 - if its .extern 3 - if its a .entry 2 - if its a .string 1 if it is a .data 0 if it neither of them 
  */
 short isDotType(char* word);
 
