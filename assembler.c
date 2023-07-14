@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "libs.h"
 
+
 void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error) {
     CodeNode* temp_code;
     LabelNode* test_label_node;
@@ -17,7 +18,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     int token_idx = 0;
     int memory_idx = 100;
     short data[100];
-    bool code_flag = false;
 
     DC = IC = 0;
     cleanMemory(memory);
@@ -125,7 +125,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
 
         token_idx = 0;
         label_flag = false;
-        code_flag = false;
         temp_code = temp_code->next;
     }
 }
