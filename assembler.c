@@ -137,7 +137,15 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     }
                     printf("\n");
                 }
-                checkCommand(tokens[1]);            
+                if (label_flag)
+                {
+                    checkCommand(tokens[1]);
+                }
+                else
+                {
+                    checkCommand(tokens[0]);
+                }
+                
                 break;
         }
 
