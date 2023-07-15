@@ -42,6 +42,11 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     cleanMemory(memory);
     temp_code = code;
     while(temp_code) {
+        if (temp_code->code_row[0] == ';') {
+            printf("I SEE  COMMENT HERE: %s\n", temp_code->code_row);
+            temp_code = temp_code->next;
+            continue;
+        }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
         if(isLabel(tokens[token_idx], true)) {
             printf("I  SEE  LABEL  HERE: %s\n",temp_code->code_row);
@@ -67,6 +72,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         pushToMemory(&memory_idx, memory, atoi(tokens[i]));
                         DC++;
                     }
+                    printf("CURRENT  IC  AND DC: %d, %d\n", IC, DC);
                 }
                 printf("CURRENT      MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
@@ -94,6 +100,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     }
                     pushToMemory(&memory_idx, memory, '\0');
                     DC++;
+                    printf("CURRENT  IC  AND DC: %d, %d\n", IC, DC);
                 }
                 printf("CURRENT      MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
@@ -143,8 +150,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 
                 break;
         }
-
-        printf("CURRENT  IC  AND DC: %d, %d\n", IC, DC);
 
         token_idx = 0;
         label_flag = false;
