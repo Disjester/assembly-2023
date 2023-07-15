@@ -4,23 +4,23 @@
 #include <ctype.h>
 #include "libs.h"
 
-static Command commands[MAX_COMMAND_LENGTH] = {
-    {"mov",  0x0000, 2, {1, 1, 1}, {0, 1, 1}},
-    {"cmp",  0x0001, 2, {1, 1, 1}, {1, 1, 1}},
-    {"add",  0x0010, 2, {1, 1, 1}, {0, 1, 1}},
-    {"sub",  0x0011, 2, {1, 1, 1}, {0, 1, 1}},
-    {"not",  0x0100, 1, {0, 0, 0}, {0, 1, 1}},
-    {"clr",  0x0101, 1, {0, 0, 0}, {0, 1, 1}},
-    {"lea",  0x0110, 2, {0, 1, 0}, {0, 1, 1}},
-    {"inc",  0x0111, 1, {0, 0, 0}, {0, 1, 1}},
-    {"dec",  0x1000, 1, {0, 0, 0}, {0, 1, 1}},
-    {"jmp",  0x1001, 1, {0, 0, 0}, {0, 1, 1}},
-    {"bne",  0x1010, 1, {0, 0, 0}, {0, 1, 1}},
-    {"red",  0x1011, 1, {0, 0, 0}, {0, 1, 1}},
-    {"prn",  0x1100, 1, {0, 0, 0}, {1, 1, 1}},
-    {"jsr",  0x1101, 1, {0, 0, 0}, {0, 1, 1}},
-    {"rts",  0x1110, 0, {0, 0, 0}, {0, 0, 0}},
-    {"stop", 0x1111, 0, {0, 0, 0}, {0, 0, 0}}
+static const Command commands[MAX_COMMAND_LENGTH] = {
+    {"mov",  0x0, 2, {1, 1, 1}, {0, 1, 1}},
+    {"cmp",  0x1, 2, {1, 1, 1}, {1, 1, 1}},
+    {"add",  0x2, 2, {1, 1, 1}, {0, 1, 1}},
+    {"sub",  0x3, 2, {1, 1, 1}, {0, 1, 1}},
+    {"not",  0x4, 1, {0, 0, 0}, {0, 1, 1}},
+    {"clr",  0x5, 1, {0, 0, 0}, {0, 1, 1}},
+    {"lea",  0x6, 2, {0, 1, 0}, {0, 1, 1}},
+    {"inc",  0x7, 1, {0, 0, 0}, {0, 1, 1}},
+    {"dec",  0x8, 1, {0, 0, 0}, {0, 1, 1}},
+    {"jmp",  0x9, 1, {0, 0, 0}, {0, 1, 1}},
+    {"bne",  0xA, 1, {0, 0, 0}, {0, 1, 1}},
+    {"red",  0xB, 1, {0, 0, 0}, {0, 1, 1}},
+    {"prn",  0xC, 1, {0, 0, 0}, {1, 1, 1}},
+    {"jsr",  0xD, 1, {0, 0, 0}, {0, 1, 1}},
+    {"rts",  0xE, 0, {0, 0, 0}, {0, 0, 0}},
+    {"stop", 0xF, 0, {0, 0, 0}, {0, 0, 0}}
 };
 
 
@@ -225,12 +225,12 @@ LabelType getLabelType(char* label, LabelNode* LabelNode){
 
 bool isString(char* string){
     int i = 0;
+    bool quote = false;
     if (string[i] != '"')
     {
         return false;
     }
     i++;
-    bool quote = false;
     for ( ; i < strlen(string); i++)
     {
         if (quote)
@@ -239,7 +239,7 @@ bool isString(char* string){
         }
         
         if (string[i] == '"')
-        {
+        { 
             quote = true;
         }
         
@@ -333,7 +333,7 @@ void cleanMemory(short* memory) {
     }
 }
 
-void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, short* memory_idx) {
+void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx) {
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;

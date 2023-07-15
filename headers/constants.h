@@ -10,7 +10,7 @@ enum dot_type{
     DOT_DATA,
     DOT_STRING, 
     DOT_ENTRY, 
-    DOT_EXTERN, 
+    DOT_EXTERN
 };      
 
 #define DEFAULT_EXTERN_MEMORY -1
