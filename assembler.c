@@ -234,13 +234,10 @@ LabelType getLabelType(char* label, LabelNode* LabelNode){
 bool isString(char* string){
     int i = 0;
     bool quote = false;
-    bool quote = false;
-    if (string[i] != '"')
+    if (string[i++] != '"')
     {
         return false;
     }
-    i++;
-    bool quote = false;
     for ( ; i < strlen(string); i++)
     {
         if (quote)
