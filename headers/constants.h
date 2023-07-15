@@ -4,6 +4,7 @@
 #define MAX_LINE_LENGTH 80
 #define MAX_TOKENS 10
 #define NUMBER_OF_COMMANDS 16
+#define NUM_OF_REGISTERS 8
 
 enum dot_type{
     DOT_OTHER,
@@ -31,5 +32,12 @@ typedef enum LabelType {
     LABEL_TYPE_EXTERNAL,
     LABEL_TYPE_ENTRY
 } LabelType;
+
+typedef enum OperandType{
+    OPERAND_TYPE_NUMBER,
+    OPERAND_TYPE_LABEL,
+    OPERAND_TYPE_REGISTER,
+    OPERAND_TYPE_OTHER
+} OperandType;
 
 #endif

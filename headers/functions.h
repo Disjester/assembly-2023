@@ -13,6 +13,9 @@
  * @return short 
  */
 short checkCommand(char* word);
+
+
+OperandType checkOperand(char* operand, LabelNode* LabelNode);
 /**
  * @brief checks if the string is a label
  * 
@@ -79,6 +82,13 @@ bool checkData(char* line, Error* error);
  */
 bool checkDataLine(char** tokens, int num_tokens, bool label);
 
+/**
+ * @brief takes in a string and checks if its a legal number
+ * 
+ * @param word 
+ * @return true if it is a number
+ * @return false otherwise
+ */
 bool isNumber(char* word);
 
 bool isString(char* string);
