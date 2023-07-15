@@ -444,7 +444,7 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr){
         return OPERAND_TYPE_NUMBER;
     }
     
-    if (getLabelType(operand, LabelPtr))
+    if (isLabel(operand, false))
     {
         return OPERAND_TYPE_LABEL;
     }
