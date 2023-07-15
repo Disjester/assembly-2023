@@ -253,7 +253,10 @@ bool isString(char* string){
 bool isNumber(char* word){
     int i = 0;
     int len = strlen(word);
-    
+
+    /* Check for a minus sign at the beginning*/
+    if (word[i] == '-')
+        i++;  /* Skip the minus sign */
     
     for ( ; i < len; i++)
     {
