@@ -169,7 +169,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
         }
         temp_label_node = temp_label_node->next;
     }
-
+ 
     /**/
     test_label_node = labels;
     printf("LABEL  TABLE  AFTER 1: ");
