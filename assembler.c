@@ -103,15 +103,12 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 break;
             case DOT_EXTERN:
                 place = 1;
-                for (; place < num_tokens; place++)
-                {
-                    if (isLabel(tokens[place], false))
-                    {
+                for (; place < num_tokens; place++) {
+                    if (isLabel(tokens[place], false)) {
                         insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem);
                         printf("I SEE EXTERNAL HERE: %s\n", temp_code->code_row);
                     }
-                    else
-                    {
+                    else {
                         break;
                     }
                     
@@ -137,12 +134,10 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     }
                     printf("\n");
                 }
-                if (label_flag)
-                {
+                if (label_flag) {
                     checkCommand(tokens[1]);
                 }
-                else
-                {
+                else {
                     checkCommand(tokens[0]);
                 }
                 
