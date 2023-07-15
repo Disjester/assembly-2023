@@ -43,13 +43,18 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
     temp_code = code;
     while(temp_code) {
         if (temp_code->code_row[0] == ';') {
-            printf("I SEE  COMMENT HERE: %s\n", temp_code->code_row);
+            printf("I  SEE  COMMENT  HERE: %s\n", temp_code->code_row);
+            temp_code = temp_code->next;
+            continue;
+        }
+        if (temp_code->code_row[0] == '\n') {
+            printf("I SEE EMPTY LINE HERE: %s\n", temp_code->code_row);
             temp_code = temp_code->next;
             continue;
         }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens);
         if(isLabel(tokens[token_idx], true)) {
-            printf("I  SEE  LABEL  HERE: %s\n",temp_code->code_row);
+            printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
             label_flag = true;
             token_idx++;
         }
@@ -58,7 +63,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 if (label_flag) {
                     insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, &DC);
                     test_label_node = labels;
-                    printf("CURRENT LABEL TABLE: ");
+                    printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
@@ -66,15 +71,15 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
-                    printf("I  SEE   DATA  HERE: %s\n", temp_code->code_row);
+                    printf("I   SEE   DATA   HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
                         pushToMemory(&memory_idx, memory, atoi(tokens[i]));
                         DC++;
                     }
-                    printf("CURRENT  IC  AND DC: %d, %d\n", IC, DC);
+                    printf("CURRENT   IC  AND  DC: %d, %d\n", IC, DC);
                 }
-                printf("CURRENT      MEMORY: ");
+                printf("CURRENT        MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
                     printf("%d:%d ", i, memory[i]);
                 }
@@ -84,7 +89,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 if (label_flag) {
                     insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, &DC);
                     test_label_node = labels;
-                    printf("CURRENT LABEL TABLE: ");
+                    printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
@@ -92,7 +97,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag)) {
-                    printf("I  SEE STRING  HERE: %s\n", temp_code->code_row);
+                    printf("I  SEE  STRING   HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
                         pushToMemory(&memory_idx, memory, tokens[token_idx][i]);
@@ -100,9 +105,9 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     }
                     pushToMemory(&memory_idx, memory, '\0');
                     DC++;
-                    printf("CURRENT  IC  AND DC: %d, %d\n", IC, DC);
+                    printf("CURRENT  IC   AND  DC: %d, %d\n", IC, DC);
                 }
-                printf("CURRENT      MEMORY: ");
+                printf("CURRENT        MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
                     printf("%d:%d ", memory[i], i);
                 }
@@ -113,7 +118,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 for (; place < num_tokens; place++) {
                     if (isLabel(tokens[place], false)) {
                         insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem);
-                        printf("I SEE EXTERNAL HERE: %s\n", temp_code->code_row);
+                        printf("I SEE  EXTERNAL  HERE: %s\n", temp_code->code_row);
                     }
                     else {
                         break;
@@ -121,7 +126,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                     
                 }
                 test_label_node = labels;
-                printf("CURRENT LABEL TABLE: ");
+                printf("CURRENT  LABEL  TABLE: ");
                 while (test_label_node) {
                     printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                     test_label_node = test_label_node->next;
@@ -134,7 +139,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                 if (label_flag) {
                     insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, &IC);
                     test_label_node = labels;
-                    printf("CURRENT LABEL TABLE: ");
+                    printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
                         test_label_node = test_label_node->next;
@@ -374,7 +379,7 @@ short checkCommand(char* word){
     {
         if (!strcmp((char*)commands[i].command, word))
         {
-            printf("I SEE COMMAND  HERE: %s! its opcode is: %d\n", (char*)commands[i].command, commands[i].opcode);
+            printf("I  SEE  COMMAND  HERE: %s! its opcode is: %d\n", (char*)commands[i].command, commands[i].opcode);
             return commands[i].opcode;
         }
         

@@ -1,6 +1,7 @@
 ;comment 1/3
 MAIN: mov @r3 ,LENGTH
 STR:    .string "abcdef"
+
 DAN:   .data 3 , 5
 LOOP:jmp L1
         mcro m1
@@ -8,6 +9,7 @@ LOOP:jmp L1
             bne END
         endmcro
         prn -5
+        
         bne LOOP
         m1
         mcro m2
@@ -27,3 +29,5 @@ TEST:mov @r4,@r2
         ;comment 3/3
 3K:          .data 22
 .extern L3
+
+
