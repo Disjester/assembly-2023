@@ -390,3 +390,22 @@ short checkCommand(char* word){
     printf("Error, command unrecognized command: %s\n", word);
     return -1;
 }
+
+
+checkOperand(char* operand){
+    switch (true)
+    {
+    case REGISTER:
+        /* code */
+        break;
+    
+    case LABEL:
+        break;
+    
+    case NUMBER:
+        break;
+        
+    default:
+        break;
+    }
+}
