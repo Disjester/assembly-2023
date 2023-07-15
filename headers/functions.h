@@ -32,7 +32,9 @@ char* removeColon(char* str);
 
 void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, int* memory_idx);
 
-void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* error);
+void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error);
+
+void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error); 
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField);
 
