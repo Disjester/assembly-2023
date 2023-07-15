@@ -148,7 +148,13 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
                     printf("\n");
                 }
                 if (label_flag) {
-                    checkCommand(tokens[1]);
+                    if (checkCommand(tokens[1]) == 0)
+                    {
+                        checkOperand(tokens[2], labels);
+                        checkOperand(tokens[3], labels);
+                        checkOperand(tokens[4], labels);
+                    }
+                    
                 }
                 else {
                     checkCommand(tokens[0]);
@@ -242,22 +248,22 @@ short isDotType(char* word){
 }
 
 
-LabelType getLabelType(char* label, LabelNode* LabelNode){
-    if (LabelNode != NULL)
+LabelType getLabelType(char* label, LabelNode* LabelPtr){
+    if (LabelPtr != NULL)
     {
         do
         {
-            if (!strcmp(label, LabelNode->label_name))
+            if (!strcmp(label, LabelPtr->label_name))
             {
-                printf("found Label %s is of type: %d\n", label, LabelNode->label_type);
-                return LabelNode->label_type;
+                printf("found Label %s is of type: %d\n", label, LabelPtr->label_type);
+                return LabelPtr->label_type;
             }
-            LabelNode = LabelNode->next;
+            LabelPtr = LabelPtr->next;
         }
-        while (LabelNode->next != NULL);
+        while (LabelPtr != NULL);
     }
     
-    printf("error, haven't found the label\n");
+    printf("error, haven't found the label %s\n", label);
     return 0;
 
 }
@@ -418,20 +424,32 @@ short checkCommand(char* word){
 }
 
 
-checkOperand(char* operand){
-    switch (true)
+OperandType checkOperand(char* operand, LabelNode* LabelPtr){
+    const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
+    int i = 0;
+
+    for (; i < NUM_OF_REGISTERS; i++)
     {
-    case REGISTER:
-        /* code */
-        break;
-    
-    case LABEL:
-        break;
-    
-    case NUMBER:
-        break;
+        if (!strcmp(registers[i], operand))
+        {
+            printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_REGISTER);
+            return OPERAND_TYPE_REGISTER;
+        }
         
-    default:
-        break;
     }
+    
+    if (isNumber(operand))
+    {
+        printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_NUMBER);
+        return OPERAND_TYPE_NUMBER;
+    }
+    
+    if (getLabelType(operand, LabelPtr))
+    {
+        return OPERAND_TYPE_LABEL;
+    }
+
+    /*handle error*/
+    printf("ILLEGAL        OPERAND: %s\n", operand);    
+    return OPERAND_TYPE_OTHER;
 }
