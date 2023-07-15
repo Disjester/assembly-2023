@@ -3,19 +3,6 @@
 #include <stdlib.h>
 #include "libs.h"
 
-int main (int argc, char** argv) {
-    CodeNode* code;
-    Error* error = NO_ERROR;
-    LabelNode* labels = NULL;
-    short memory[1024];
-    code = preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
-    
-    
-
-    firstIteration(memory, code, labels, error);
-    return 1;
-}
-
 CodeNode* preproccessor(char* file_name) {
     CodeNode* code;
     Error* error = NO_ERROR;
