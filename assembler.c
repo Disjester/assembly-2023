@@ -374,7 +374,7 @@ short checkCommand(char* word){
     {
         if (!strcmp((char*)commands[i].command, word))
         {
-            printf("found the right command %s!\n", (char*)commands[i].command);
+            printf("I SEE COMMAND  HERE: %s! its opcode is: %d\n", (char*)commands[i].command, commands[i].opcode);
             return commands[i].opcode;
         }
         
