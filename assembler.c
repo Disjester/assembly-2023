@@ -289,7 +289,10 @@ bool isString(char* string){
 bool isNumber(char* word){
     int i = 0;
     int len = strlen(word);
-    
+
+    /* Check for a minus sign at the beginning*/
+    if (word[i] == '-')
+        i++;  /* Skip the minus sign */
     
     for ( ; i < len; i++)
     {
@@ -412,4 +415,23 @@ short checkCommand(char* word){
     }
     printf("Error, command unrecognized command: %s\n", word);
     return -1;
+}
+
+
+checkOperand(char* operand){
+    switch (true)
+    {
+    case REGISTER:
+        /* code */
+        break;
+    
+    case LABEL:
+        break;
+    
+    case NUMBER:
+        break;
+        
+    default:
+        break;
+    }
 }
