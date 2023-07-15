@@ -151,7 +151,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
                     if (checkCommand(tokens[1]) == 0)
                     {
                         checkOperand(tokens[2], labels);
-                        checkOperand(tokens[3], labels);
                         checkOperand(tokens[4], labels);
                     }
                     
