@@ -7,6 +7,13 @@
 #include <stdio.h>
 
 /**
+ * @brief returns opcode of a command if it is, otherwise returns -1
+ * 
+ * @param word 
+ * @return short 
+ */
+short checkCommand(char* word);
+/**
  * @brief checks if the string is a label
  * 
  * @param word 

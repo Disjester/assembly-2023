@@ -136,7 +136,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, Error* err
                         test_label_node = test_label_node->next;
                     }
                     printf("\n");
-                }            
+                }
+                checkCommand(tokens[1]);            
                 break;
         }
 
