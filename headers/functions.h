@@ -6,6 +6,11 @@
 #include "nodes.h"
 #include <stdio.h>
 
+
+
+
+int checkCommandLine(char** tokens, int num_tokens, bool label);
+
 /**
  * @brief returns opcode of a command if it is, otherwise returns -1
  * 
@@ -15,7 +20,7 @@
 short checkCommand(char* word);
 
 
-OperandType checkOperand(char* operand, LabelNode* LabelNode);
+OperandType checkOperand(char* operand);
 /**
  * @brief checks if the string is a label
  * 

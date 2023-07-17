@@ -152,8 +152,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 if (label_flag) {
                     if (checkCommand(tokens[1]) == 0)
                     {
-                        checkOperand(tokens[2], *labels);
-                        checkOperand(tokens[4], *labels);
+                        checkOperand(tokens[2]);
+                        checkOperand(tokens[4]);
                     }
                     
                 }
@@ -488,12 +488,85 @@ short checkCommand(char* word){
         }
         
     }
+
+    /*Error*/
     printf("Error, command unrecognized command: %s\n", word);
     return -1;
 }
 
 
-OperandType checkOperand(char* operand, LabelNode* LabelPtr){
+int checkCommandLine(char** tokens, int num_tokens, bool label){
+    short opcode = checkCommand(tokens[label]);
+    int i = label+1; /*operand index*/
+    bool register_flag = false;
+    bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
+
+    int L = 1;
+
+    /*Check if not a command OR the number of operands is wrong - Error*/
+    if (opcode == -1 || (num_tokens - label - 1) != commands[opcode].number_of_operands)
+    {
+        return -1;
+    }
+    
+
+    for (; i < commands[opcode].number_of_operands; i++)
+    {
+        
+        switch (checkOperand(tokens[i]))
+        {
+        case OPERAND_TYPE_LABEL:
+            L++;
+            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]))
+            {
+                printf("INCORRECT OPERAND FOR %s: %s",commands[opcode].command, tokens[i]);
+                return -1; 
+            }
+            
+            break;
+
+        case OPERAND_TYPE_REGISTER:
+
+            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]))
+            {
+                printf("INCORRECT OPERAND FOR %s: %s",commands[opcode].command, tokens[i]);
+                return -1; 
+            }
+
+            if (!register_flag)
+            {
+                L++;
+                register_flag = true;
+            }
+            break;
+
+        case OPERAND_TYPE_NUMBER:
+            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]))
+            {
+                printf("INCORRECT OPERAND FOR %s: %s",commands[opcode].command, tokens[i]);
+                return -1; 
+            }
+
+            L++;
+            break;
+
+        default:
+            printf("ERROR IN OPERAND %s", tokens[i]);
+            return -1;
+            break;
+        }
+        
+        if (source_flag)
+        {
+            source_flag = false;
+        }
+        
+    }
+    printf("CORRECT COMMAND LINE: %s", tokens);
+    return L;
+}
+
+OperandType checkOperand(char* operand){
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
     int i = 0;
 

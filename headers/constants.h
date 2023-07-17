@@ -8,6 +8,10 @@
 #define MAX_FILE_NAME 30
 #define MAX_FILE_NAME_WITH_EXTENSION 34
 
+#define ADDRESING_NUMBER 0
+#define ADDRESING_LABEL 1 
+#define ADDRESING_REGISTER 2
+
 enum dot_type{
     DOT_OTHER,
     DOT_DATA,
@@ -36,10 +40,10 @@ typedef enum LabelType {
 } LabelType;
 
 typedef enum OperandType{
-    OPERAND_TYPE_NUMBER,
+    OPERAND_TYPE_OTHER,
     OPERAND_TYPE_LABEL,
     OPERAND_TYPE_REGISTER,
-    OPERAND_TYPE_OTHER
+    OPERAND_TYPE_NUMBER
 } OperandType;
 
 #endif
