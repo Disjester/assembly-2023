@@ -431,7 +431,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
     bool register_flag = false;
     bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
 
-    int L = 0;
+    int L = 1;
 
     /*Check if not a command OR the number of operands is wrong - Error*/
     if (opcode == -1 || (num_tokens - label - 1) != commands[opcode].number_of_operands)
