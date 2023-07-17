@@ -34,10 +34,10 @@ typedef enum LabelType {
 } LabelType;
 
 typedef enum OperandType{
-    OPERAND_TYPE_NUMBER,
+    OPERAND_TYPE_OTHER,
     OPERAND_TYPE_LABEL,
     OPERAND_TYPE_REGISTER,
-    OPERAND_TYPE_OTHER
+    OPERAND_TYPE_NUMBER
 } OperandType;
 
 #endif

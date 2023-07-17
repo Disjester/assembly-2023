@@ -150,8 +150,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
                 if (label_flag) {
                     if (checkCommand(tokens[1]) == 0)
                     {
-                        checkOperand(tokens[2], labels);
-                        checkOperand(tokens[4], labels);
+                        checkOperand(tokens[2]);
+                        checkOperand(tokens[4]);
                     }
                     
                 }
@@ -418,12 +418,57 @@ short checkCommand(char* word){
         }
         
     }
+
+    /*Error*/
     printf("Error, command unrecognized command: %s\n", word);
     return -1;
 }
 
 
-OperandType checkOperand(char* operand, LabelNode* LabelPtr){
+int checkCommandLine(char** tokens, int num_tokens, bool label){
+    short opcode = checkCommand(tokens[label]);
+    int i = label+1;
+    bool register_flag = false;
+    int L = 0;
+
+    /*Check if not a command OR the number of operands is wrong - Error*/
+    if (opcode == -1 || (num_tokens - label - 1) != commands[opcode].number_of_operands)
+    {
+        return -1;
+    }
+    
+
+    for (; i < commands[opcode].number_of_operands; i++)
+    {
+        switch (checkOperand(tokens[i]))
+        {
+        case OPERAND_TYPE_LABEL:
+            L++;
+            break;
+        case OPERAND_TYPE_REGISTER:
+            if (!register_flag)
+            {
+                L++;
+                register_flag = true;
+            }
+
+            break;
+        case OPERAND_TYPE_NUMBER:
+            L++;
+            break;
+
+        default:
+            printf("ERROR IN OPERAND %s", tokens[i]);
+            return -1;
+            break;
+        }
+        
+    }
+    printf("CORRECT COMMAND LINE: %s", tokens);
+    return L;
+}
+
+OperandType checkOperand(char* operand){
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
     int i = 0;
 
