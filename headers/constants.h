@@ -5,6 +5,8 @@
 #define MAX_TOKENS 10
 #define NUMBER_OF_COMMANDS 16
 #define NUM_OF_REGISTERS 8
+#define MAX_FILE_NAME 30
+#define MAX_FILE_NAME_WITH_EXTENSION 34
 
 enum dot_type{
     DOT_OTHER,

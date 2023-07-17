@@ -26,15 +26,19 @@ OperandType checkOperand(char* operand, LabelNode* LabelNode);
  */
 bool isLabel(char* word, bool colon);
 
+void createOutputFiles (char* file_name, LabelNode* labels, Error* error);
+
+void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
+
 void cleanMemory(short* memory);
 
 char* removeColon(char* str);
 
-void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, int* memory_idx);
+void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, int* memory_idx, Error* error);
 
-void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error);
+void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error);
 
-void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error); 
+void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name); 
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField);
 
@@ -60,7 +64,7 @@ void freeLinkedList(CodeNode* head);
 
 int getLine(char* line, Error* error, FILE* file);
 
-void cleanLine(char* line);
+void cleanLine(char* line, int length);
 
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens);
 

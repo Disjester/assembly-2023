@@ -55,7 +55,6 @@ CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int
 
         /* Copy the string from buffer to the new node*/
         strcpy(node->code_row, buffer);
-        node->next = NULL;
         
         /* If this is the first node, it is the head of the list*/
         if(!head) {
@@ -85,7 +84,7 @@ void freeLinkedList(CodeNode* head) {
 int getLine(char* line, Error* error, FILE* file) {
     char x; /*current symbol in the input stream*/
     int i = 0;
-    cleanLine(line);
+    cleanLine(line, MAX_LINE_LENGTH);
     while ((x = fgetc(file)) != '\n' && x != EOF) {
         if (i == MAX_LINE_LENGTH) {
             *error = ERROR_MAXED_OUT_LINE_LENGTH;
@@ -129,9 +128,9 @@ int getLine(char* line, Error* error, FILE* file) {
     return i;
 }
 
-void cleanLine(char* line) {
+void cleanLine(char* line, int length) {
     int i;
-    for (i = 0; i < MAX_LINE_LENGTH; i++) {
+    for (i = 0; i < length; i++) {
         line[i] = '\0';
     }
 }
@@ -150,7 +149,6 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), error);
-            new_macro_node->next = NULL;
             new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
             if (!validateVariableName(tokens[1])) {
                 is_correct_name = false;
@@ -163,14 +161,12 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, E
             tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens);
 
             new_code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
-            new_code_node->code_row = NULL;
             new_code_node_head = new_code_node;
 
             while(curr_code_node && strcmp(tokens[0], "endmcro")) {
                 if (new_code_node->code_row) {
                     new_code_node->next = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
                     new_code_node = new_code_node->next;
-                    new_code_node->next = NULL;
                 }
                 new_code_node->code_row = my_strdup(curr_code_node->code_row);
                 curr_code_node = curr_code_node->next;
@@ -229,7 +225,6 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                         /* Create a new code node and copy the code row */
                         CodeNode *new_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), error);
                         new_code_node->code_row = my_strdup(current_macro_code->code_row);
-                        new_code_node->next = NULL;
 
                         /* Append the new code node to the linked list */
                         if (prev_code)

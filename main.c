@@ -11,9 +11,10 @@ int main (int argc, char** argv) {
     short memory[1024];
     int DC, IC;
 
-    code = preproccessor(argv[1]); /*HAS TO BE CHECKED!*/
+    code = preproccessor(argv[1]);
     
-    firstIteration(memory, code, labels, &DC, &IC, error);
-    secondIteration(memory, code, labels, &DC, &IC, error);
+    firstIteration(memory, code, &labels, &DC, &IC, error);
+    secondIteration(memory, code, labels, &DC, &IC, error, argv[1]);
+
     return 1;
 }

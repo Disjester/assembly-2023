@@ -24,7 +24,7 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
 };
 
 
-void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error) {
+void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
     CodeNode* temp_code;
     LabelNode* test_label_node;
     LabelNode* temp_label_node;
@@ -39,6 +39,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
     short data[100];
     int L;
 
+
+    printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n");
     *DC = *IC = 0;
     cleanMemory(memory);
     temp_code = code;
@@ -62,8 +64,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
         switch (isDotType(tokens[token_idx])) {
             case DOT_DATA:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC);
-                    test_label_node = labels;
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
+                    test_label_node = *labels;
                     printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
@@ -88,8 +90,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
                 break;
             case DOT_STRING:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC);
-                    test_label_node = labels;
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
+                    test_label_node = *labels;
                     printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
@@ -118,7 +120,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
                 place = 1;
                 for (; place < num_tokens; place++) {
                     if (isLabel(tokens[place], false)) {
-                        insertNewLabel(&labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem);
+                        insertNewLabel(labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem, error);
                         printf("I SEE  EXTERNAL  HERE: %s\n", temp_code->code_row);
                     }
                     else {
@@ -126,7 +128,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
                     }
                     
                 }
-                test_label_node = labels;
+                test_label_node = *labels;
                 printf("CURRENT  LABEL  TABLE: ");
                 while (test_label_node) {
                     printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
@@ -138,8 +140,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
                 break;
             case DOT_OTHER:
                 if (label_flag) {
-                    insertNewLabel(&labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC);
-                    test_label_node = labels;
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, error);
+                    test_label_node = *labels;
                     printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
                         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
@@ -150,8 +152,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
                 if (label_flag) {
                     if (checkCommand(tokens[1]) == 0)
                     {
-                        checkOperand(tokens[2], labels);
-                        checkOperand(tokens[4], labels);
+                        checkOperand(tokens[2], *labels);
+                        checkOperand(tokens[4], *labels);
                     }
                     
                 }
@@ -167,7 +169,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
         temp_code = temp_code->next;
     }
 
-    temp_label_node = labels;
+    temp_label_node = *labels;
     while (temp_label_node) {
         if (temp_label_node->label_type == LABEL_TYPE_DATA) {
             temp_label_node->memory_adress += *IC;
@@ -176,7 +178,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
     }
  
     /**/
-    test_label_node = labels;
+    test_label_node = *labels;
     printf("LABEL  TABLE  AFTER 1: ");
     while (test_label_node) {
         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
@@ -185,14 +187,84 @@ void firstIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, i
     printf("\n");
 }
 
-void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error) {
-    
+void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
+    CodeNode* temp_code;
+    int token_idx = 0;
+    bool label_flag = false;
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
+    int num_tokens = 0;
+    int L;
 
-
+    printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n");
+    temp_code = code;
     *IC = 0;
-
+    while (temp_code) {
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens);
+        if(isLabel(tokens[token_idx], true)) {
+            printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
+            label_flag = true;
+            token_idx++;
+        }
+        switch (isDotType(tokens[token_idx])) {
+            case DOT_ENTRY:
+                /*updateEntryLabels(label, tokens);*/
+                break;
+            case DOT_OTHER:
+                /*L = updateBinaryWords();*/
+                IC += L;
+                break;
+            case DOT_DATA:
+            case DOT_EXTERN:
+            case DOT_STRING:
+                break;
+        }
+        temp_code = temp_code->next;
+    }
+    handleError(error);
+    createOutputFiles(file_name, labels, error);
 }
 
+void createOutputFiles (char* file_name, LabelNode* labels, Error* error) {
+    createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
+    createFileWithLabelType(file_name, labels, LABEL_TYPE_EXTERNAL ,error);
+}
+
+void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error) {
+    FILE *fptr;
+    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
+    
+    cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
+
+    strcat(output_file_name, file_name);
+
+    switch (label_type) {
+        case LABEL_TYPE_ENTRY:
+            strcat(output_file_name, ".ent");
+            break;
+        case LABEL_TYPE_EXTERNAL:
+            strcat(output_file_name, ".ext");
+            break;
+        default:
+            /*Error*/
+            break;
+    }
+
+    fptr = fopen(output_file_name, "w");
+
+    if (!fptr) {
+        /*error*/
+        return;
+    }
+
+    while (labels) {
+        if (labels->label_type == label_type) {
+            fprintf(fptr, "%s %d\n", labels->label_name, labels->memory_adress);
+        }
+        labels = labels->next;
+    }
+    fclose(fptr);
+    return;
+}
 
 bool isLabel(char* word, bool colon){
     bool flag = false;
@@ -379,7 +451,7 @@ void cleanMemory(short* memory) {
     }
 }
 
-void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx) {
+void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, Error* error) {
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;
@@ -387,18 +459,16 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
         while(temp_label && temp_label->next) {
             temp_label = temp_label->next;
         }
-        new_label = (LabelNode*) malloc(sizeof(LabelNode));
+        new_label = (LabelNode*) allocateMemory(sizeof(LabelNode), error);
         new_label->label_name = label_name;
         new_label->label_type = label_type;
         new_label->memory_adress = *memory_idx;
-        new_label->next = NULL;
         temp_label->next = new_label;
     } else {
-        *labels = (LabelNode*) malloc(sizeof(LabelNode));
+        *labels = (LabelNode*) allocateMemory(sizeof(LabelNode), error);
         (*labels)->label_name = label_name;
         (*labels)->label_type = label_type;
         (*labels)->memory_adress = *memory_idx;
-        (*labels)->next = NULL;
     }
 }
 
