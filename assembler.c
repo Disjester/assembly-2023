@@ -427,8 +427,10 @@ short checkCommand(char* word){
 
 int checkCommandLine(char** tokens, int num_tokens, bool label){
     short opcode = checkCommand(tokens[label]);
-    int i = label+1;
+    int i = label+1; /*operand index*/
     bool register_flag = false;
+    bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
+
     int L = 0;
 
     /*Check if not a command OR the number of operands is wrong - Error*/
@@ -440,20 +442,41 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
 
     for (; i < commands[opcode].number_of_operands; i++)
     {
+        
         switch (checkOperand(tokens[i]))
         {
         case OPERAND_TYPE_LABEL:
             L++;
+            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]))
+            {
+                printf("INCORRECT OPERAND FOR %s: %s",commands[opcode].command, tokens[i]);
+                return -1; 
+            }
+            
             break;
+
         case OPERAND_TYPE_REGISTER:
+
+            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]))
+            {
+                printf("INCORRECT OPERAND FOR %s: %s",commands[opcode].command, tokens[i]);
+                return -1; 
+            }
+
             if (!register_flag)
             {
                 L++;
                 register_flag = true;
             }
-
             break;
+
         case OPERAND_TYPE_NUMBER:
+            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]))
+            {
+                printf("INCORRECT OPERAND FOR %s: %s",commands[opcode].command, tokens[i]);
+                return -1; 
+            }
+
             L++;
             break;
 
@@ -461,6 +484,11 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
             printf("ERROR IN OPERAND %s", tokens[i]);
             return -1;
             break;
+        }
+        
+        if (source_flag)
+        {
+            source_flag = false;
         }
         
     }

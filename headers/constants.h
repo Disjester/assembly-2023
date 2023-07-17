@@ -6,6 +6,10 @@
 #define NUMBER_OF_COMMANDS 16
 #define NUM_OF_REGISTERS 8
 
+#define ADDRESING_NUMBER 0
+#define ADDRESING_LABEL 1 
+#define ADDRESING_REGISTER 2
+
 enum dot_type{
     DOT_OTHER,
     DOT_DATA,
