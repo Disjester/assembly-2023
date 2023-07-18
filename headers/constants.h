@@ -12,6 +12,8 @@
 #define ADDRESING_LABEL 1 
 #define ADDRESING_REGISTER 2
 
+#define COMMAND_LINE_ERROR -1 /*Change this later*/
+
 enum dot_type{
     DOT_OTHER,
     DOT_DATA,
