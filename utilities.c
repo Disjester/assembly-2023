@@ -11,7 +11,7 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
     temp = allocateMemory((length + 1) * sizeof(char), error);
     if (*error != NO_ERROR) {
         return;
-    } 
+    }
     strcpy(temp, input);  /* Copy input string into temp */
 
     token = strtok(temp, " ");

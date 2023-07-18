@@ -249,6 +249,7 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
     
     cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
 
+    strcat(output_file_name, "output/");
     strcat(output_file_name, file_name);
     switch (label_type) {
         case LABEL_TYPE_ENTRY:

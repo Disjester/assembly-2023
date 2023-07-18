@@ -26,12 +26,20 @@ CodeNode* preproccessor(char* file_name, Error* error) {
     }
 
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, error);
+    if (*error != NO_ERROR) {
+        *error = NO_ERROR;
+        return NULL;
+    }
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, error);
     if (*error != NO_ERROR) {
         *error = NO_ERROR;
         return NULL;
     }
     macrosToValues(&code, &macros, tokens, &num_tokens, error);
+        if (*error != NO_ERROR) {
+        *error = NO_ERROR;
+        return NULL;
+    }
     return code;
 }
 
@@ -44,7 +52,6 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         node = (CodeNode*)allocateMemory(sizeof(CodeNode), error);
 
         if (*error != NO_ERROR) {
-            *error = NO_ERROR;
             return NULL;
         }
         /*printing the contents of the buffer, to see what's inside*/

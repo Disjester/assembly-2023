@@ -1,6 +1,0 @@
-git init
-git remote add origin https://github.com/Disjester/assembly-2023
-git pull origin main
-git add .
-git commit -m "Message"
-git push origin main
