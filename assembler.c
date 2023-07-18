@@ -189,12 +189,14 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
     bool label_flag = false;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int num_tokens = 0;
-    int L;
+    int L = 0;
 
     printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n");
     temp_code = code;
     *IC = 0;
     while (temp_code) {
+        L = 0;
+        
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
             printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
