@@ -12,6 +12,8 @@
 #define ADDRESING_LABEL 1 
 #define ADDRESING_REGISTER 2
 
+#define COMMAND_LINE_ERROR -1 /*Change this later*/
+
 typedef enum error {
     NO_ERROR, /*IN USE*/
     ERROR_MISSING_VARIABLE,
