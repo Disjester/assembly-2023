@@ -28,13 +28,13 @@ typedef enum error {
     ERROR_FILE_HANDLE
 } Error;
 
-enum dot_type{
+typedef enum DotType{
     DOT_OTHER,
     DOT_DATA,
     DOT_STRING, 
     DOT_ENTRY, 
     DOT_EXTERN
-};      
+} DotType;
 
 #define DEFAULT_EXTERN_MEMORY -1
 

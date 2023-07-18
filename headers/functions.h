@@ -2,11 +2,8 @@
 #define FUNCTIONS_H
 
 #include "constants.h"
-#include "nodes.h"
+#include "structures.h"
 #include <stdio.h>
-
-
-
 
 int checkCommandLine(char** tokens, int num_tokens, bool label);
 
