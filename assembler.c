@@ -55,7 +55,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
             temp_code = temp_code->next;
             continue;
         }
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens);
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
             printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
             label_flag = true;
@@ -188,7 +188,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
 }
 
 void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
-    CodeNode* temp_code;
+    CodeNode* temp_code; 
     int token_idx = 0;
     bool label_flag = false;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
@@ -199,7 +199,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
     temp_code = code;
     *IC = 0;
     while (temp_code) {
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens);
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
             printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
             label_flag = true;
@@ -207,7 +207,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
         }
         switch (isDotType(tokens[token_idx])) {
             case DOT_ENTRY:
-                /*updateEntryLabels(label, tokens);*/
+                updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
             case DOT_OTHER:
                 /*L = updateBinaryWords();*/
@@ -219,9 +219,27 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
                 break;
         }
         temp_code = temp_code->next;
+        token_idx = 0;
+        label_flag = false;
     }
     handleError(error);
     createOutputFiles(file_name, labels, error);
+}
+
+void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx) {
+    LabelNode* temp_label;
+    
+    for (;token_idx < num_tokens; token_idx++) {
+        if (isLabel(tokens[token_idx], false)) {
+            temp_label = labels;
+            while(temp_label) {
+                if (!strcmp(temp_label->label_name, tokens[token_idx])) {
+                    temp_label->label_type = LABEL_TYPE_ENTRY;
+                }
+                temp_label = temp_label->next;
+            }
+        }
+    }
 }
 
 void createOutputFiles (char* file_name, LabelNode* labels, Error* error) {
@@ -236,7 +254,6 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
     cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
 
     strcat(output_file_name, file_name);
-
     switch (label_type) {
         case LABEL_TYPE_ENTRY:
             strcat(output_file_name, ".ent");

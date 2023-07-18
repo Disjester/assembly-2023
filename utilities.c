@@ -4,13 +4,14 @@
 #include <ctype.h>
 #include "libs.h"
 
-void tokenizeInput(char *input, char **tokens, int *num_tokens);
-
-void tokenizeInput(char *input, char **tokens, int *num_tokens) {
+void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
     size_t length = strlen(input);
     char *token = NULL;
     char *temp = NULL;
-    temp = malloc((length + 1) * sizeof(char));
+    temp = allocateMemory((length + 1) * sizeof(char), error);
+    if (*error != NO_ERROR) {
+        return;
+    }
     strcpy(temp, input);  /* Copy input string into temp */
 
     token = strtok(temp, " ");
@@ -36,7 +37,7 @@ char *my_strdup(const char *str) {
 void* allocateMemory(size_t size, Error* error) {
     void* ptr = calloc(1, size);
     if (ptr == NULL) {
-        *error = ERROR_NO_MEMORY;
+        *error = ERROR_MEMORY_ALLOCATION;
         handleError(error);
     }
     return ptr;
@@ -58,6 +59,15 @@ bool validateVariableName (char *name) {
     return true;
 }
 
-void handleError(Error* error) {
-
+bool handleError(Error* error) {
+    switch (*error) {
+    case ERROR_MEMORY_ALLOCATION:
+        perror("ERROR: MEMORY ALLOCATION FAILED\n");
+        return true;
+    case ERROR_FILE_HANDLE:
+        perror("ERROR: FILE COULDN'T BE OPENED OR DOESN'T EXIST");
+        return true;
+    default:
+        return false;
+    }
 }

@@ -1,7 +1,6 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#include "errors.h"
 #include "constants.h"
 #include "nodes.h"
 #include <stdio.h>
@@ -18,7 +17,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label);
  * @return short 
  */
 short checkCommand(char* word);
-
 
 OperandType checkOperand(char* operand);
 /**
@@ -37,6 +35,8 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
 
 void cleanMemory(short* memory);
 
+void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx);
+
 char* removeColon(char* str);
 
 void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, int* memory_idx, Error* error);
@@ -49,7 +49,7 @@ void pushToMemory(int* memory_counter, short* memory, short memoryField);
 
 bool validateVariableName (char *name);
 
-CodeNode* preproccessor(char *file_name);
+CodeNode* preproccessor(char *file_name, Error* error);
 
 /**
  * @brief takes a string , and splits it into words base on whiteSpaces.
@@ -59,11 +59,11 @@ CodeNode* preproccessor(char *file_name);
  * @param tokens the array of strings in which you would save your tokens - need to have memory already allocated
  * @param num_tokens a pointer to where you save the number of tokens 
  */
-void tokenizeInput(char *input, char **tokens, int *num_tokens);
+void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error);
 
 char *my_strdup(const char *str);
 
-CodeNode* createLinkedListFromFile(FILE* file, Error* error, char *tokens[], int* pnum_tokens);
+CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, Error* error);
 
 void freeLinkedList(CodeNode* head);
 
@@ -71,14 +71,13 @@ int getLine(char* line, Error* error, FILE* file);
 
 void cleanLine(char* line, int length);
 
-void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, Error* error, int* pnum_tokens, char** tokens);
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, Error* error);
 
 void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, Error* error);
 
 void* allocateMemory(size_t size, Error* error);
 
-void handleError(Error* error);
-
+bool handleError(Error* error);
 
 bool checkData(char* line, Error* error);
 
