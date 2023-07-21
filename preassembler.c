@@ -49,7 +49,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
 
     while(getLine(buffer, error, fptr)) {
         /*Create a new node*/
-        node = (CodeNode*)allocateMemory(sizeof(CodeNode), error);
+        node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
 
         if (*error != NO_ERROR) {
             return NULL;
@@ -278,10 +278,8 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                     prev_code->next = current_code->next;
                     break;
                 }
-
             }    
         }
-        
         prev_code = current_code;
         current_code = current_code->next;
     }
