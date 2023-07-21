@@ -221,6 +221,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
         temp_code = temp_code->next;
         token_idx = 0;
         label_flag = false;
+        L = 0;
     }
     handleError(error);
     createOutputFiles(file_name, labels, error);
