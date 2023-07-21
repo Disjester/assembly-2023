@@ -223,7 +223,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
         label_flag = false;
         L = 0;
     }
-    handleError(error);
+    /*handleError(error);*/
     createOutputFiles(file_name, labels, error);
 }
 
@@ -502,14 +502,10 @@ short checkCommand(char* word){
     {
         if (!strcmp((char*)commands[i].command, word))
         {
-            printf("I  SEE  COMMAND  HERE: %s! its opcode is: %d\n", (char*)commands[i].command, commands[i].opcode);
             return commands[i].opcode;
         }
         
     }
-
-    /*Error*/
-    printf("Error, command unrecognized command: %s\n", word);
     return -1;
 }
 

@@ -9,16 +9,14 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
     char *token = NULL;
     char *temp = NULL;
     temp = allocateMemory((length + 1) * sizeof(char), error);
-    if (*error != NO_ERROR) {
-        return;
-    }
+    if (*error == ERROR_MEMORY_ALLOCATION) return;
     strcpy(temp, input);  /* Copy input string into temp */
 
     token = strtok(temp, " ");
     *num_tokens = 0;
     while (token != NULL && *num_tokens < MAX_TOKENS) {
         tokens[*num_tokens] = my_strdup(token, error);  /* Duplicate and store token */
-        if (*error != NO_ERROR) return;
+        if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         (*num_tokens)++;
         token = strtok(NULL, " ");
@@ -29,9 +27,7 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
 char *my_strdup(const char *str, Error* error) {
     size_t length = strlen(str);
     char *duplicate = allocateMemory(length + 1, error);  /* Allocate memory for the duplicate string*/
-    if (*error != NO_ERROR) {
-        return NULL;
-    }
+    if (*error == ERROR_MEMORY_ALLOCATION) return;
     if (duplicate != NULL) {
         strcpy(duplicate, str);  /* Copy the string into the allocated memory*/
     }
@@ -42,7 +38,7 @@ void* allocateMemory(size_t size, Error* error) {
     void* ptr = calloc(1, size);
     if (!ptr) {
         *error = ERROR_MEMORY_ALLOCATION;
-        handleError(error);
+        handleError(error, DEFAULT_LINE_NUMER);
         return NULL;
     }
     return ptr;
@@ -64,18 +60,21 @@ bool validateVariableName (char *name) {
     return true;
 }
 
-bool handleError(Error* error) {
+bool handleError(Error* error, int num_line) {
     switch (*error) {
-    case ERROR_MEMORY_ALLOCATION:
-        perror("ERROR: MEMORY ALLOCATION FAILED\n");
-        return true;
-    case ERROR_FILE_HANDLE:
-        perror("ERROR: FILE COULDN'T BE OPENED OR DOESN'T EXIST\n");
-        return true;
-    case ERROR_ILLEGAL_NAME:
-        perror("ERROR: ILLEGAL NAME\n");
-        return true;
-    default:
-        return false;
+        case ERROR_MEMORY_ALLOCATION:
+            fprintf(stderr, "ERROR ON %d: MEMORY ALLOCATION FAILED\n", num_line);
+            return true;
+        case ERROR_FILE_HANDLE:
+            fprintf(stderr, "ERROR ON %d: FILE COULDN'T BE OPENED OR DOESN'T EXIST\n", num_line);
+            return true;
+        case ERROR_ILLEGAL_NAME:
+            fprintf(stderr, "ERROR ON %d: ILLEGAL NAME\n", num_line);
+            return true;
+        case ERROR_DUPLICATED_MACRO_DEFINITION:
+            fprintf(stderr, "ERROR ON %d: DUPLICATED MACRO DEFINITION\n", num_line);
+            return true;
+        default:
+            return false;
     }
 }

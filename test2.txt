@@ -4,7 +4,7 @@ STR:    .string "abcdef"
 
 DAN:   .data 3 , 5
 LOOP:jmp L1
-        mcro 1m
+        mcro prn
             sub @r1, @r4
             bne END
         endmcro
@@ -19,12 +19,19 @@ LOOP:jmp L1
 L1:     inc K
         m2
 bne     LOOP
+        mcro m1
+                hello
+        endmcro
 ;comment 2/3
         m1
 END:    stop
 .extern L2
 NUMBER: .data 7
+        mcro m1
+                bye
+        endmcro
 .entry END
+        m3
 PUNK:   .data 34, 23,54,64
 TEST:mov @r4,@r2
         ;comment 3/3

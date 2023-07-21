@@ -20,7 +20,7 @@ CodeNode* preproccessor(char* file_name, Error* error) {
     fptr = fopen(file_name, "r");
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
-        handleError(error);
+        handleError(error, DEFAULT_LINE_NUMER);
         *error = NO_ERROR;
         return NULL;
     }
@@ -45,8 +45,13 @@ CodeNode* preproccessor(char* file_name, Error* error) {
 CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens, Error* error) {
     char buffer[MAX_LINE_LENGTH]; 
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
+    int num_line = 1;
 
-    while(getLine(buffer, error, fptr)) {
+    while(getLine(buffer, error, fptr, num_line)) {
+        if (*error == ERROR_MAXED_OUT_LINE_LENGTH) {
+            num_line++;
+            continue;
+        }
         /*Create a new node*/
         node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
 
@@ -72,6 +77,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         
         /* Move the temporary pointer to the new node*/
         temp = node;
+        num_line++;
     }
     return head;
 }
@@ -86,13 +92,14 @@ void freeLinkedList(CodeNode* head) {
     }
 }
 
-int getLine(char* line, Error* error, FILE* fptr) {
+int getLine(char* line, Error* error, FILE* fptr, int num_line) {
     char x; /*current symbol in the input stream*/
     int i = 0;
     cleanLine(line, MAX_LINE_LENGTH);
     while ((x = fgetc(fptr)) != '\n' && x != EOF) {
         if (i == MAX_LINE_LENGTH) {
             *error = ERROR_MAXED_OUT_LINE_LENGTH;
+            handleError(error, num_line);
             /*skipping to the next line*/
             while ((x = fgetc(fptr)) != '\n' && x != EOF) {
                 continue;
@@ -143,60 +150,72 @@ void cleanLine(char* line, int length) {
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, Error* error) {
     MacroNode* new_macro_node;
     MacroNode* temp_macro_node;
+    MacroNode* test_macro_node;
     CodeNode* new_code_node;
     CodeNode* new_code_node_head;
     CodeNode* curr_code_node;
+    int num_line = 1;
 
     temp_macro_node = NULL;
     curr_code_node = *code_node;
     while (curr_code_node) {
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
-        if (*error != NO_ERROR) return;
+        if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
-
-            if (!isLabel(tokens[1], false)) {
+            if (!isLabel(tokens[1], false) || checkCommand(tokens[1]) != -1) {
                 while (strcmp(tokens[0], "endmcro")) {
                     curr_code_node = curr_code_node->next;
+                    num_line++;
                     tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
-                    if (*error != NO_ERROR) return;
+                    if (*error == ERROR_MEMORY_ALLOCATION) return;
                 }
                 curr_code_node = curr_code_node->next;
+                num_line++;
                 *error = ERROR_ILLEGAL_NAME;
-                handleError(error);
+                handleError(error, num_line);
                 continue;
+            }
+            test_macro_node = *macro_node;
+            while (test_macro_node) {
+                if (!strcmp(tokens[1], test_macro_node->macro_name)) {
+                    *error = ERROR_DUPLICATED_MACRO_DEFINITION;
+                    handleError(error, num_line);
+                }
+                test_macro_node = test_macro_node->next;
             }
 
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), error);
-            if (*error != NO_ERROR) return;
+            if (*error == ERROR_MEMORY_ALLOCATION) return;
 
             new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
-            if (*error != NO_ERROR) return;
+            if (*error == ERROR_MEMORY_ALLOCATION) return;
 
             new_macro_node->macro_name = my_strdup(tokens[1], error);
-            if (*error != NO_ERROR) return;
+            if (*error == ERROR_MEMORY_ALLOCATION) return;
 
             curr_code_node = curr_code_node->next;
+            num_line++;
             tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
-            if (*error != NO_ERROR) return;
+            if (*error == ERROR_MEMORY_ALLOCATION) return;
 
             new_code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
-            if (*error != NO_ERROR) return;
+            if (*error == ERROR_MEMORY_ALLOCATION) return;
             
             new_code_node_head = new_code_node;
             while(curr_code_node && strcmp(tokens[0], "endmcro")) {
                 if (new_code_node->code_row) {
                     new_code_node->next = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
-                    if (*error != NO_ERROR) return;
+                    if (*error == ERROR_MEMORY_ALLOCATION) return;
                     new_code_node = new_code_node->next;
                 }
                 new_code_node->code_row = my_strdup(curr_code_node->code_row, error);
-                if (*error != NO_ERROR) return;
+                if (*error == ERROR_MEMORY_ALLOCATION) return;
 
                 curr_code_node = curr_code_node->next;
+                num_line++;
                 tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
-                if (*error != NO_ERROR) return;
-
+                if (*error == ERROR_MEMORY_ALLOCATION) return;
             }
             new_macro_node->code_node = new_code_node_head;
             if (temp_macro_node) {
@@ -211,6 +230,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
             }
         }
         curr_code_node = curr_code_node->next;
+        num_line++;
     }
 }
 
@@ -233,7 +253,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     while (current_code)
     {
         tokenizeInput(current_code->code_row, tokens, pnum_tokens, error);
-        if (*error != NO_ERROR) return;
+        if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         if (*pnum_tokens == 1)
         {
@@ -251,9 +271,9 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                     {
                         /* Create a new code node and copy the code row */
                         CodeNode *new_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), error);
-                        if (*error != NO_ERROR) return;
+                        if (*error == ERROR_MEMORY_ALLOCATION) return;
                         new_code_node->code_row = my_strdup(current_macro_code->code_row, error);
-                        if (*error != NO_ERROR) return;
+                        if (*error == ERROR_MEMORY_ALLOCATION) return;
 
                         /* Append the new code node to the linked list */
                         if (prev_code)
@@ -265,13 +285,10 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
 
                         current_macro_code = current_macro_code->next;
                     }
-
                     macro_replaced = true;
                 }
-
                 current_macro = current_macro->next;
             }
-
             /* Remove the current code node if a macro was replaced */
             if (macro_replaced)
             {

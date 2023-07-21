@@ -73,7 +73,7 @@ CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens,
 
 void freeLinkedList(CodeNode* head);
 
-int getLine(char* line, Error* error, FILE* file);
+int getLine(char* line, Error* error, FILE* file, int num_line);
 
 void cleanLine(char* line, int length);
 
@@ -83,9 +83,7 @@ void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pn
 
 void* allocateMemory(size_t size, Error* error);
 
-bool handleError(Error* error);
-
-bool checkData(char* line, Error* error);
+bool handleError(Error* error, int num_line);
 
 /**
  * @brief checks if a line is a correct data line or not
