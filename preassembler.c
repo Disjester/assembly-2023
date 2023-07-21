@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "libs.h"
 
-CodeNode* preproccessor(char* file_name, Error* error) {
+CodeNode* preproccessor(CodeNode* code, char* file_name, Error* error) {
     CodeNode* code;
     MacroNode* macros = NULL;
     FILE* fptr;
@@ -51,8 +51,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         /*Create a new node*/
         node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
 
-        if (*error != NO_ERROR) {
-            return NULL;
+        if (*error != NO_ERROR) return NULL;
         }
         /*printing the contents of the buffer, to see what's inside*/
         node->code_row = (char*) allocateMemory(strlen(buffer) + 1, error);
@@ -159,28 +158,35 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
         }
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), error);
+            if (*error != NO_ERROR) return;
+
             new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
-            /*if (!validateVariableName(tokens[1])) {
-                
-            } else {
-                
-            }*/
-            new_macro_node->macro_name = my_strdup(tokens[1]);
+            if (*error != NO_ERROR) return;
+
+            new_macro_node->macro_name = my_strdup(tokens[1], error);
+            if (*error != NO_ERROR) return;
 
             curr_code_node = curr_code_node->next;
             tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
+            if (*error != NO_ERROR) return;
 
             new_code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
+            if (*error != NO_ERROR) return;
+            
             new_code_node_head = new_code_node;
-
             while(curr_code_node && strcmp(tokens[0], "endmcro")) {
                 if (new_code_node->code_row) {
                     new_code_node->next = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
+                    if (*error != NO_ERROR) return;
                     new_code_node = new_code_node->next;
                 }
-                new_code_node->code_row = my_strdup(curr_code_node->code_row);
+                new_code_node->code_row = my_strdup(curr_code_node->code_row, error);
+                if (*error != NO_ERROR) return;
+
                 curr_code_node = curr_code_node->next;
                 tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
+                if (*error != NO_ERROR) return;
+
             }
             new_macro_node->code_node = new_code_node_head;
             if (temp_macro_node) {
@@ -217,6 +223,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     while (current_code)
     {
         tokenizeInput(current_code->code_row, tokens, pnum_tokens, error);
+        if (*error != NO_ERROR) return;
 
         if (*pnum_tokens == 1)
         {
@@ -234,7 +241,9 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                     {
                         /* Create a new code node and copy the code row */
                         CodeNode *new_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), error);
-                        new_code_node->code_row = my_strdup(current_macro_code->code_row);
+                        if (*error != NO_ERROR) return;
+                        new_code_node->code_row = my_strdup(current_macro_code->code_row, error);
+                        if (*error != NO_ERROR) return;
 
                         /* Append the new code node to the linked list */
                         if (prev_code)
@@ -273,6 +282,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 current_code = current_code->next;
                 free(temp);
                 tokenizeInput(current_code->code_row, tokens, pnum_tokens, error);
+                if (*error != NO_ERROR) return;
                 if (*pnum_tokens == 1 && !strcmp(tokens[0], "endmcro"))
                 {
                     prev_code->next = current_code->next;

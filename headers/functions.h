@@ -67,7 +67,7 @@ CodeNode* preproccessor(char *file_name, Error* error);
  */
 void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error);
 
-char *my_strdup(const char *str);
+char *my_strdup(const char *str, Error* error);
 
 CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, Error* error);
 

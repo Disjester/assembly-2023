@@ -17,17 +17,21 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
     token = strtok(temp, " ");
     *num_tokens = 0;
     while (token != NULL && *num_tokens < MAX_TOKENS) {
-        tokens[*num_tokens] = my_strdup(token);  /* Duplicate and store token */
+        tokens[*num_tokens] = my_strdup(token, error);  /* Duplicate and store token */
+        if (*error != NO_ERROR) return;
+
         (*num_tokens)++;
         token = strtok(NULL, " ");
     }
-
     free(temp);
 }
 
-char *my_strdup(const char *str) {
+char *my_strdup(const char *str, Error* error) {
     size_t length = strlen(str);
-    char *duplicate = malloc(length + 1);  /* Allocate memory for the duplicate string*/
+    char *duplicate = allocateMemory(length + 1, error);  /* Allocate memory for the duplicate string*/
+    if (*error != NO_ERROR) {
+        return NULL;
+    }
     if (duplicate != NULL) {
         strcpy(duplicate, str);  /* Copy the string into the allocated memory*/
     }
@@ -36,9 +40,10 @@ char *my_strdup(const char *str) {
 
 void* allocateMemory(size_t size, Error* error) {
     void* ptr = calloc(1, size);
-    if (ptr == NULL) {
+    if (!ptr) {
         *error = ERROR_MEMORY_ALLOCATION;
         handleError(error);
+        return NULL;
     }
     return ptr;
 }
