@@ -5,6 +5,15 @@
 #include "structures.h"
 #include <stdio.h>
 
+
+/**
+ * @brief takes a line of code with command, and checks if its legal
+ * 
+ * @param tokens 
+ * @param num_tokens 
+ * @param label - Is the line starts with a label ? 
+ * @return int  - > returns L = the number of memory words in the command line , -1 otherwise
+ */
 int checkCommandLine(char** tokens, int num_tokens, bool label);
 
 /**

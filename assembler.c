@@ -45,7 +45,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     cleanMemory(memory);
     temp_code = code;
     while(temp_code) {
-        L = 0;
         
         if (temp_code->code_row[0] == ';') {
             printf("I  SEE  COMMENT  HERE: %s\n", temp_code->code_row);
@@ -151,9 +150,9 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     }
                     printf("\n");
                 }
-                if (checkCommandLine(tokens, num_tokens, label_flag) != -1)
+                if (checkCommandLine(tokens, num_tokens, label_flag) != COMMAND_LINE_ERROR)
                 {
-                    L += checkCommandLine(tokens, num_tokens, label_flag);
+                    L = checkCommandLine(tokens, num_tokens, label_flag);
                 }
                 /* L = 0;*/
                 *IC += L;
@@ -195,7 +194,6 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
     temp_code = code;
     *IC = 0;
     while (temp_code) {
-        L = 0;
         
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
@@ -208,7 +206,11 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
                 updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
             case DOT_OTHER:
-                /*L = updateBinaryWords();*/
+                if (checkCommandLine(tokens, num_tokens, label_flag) != COMMAND_LINE_ERROR)
+                {
+                    L = checkCommandLine(tokens, num_tokens, label_flag);
+                }
+
                 IC += L;
                 break;
             case DOT_DATA:
@@ -640,3 +642,4 @@ OperandType checkOperand(char* operand){
     printf("ILLEGAL        OPERAND: %s\n", operand);    
     return OPERAND_TYPE_OTHER;
 }
+
