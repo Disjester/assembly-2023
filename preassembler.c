@@ -29,10 +29,6 @@ CodeNode* preproccessor(char* file_name, Error* error) {
         *error = NO_ERROR;
         return NULL;
     }
-    while (code) {
-        printf("%s\n", code->code_row);
-        code = code->next;
-    }
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, error);
     if (*error != NO_ERROR) {
         *error = NO_ERROR;
@@ -155,10 +151,21 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
     curr_code_node = *code_node;
     while (curr_code_node) {
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
-        if (*error != NO_ERROR) {
-            return;
-        }
+        if (*error != NO_ERROR) return;
+
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
+
+            if (!isLabel(tokens[1], false)) {
+                while (strcmp(tokens[0], "endmcro")) {
+                    curr_code_node = curr_code_node->next;
+                    tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
+                    if (*error != NO_ERROR) return;
+                }
+                curr_code_node = curr_code_node->next;
+                *error = ERROR_ILLEGAL_NAME;
+                handleError(error);
+                continue;
+            }
 
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), error);
             if (*error != NO_ERROR) return;

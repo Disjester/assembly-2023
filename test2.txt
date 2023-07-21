@@ -4,7 +4,7 @@ STR:    .string "abcdef"
 
 DAN:   .data 3 , 5
 LOOP:jmp L1
-        mcro m1
+        mcro 1m
             sub @r1, @r4
             bne END
         endmcro

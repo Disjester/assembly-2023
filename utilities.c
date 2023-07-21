@@ -70,7 +70,10 @@ bool handleError(Error* error) {
         perror("ERROR: MEMORY ALLOCATION FAILED\n");
         return true;
     case ERROR_FILE_HANDLE:
-        perror("ERROR: FILE COULDN'T BE OPENED OR DOESN'T EXIST");
+        perror("ERROR: FILE COULDN'T BE OPENED OR DOESN'T EXIST\n");
+        return true;
+    case ERROR_ILLEGAL_NAME:
+        perror("ERROR: ILLEGAL NAME\n");
         return true;
     default:
         return false;

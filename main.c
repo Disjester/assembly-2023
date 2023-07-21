@@ -12,7 +12,10 @@ int main (int argc, char** argv) {
     int DC, IC;
 
     code = preproccessor(argv[1], &error);
-
+    while (code) {
+        printf("%s\n", code->code_row);
+        code = code->next;
+    }
     /*firstIteration(memory, code, &labels, &DC, &IC, &error);
     secondIteration(memory, code, labels, &DC, &IC, &error, argv[1]);*/
 
