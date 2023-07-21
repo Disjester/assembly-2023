@@ -154,6 +154,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 {
                     L = checkCommandLine(tokens, num_tokens, label_flag);
                 }
+                
                 *IC += L;
                 L = 0;
                 printf("THE IC IS : %d\n",*IC);
@@ -535,13 +536,15 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
     /*ERROR illegal comma*/
     if (!strcmp(tokens[num_tokens-1], ","))
     {
-        printf("ERROR ILLEGAL COMMA HERE: %s\n", *tokens);
+        printf("ERROR ILLEGAL COMMA HERE:");
+        printLine(tokens, num_tokens);
         return COMMAND_LINE_ERROR;
     }
     
     if (num_tokens > 2 + label && (num_tokens - label - 2) != commands[opcode].number_of_operands)
     {
-        printf("ERROR INCORRECT NUMBER OF OPERANDS HERE: %s\n", *tokens);
+        printf("ERROR INCORRECT NUMBER OF OPERANDS HERE: ");
+        printLine(tokens, num_tokens);
         return COMMAND_LINE_ERROR;
     }
     
@@ -679,3 +682,11 @@ OperandType checkOperand(char* operand){
     return OPERAND_TYPE_OTHER;
 }
 
+void printLine(char** tokens, int num_tokens){
+    int i = 0;
+    for (; i < num_tokens; i++)
+    {
+        printf("%s ",tokens[i]);
+    }
+    printf("\n");
+}
