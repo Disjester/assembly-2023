@@ -154,8 +154,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 {
                     L = checkCommandLine(tokens, num_tokens, label_flag);
                 }
-                /* L = 0;*/
                 *IC += L;
+                L = 0;
                 printf("THE IC IS : %d\n",*IC);
                 break;
         }
@@ -221,6 +221,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
         temp_code = temp_code->next;
         token_idx = 0;
         label_flag = false;
+        L = 0;
     }
     handleError(error);
     createOutputFiles(file_name, labels, error);
@@ -542,7 +543,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
         return COMMAND_LINE_ERROR;
     }
     
-    if ((num_tokens - label - 2) != commands[opcode].number_of_operands)
+    if (num_tokens > 2 + label && (num_tokens - label - 2) != commands[opcode].number_of_operands)
     {
         printf("ERROR INCORRECT NUMBER OF OPERANDS HERE: %s\n", *tokens);
         return COMMAND_LINE_ERROR;
@@ -564,6 +565,19 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
         {
         case OPERAND_TYPE_LABEL:
             L++;
+            if (commands[opcode].number_of_operands < 2)
+            {
+                if (!commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])
+                {
+                    printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
+                    return COMMAND_LINE_ERROR;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
             if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]))
             {
                 printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
@@ -573,6 +587,19 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
             break;
 
         case OPERAND_TYPE_REGISTER:
+
+            if (commands[opcode].number_of_operands < 2)
+            {
+                if (!commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])
+                {
+                    printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
+                    return COMMAND_LINE_ERROR;
+                }
+                else
+                {
+                    break;
+                }
+            }
 
             if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]))
             {
@@ -588,6 +615,19 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
             break;
 
         case OPERAND_TYPE_NUMBER:
+            if (commands[opcode].number_of_operands < 2)
+            {
+                if (!commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])
+                {
+                    printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
+                    return COMMAND_LINE_ERROR;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
             if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]))
             {
                 printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
