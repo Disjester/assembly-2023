@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "libs.h"
 
-CodeNode* preproccessor(CodeNode* code, char* file_name, Error* error) {
+CodeNode* preproccessor(char* file_name, Error* error) {
     CodeNode* code;
     MacroNode* macros = NULL;
     FILE* fptr;
@@ -24,11 +24,14 @@ CodeNode* preproccessor(CodeNode* code, char* file_name, Error* error) {
         *error = NO_ERROR;
         return NULL;
     }
-
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, error);
     if (*error != NO_ERROR) {
         *error = NO_ERROR;
         return NULL;
+    }
+    while (code) {
+        printf("%s\n", code->code_row);
+        code = code->next;
     }
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, error);
     if (*error != NO_ERROR) {
@@ -52,10 +55,9 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
 
         if (*error != NO_ERROR) return NULL;
-        }
+
         /*printing the contents of the buffer, to see what's inside*/
         node->code_row = (char*) allocateMemory(strlen(buffer) + 1, error);
-
         if (*error != NO_ERROR) {
             *error = NO_ERROR;
             return NULL;
@@ -129,7 +131,7 @@ int getLine(char* line, Error* error, FILE* fptr) {
     }
     /*The case where the line is empty*/
     if (i == 0 && x == '\n') {
-        line[0] = '\n';
+        line[0] = '\0';
         return 1;
     }
     return i;
@@ -157,6 +159,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
             return;
         }
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
+
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), error);
             if (*error != NO_ERROR) return;
 
@@ -214,7 +217,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     CodeNode *temp;
 
     bool macro_replaced = false; /* Flag to track if a macro is replaced */
-    /*test comments*/
+
     /* Initialize variables */
     current_code = *code;
     prev_code = NULL;

@@ -294,7 +294,7 @@ bool isLabel(char* word, bool colon){
     
     for (; word[i] != '\0'; i++)
     {
-        if (colon == true && word[i] == ':' && word[i+1] == '\0')
+        if (colon && word[i] == ':' && word[i+1] == '\0')
         {
             flag = true;
             return flag;
