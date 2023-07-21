@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "libs.h"
 
-CodeNode* preproccessor(char* file_name, Error* error) {
+CodeNode* preproccessor(CodeNode* code, char* file_name, Error* error) {
     CodeNode* code;
     MacroNode* macros = NULL;
     FILE* fptr;
@@ -51,8 +51,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         /*Create a new node*/
         node = (CodeNode*) allocateMemory(sizeof(CodeNode), error);
 
-        if (*error != NO_ERROR) {
-            return NULL;
+        if (*error != NO_ERROR) return NULL;
         }
         /*printing the contents of the buffer, to see what's inside*/
         node->code_row = (char*) allocateMemory(strlen(buffer) + 1, error);

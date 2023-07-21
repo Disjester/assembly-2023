@@ -12,8 +12,8 @@ int main (int argc, char** argv) {
     int DC, IC;
 
     code = preproccessor(argv[1], &error);
-    firstIteration(memory, code, &labels, &DC, &IC, &error);
-    secondIteration(memory, code, labels, &DC, &IC, &error, argv[1]);
+    /*firstIteration(memory, code, &labels, &DC, &IC, &error);
+    secondIteration(memory, code, labels, &DC, &IC, &error, argv[1]);*/
 
     return 1;
 }

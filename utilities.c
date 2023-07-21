@@ -40,9 +40,10 @@ char *my_strdup(const char *str, Error* error) {
 
 void* allocateMemory(size_t size, Error* error) {
     void* ptr = calloc(1, size);
-    if (ptr == NULL) {
+    if (!ptr) {
         *error = ERROR_MEMORY_ALLOCATION;
         handleError(error);
+        return NULL;
     }
     return ptr;
 }
