@@ -33,19 +33,19 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
     int place;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
+    if (*error == ERROR_MEMORY_ALLOCATION) return;
+
     int num_tokens = 0;
     int token_idx = 0;
     int memory_idx = 100;
     short data[100];
     int L = 0;
 
-
     printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n");
     *DC = *IC = 0;
     cleanMemory(memory);
     temp_code = code;
     while(temp_code) {
-        
         if (temp_code->code_row[0] == ';') {
             printf("I  SEE  COMMENT  HERE: %s\n", temp_code->code_row);
             temp_code = temp_code->next;
