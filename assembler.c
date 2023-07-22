@@ -57,6 +57,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
             continue;
         }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
+        if (*error == ERROR_MEMORY_ALLOCATION) return;
+        
         if(isLabel(tokens[token_idx], true)) {
             printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
             label_flag = true;
@@ -195,7 +197,6 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
     temp_code = code;
     *IC = 0;
     while (temp_code) {
-        
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
             printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
@@ -509,7 +510,6 @@ short checkCommand(char* word){
     }
     return -1;
 }
-
 
 int checkCommandLine(char** tokens, int num_tokens, bool label){
     short opcode = checkCommand(tokens[label]);

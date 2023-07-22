@@ -12,9 +12,7 @@ CodeNode* preproccessor(char* file_name, Error* error) {
     int num_tokens = 0;
 
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
-    if (*error != NO_ERROR) {
-        return NULL;
-    }
+    if (*error != NO_ERROR) return NULL;
 
     fptr = fopen(file_name, "r");
     if (!fptr) {
@@ -23,9 +21,8 @@ CodeNode* preproccessor(char* file_name, Error* error) {
         return NULL;
     }
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, error);
-    if (*error != NO_ERROR) {
-        return NULL;
-    }
+    if (*error != NO_ERROR) return NULL;
+    
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, error);
     if (*error != NO_ERROR) {
         return NULL;

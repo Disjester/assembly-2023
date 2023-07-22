@@ -21,7 +21,13 @@ int main (int argc, char** argv) {
         return 0;
     }
     firstIteration(memory, code, &labels, &DC, &IC, &error);
+    if (error != NO_ERROR) {
+        return 0;
+    }
     secondIteration(memory, code, labels, &DC, &IC, &error, argv[1]);
+    if (error != NO_ERROR) {
+        return 0;
+    }
 
     return 1;
 }
