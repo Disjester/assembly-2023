@@ -14,7 +14,7 @@ int main (int argc, char** argv) {
     code = preproccessor(argv[1], &error);
     test_code = code;
     while (test_code) {
-        printf("%s\n", code->code_row);
+        printf("%s\n", test_code->code_row);
         test_code = test_code->next;
     }
     if (error != NO_ERROR) {

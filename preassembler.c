@@ -13,7 +13,6 @@ CodeNode* preproccessor(char* file_name, Error* error) {
 
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     if (*error != NO_ERROR) {
-        *error = NO_ERROR;
         return NULL;
     }
 
