@@ -8,7 +8,7 @@ int main (int argc, char** argv) {
     CodeNode* code, *test_code;
     Error error = NO_ERROR;
     LabelNode* labels = NULL;
-    short memory[1024];
+    short memory[MAX_MEMORY_SIZE];
     int DC, IC;
 
     code = preproccessor(argv[1], &error);
