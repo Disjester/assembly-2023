@@ -117,4 +117,5 @@ short isDotType(char* word);
 
 LabelType getLabelType(char* label, LabelNode* LabelNode);
 
+void printLine(char** tokens, int num_tokens);
 #endif
