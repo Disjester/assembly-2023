@@ -27,9 +27,6 @@ bne     LOOP
 END:    stop
 .extern L2
 NUMBER: .data 7
-        mcro m1
-                bye
-        endmcro
 .entry END
         m3
 PUNK:   .data 34, 23,54,64

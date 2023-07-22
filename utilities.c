@@ -27,7 +27,7 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
 char *my_strdup(const char *str, Error* error) {
     size_t length = strlen(str);
     char *duplicate = allocateMemory(length + 1, error);  /* Allocate memory for the duplicate string*/
-    if (*error == ERROR_MEMORY_ALLOCATION) return;
+    if (*error == ERROR_MEMORY_ALLOCATION) return NULL;
     if (duplicate != NULL) {
         strcpy(duplicate, str);  /* Copy the string into the allocated memory*/
     }
