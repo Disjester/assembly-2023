@@ -623,6 +623,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
                 }
                 else
                 {
+                    L++;
                     break;
                 }
             }
