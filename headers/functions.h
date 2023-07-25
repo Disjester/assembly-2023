@@ -14,7 +14,7 @@
  * @param label - Is the line starts with a label ? 
  * @return int  - > returns L = the number of memory words in the command line , -1 otherwise
  */
-int checkCommandLine(char** tokens, int num_tokens, bool label);
+int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error);
 
 /**
  * @brief returns opcode of a command if it is, otherwise returns -1
@@ -22,9 +22,9 @@ int checkCommandLine(char** tokens, int num_tokens, bool label);
  * @param word 
  * @return short 
  */
-short checkCommand(char* word);
+short checkCommand(char* word, Error* error);
 
-OperandType checkOperand(char* operand);
+OperandType checkOperand(char* operand, Error* error);
 /**
  * @brief checks if the string is a label
  * 
@@ -94,7 +94,7 @@ bool handleError(Error* error, int num_line);
  * @return true - if it is a data line and its correct
  * @return false - when its not a data line or an incorrect one 
  */
-bool checkDataLine(char** tokens, int num_tokens, bool label);
+bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error);
 
 /**
  * @brief takes in a string and checks if its a legal number
@@ -113,9 +113,9 @@ bool isString(char* string);
  * @param word 
  * @return 4 - if its .extern 3 - if its a .entry 2 - if its a .string 1 if it is a .data 0 if it neither of them 
  */
-short isDotType(char* word);
+short isDotType(char* word, Error* error);
 
-LabelType getLabelType(char* label, LabelNode* LabelNode);
+LabelType getLabelType(char* label, LabelNode* LabelNode, Error* error);
 
 void printLine(char** tokens, int num_tokens);
 #endif

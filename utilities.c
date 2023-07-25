@@ -68,7 +68,7 @@ bool handleError(Error* error, int num_line) {
         case ERROR_FILE_HANDLE:
             fprintf(stderr, "ERROR ON %d: FILE COULDN'T BE OPENED OR DOESN'T EXIST\n", num_line);
             return true;
-        case ERROR_ILLEGAL_NAME:
+        case ERROR_ILLEGAL_MACRO_NAME:
             fprintf(stderr, "ERROR ON %d: ILLEGAL NAME\n", num_line);
             return true;
         case ERROR_DUPLICATED_MACRO_DEFINITION:

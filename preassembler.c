@@ -23,7 +23,7 @@ CodeNode* preproccessor(char* file_name, Error* error) {
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, error);
     if (*error != NO_ERROR) return NULL;
     
-    scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, error);
+    scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, error);/*error undefined command - fix it later: now permament no error*/
     if (*error != NO_ERROR) {
         return NULL;
     }
@@ -150,11 +150,12 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
     temp_macro_node = NULL;
     curr_code_node = *code_node;
     while (curr_code_node) {
+
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
-            if (!isLabel(tokens[1], false) || checkCommand(tokens[1]) != -1) {
+            if (!isLabel(tokens[1], false) || checkCommand(tokens[1], error) != -1) {
                 while (strcmp(tokens[0], "endmcro")) {
                     curr_code_node = curr_code_node->next;
                     num_line++;
@@ -163,7 +164,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
                 }
                 curr_code_node = curr_code_node->next;
                 num_line++;
-                *error = ERROR_ILLEGAL_NAME;
+                *error = ERROR_ILLEGAL_MACRO_NAME;
                 handleError(error, num_line);
                 continue;
             }
@@ -223,6 +224,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
         curr_code_node = curr_code_node->next;
         num_line++;
     }
+    *error = NO_ERROR; /*temporary*/
 }
 
 void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens, Error* error)
@@ -311,4 +313,5 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
         prev_code = current_code;
         current_code = current_code->next;
     }
+    *error = NO_ERROR; /*temporary*/
 }
