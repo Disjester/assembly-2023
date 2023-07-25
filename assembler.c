@@ -39,6 +39,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     short data[100];
     short binary_word;
     int L = 0;
+    int num_line = 1;
 
     if (*error == ERROR_MEMORY_ALLOCATION) return;
  
@@ -65,7 +66,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
             label_flag = true;
             token_idx++;
         }
-        switch (isDotType(tokens[token_idx])) {
+         
+        switch (isDotType(tokens[token_idx], error)) {
             case DOT_DATA:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
@@ -77,7 +79,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     }
                     printf("\n");
                 }
-                if (checkDataLine(tokens, num_tokens, label_flag)) {
+                if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     printf("I   SEE   DATA   HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
@@ -86,6 +88,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     }
                     printf("CURRENT   IC  AND  DC: %d, %d\n", *IC, *DC);
                 }
+                handleError(error, num_line); /*handlaing Error*/
                 printf("CURRENT        MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
                     printf("%d:%d ", i, memory[i]);
@@ -103,7 +106,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     }
                     printf("\n");
                 }
-                if (checkDataLine(tokens, num_tokens, label_flag)) {
+                if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     printf("I  SEE  STRING   HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
@@ -114,6 +117,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     (*DC)++;
                     printf("CURRENT  IC   AND  DC: %d, %d\n", *IC, *DC);
                 }
+                handleError(error, num_line); /*handlaing Error*/
                 printf("CURRENT        MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
                     printf("%d:%d ", memory[i], i);
@@ -153,11 +157,11 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     }
                     printf("\n");
                 }
-                if (checkCommandLine(tokens, num_tokens, label_flag) != COMMAND_LINE_ERROR)
+                if (checkCommandLine(tokens, num_tokens, label_flag, error) != COMMAND_LINE_ERROR)
                 {
                     binary_word = createBinaryWord(tokens, num_tokens, token_idx, error);
                     pushToMemory(&memory_idx, memory, binary_word);
-                    L = checkCommandLine(tokens, num_tokens, label_flag);
+                    L = checkCommandLine(tokens, num_tokens, label_flag, error);
                 }
                 
                 *IC += L;
@@ -167,6 +171,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
         }
         token_idx = 0;
         label_flag = false;
+        num_line++;
         temp_code = temp_code->next;
     }
 
@@ -259,14 +264,14 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
             label_flag = true;
             token_idx++;
         }
-        switch (isDotType(tokens[token_idx])) {
+        switch (isDotType(tokens[token_idx], error)) {
             case DOT_ENTRY:
                 updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
             case DOT_OTHER:
-                if (checkCommandLine(tokens, num_tokens, label_flag) != COMMAND_LINE_ERROR)
+                if (checkCommandLine(tokens, num_tokens, label_flag, error) != COMMAND_LINE_ERROR)
                 {
-                    L = checkCommandLine(tokens, num_tokens, label_flag);
+                    L = checkCommandLine(tokens, num_tokens, label_flag, error);
                 }
 
                 IC += L;
@@ -378,7 +383,7 @@ bool isLabel(char* word, bool colon){
 }
 
 
-short isDotType(char* word){
+short isDotType(char* word, Error* error){
     if (!strcmp(word, ".data"))
     {
         return DOT_DATA;
@@ -396,7 +401,8 @@ short isDotType(char* word){
 }
 
 
-LabelType getLabelType(char* label, LabelNode* LabelPtr){
+LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
+    *error = NO_ERROR;
     if (LabelPtr != NULL)
     {
         do
@@ -411,6 +417,7 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr){
         while (LabelPtr != NULL);
     }
     
+    *error = ERROR_UNRECOGNIZED_LABEL;
     printf("error, haven't found the label %s\n", label);
     return 0;
 
@@ -452,8 +459,7 @@ bool isNumber(char* word){
     {
         if (!isdigit(word[i]))
         {
-            printf("not a number: %c\n", word[i]);
-            return false;
+            return false; /* not a number*/
         }
         
     }
@@ -461,20 +467,23 @@ bool isNumber(char* word){
     
 }
 
-bool checkDataLine(char** tokens, int num_tokens, bool label){
+bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
+    
     int token_index = 1;
+    *error = NO_ERROR;
     if (num_tokens < (2 + label))
     {
+        *error = ERROR_MISSING_DATA_ARGUMENT;
         printf("The line is missing arguments\n");
         return false;
     }
     
-    if (isDotType(tokens[0 + label]) == DOT_STRING)
+    if (isDotType(tokens[0 + label], error) == DOT_STRING)
     {
         if (num_tokens > (2 + label))
         {
             printf("too many arguments\n");
-            
+            *error = ERROR_EXTRANEOS_TEXT;
             return false;
         }
         if (isString(tokens[1 + label]))
@@ -484,10 +493,11 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
         
     }
     
-    if (isDotType(tokens[0 + label]) == DOT_DATA)
+    if (isDotType(tokens[0 + label], error) == DOT_DATA)
     {
         if (num_tokens % 2 == (1 + label))
         {
+            *error = ERROR_WRONG_NUM_OF_COMMAS;
             printf("wrong number of ',' \n");
             return false;
         }
@@ -506,6 +516,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label){
         {
             if (strcmp(tokens[token_index], ","))
             {
+                *error = ERROR_MISSING_COMMA;
                 printf("Missing a ,");
                 return false;
             }
@@ -529,6 +540,7 @@ void cleanMemory(short* memory) {
 }
 
 void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, Error* error) {
+    
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;
@@ -554,8 +566,10 @@ char* removeColon(char* str) {
     return str;
 }
 
-short checkCommand(char* word){
+short checkCommand(char* word, Error* error){
+    
     int i = 0;
+    *error = NO_ERROR;
     for (; i < NUM_OF_COMMANDS; i++)
     {
         if (!strcmp((char*)commands[i].command, word))
@@ -564,11 +578,13 @@ short checkCommand(char* word){
         }
         
     }
+    *error = ERROR_UNDEFINED_COMMAND;
     return -1;
 }
 
-int checkCommandLine(char** tokens, int num_tokens, bool label){
-    short opcode = checkCommand(tokens[label]);
+int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
+    
+    short opcode = checkCommand(tokens[label], error);
     int count = 0;
     int operand_index = label+1; /*operand index*/
     int operand_result = -1;
@@ -577,6 +593,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
 
     int L = 1;
 
+    *error = NO_ERROR;
     /*ERROR unrecognized command name*/
     if (opcode == -1)
     {
@@ -586,12 +603,14 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
     /* ERROR wrong amount of operands for the command */
     if ((num_tokens <= 2 + label) && (num_tokens - label - 1) != commands[opcode].number_of_operands)
     {
+        *error = ERROR_WRONG_AMOUNT_OF_OPERANDS;
         return COMMAND_LINE_ERROR;
     }
     
     /*ERROR illegal comma*/
     if (!strcmp(tokens[num_tokens-1], ","))
     {
+        *error = ERROR_ILLEGAL_COMMA;
         printf("ERROR ILLEGAL COMMA HERE:");
         printLine(tokens, num_tokens);
         return COMMAND_LINE_ERROR;
@@ -599,6 +618,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
     
     if (num_tokens > 2 + label && (num_tokens - label - 2) != commands[opcode].number_of_operands)
     {
+        *error = ERROR_WRONG_AMOUNT_OF_OPERANDS;
         printf("ERROR INCORRECT NUMBER OF OPERANDS HERE: ");
         printLine(tokens, num_tokens);
         return COMMAND_LINE_ERROR;
@@ -609,11 +629,11 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
     {
         if (!source_flag)
         {
-            operand_result = checkOperand(tokens[operand_index + count + 1]);
+            operand_result = checkOperand(tokens[operand_index + count + 1], error);
         }
         else
         {           
-            operand_result = checkOperand(tokens[operand_index + count]);
+            operand_result = checkOperand(tokens[operand_index + count], error);
         }
         
         switch (operand_result)
@@ -624,17 +644,20 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
             {
                 if (!commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])
                 {
+                    *error = ERROR_INCORRECT_OPERAND_TYPE;
                     printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
                     return COMMAND_LINE_ERROR;
                 }
                 else
                 {
+                    L++;
                     break;
                 }
             }
             
             if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]))
             {
+                *error = ERROR_INCORRECT_OPERAND_TYPE;
                 printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
                 return COMMAND_LINE_ERROR; 
             }
@@ -647,17 +670,20 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
             {
                 if (!commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])
                 {
+                    *error = ERROR_INCORRECT_OPERAND_TYPE;
                     printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
                     return COMMAND_LINE_ERROR;
                 }
                 else
                 {
+                    L++;
                     break;
                 }
             }
 
             if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]))
             {
+                *error = ERROR_INCORRECT_OPERAND_TYPE;
                 printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
                 return COMMAND_LINE_ERROR; 
             }
@@ -674,6 +700,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
             {
                 if (!commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])
                 {
+                    *error = ERROR_INCORRECT_OPERAND_TYPE;
                     printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
                     return COMMAND_LINE_ERROR;
                 }
@@ -686,6 +713,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
 
             if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]))
             {
+                *error = ERROR_INCORRECT_OPERAND_TYPE;
                 printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
                 return COMMAND_LINE_ERROR; 
             }
@@ -694,6 +722,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
             break;
 
         default:
+            *error = ERROR_ILLEGAL_OPERAND_TYPE;
             printf("ERROR IN OPERAND %s\n", tokens[operand_index + count]);
             return COMMAND_LINE_ERROR;
             break;
@@ -709,10 +738,12 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
     return L;
 }
 
-OperandType checkOperand(char* operand){
+OperandType checkOperand(char* operand, Error* error){
+    
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
     int i = 0;
 
+    *error = NO_ERROR;
     for (; i < NUM_OF_REGISTERS; i++)
     {
         if (!strcmp(registers[i], operand))
@@ -735,7 +766,8 @@ OperandType checkOperand(char* operand){
     }
 
     /*handle error*/
-    printf("ILLEGAL        OPERAND: %s\n", operand);    
+    printf("ILLEGAL        OPERAND: %s\n", operand);
+    *error = ERROR_ILLEGAL_OPERAND_TYPE;    
     return OPERAND_TYPE_OTHER;
 }
 

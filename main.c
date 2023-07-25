@@ -16,6 +16,7 @@ int main (int argc, char** argv) {
     if (error != NO_ERROR) {
         return 0;
     }
+    
     firstIteration(memory, code, &labels, &DC, &IC, &error);
     if (error != NO_ERROR) {
         return 0;
