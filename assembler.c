@@ -41,7 +41,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     
     if (*error == ERROR_MEMORY_ALLOCATION) return;
  
-    printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n");
+    printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n\n");
     *DC = *IC = 0;
     cleanMemory(memory);
     temp_code = code;
@@ -182,7 +182,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
         printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
         test_label_node = test_label_node->next;
     }
-    printf("\n");
+    printf("\n\n");
 }
 
 void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
@@ -193,7 +193,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
     int num_tokens = 0;
     int L = 0;
 
-    printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n");
+    printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n\n");
     temp_code = code;
     *IC = 0;
     while (temp_code) {
@@ -623,6 +623,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label){
                 }
                 else
                 {
+                    L++;
                     break;
                 }
             }
