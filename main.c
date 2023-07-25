@@ -5,19 +5,14 @@
 #include "libs.h"
 
 int main (int argc, char** argv) {
-    CodeNode* code, *test_code;
+    CodeNode* code;
     Error error = NO_ERROR;
     LabelNode* labels = NULL;
     short memory[MAX_MEMORY_SIZE];
     int DC, IC;
 
     code = preproccessor(argv[1], &error);
-    /*
-    test_code = code;
-    while (test_code) {
-        printf("%s\n", test_code->code_row);
-        test_code = test_code->next;
-    }*/
+
     if (error != NO_ERROR) {
         return 0;
     }

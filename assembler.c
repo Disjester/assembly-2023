@@ -37,8 +37,9 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     int token_idx = 0;
     int memory_idx = 100;
     short data[100];
+    short binary_word;
     int L = 0;
-    
+
     if (*error == ERROR_MEMORY_ALLOCATION) return;
  
     printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n\n");
@@ -154,6 +155,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 }
                 if (checkCommandLine(tokens, num_tokens, label_flag) != COMMAND_LINE_ERROR)
                 {
+                    binary_word = createBinaryWord(tokens, num_tokens, token_idx, error);
+                    pushToMemory(&memory_idx, memory, binary_word);
                     L = checkCommandLine(tokens, num_tokens, label_flag);
                 }
                 
@@ -183,6 +186,59 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
         test_label_node = test_label_node->next;
     }
     printf("\n\n");
+}
+
+short createBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error) {
+    short resulting_binary_word = 0;
+    short source_operand, destination_operand;
+    int temp_idx = token_idx;
+    int operand_amount;
+    int opcode;
+
+    operand_amount = getOperandAmount(tokens[temp_idx]);
+    opcode = checkCommand(tokens[temp_idx++]);
+
+    switch (operand_amount) {
+    case 0:
+        source_operand = destination_operand = 0x0;
+        break;
+    case 1:
+        destination_operand = 0x0;
+        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
+        break;
+    case 2:
+        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
+        destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx]));
+        break;
+    }
+    resulting_binary_word +=  source_operand;
+    resulting_binary_word <<= 3;
+    resulting_binary_word +=  opcode;
+    resulting_binary_word <<= 4;
+    resulting_binary_word += destination_operand;
+    resulting_binary_word <<= 3;
+    resulting_binary_word += 0; /*A.R.E. CHANGE IT, BORIS*/
+    return resulting_binary_word;
+}
+
+int getAdressingMethodByOperandType(OperandType operand_type) {
+    switch (operand_type) {
+        case OPERAND_TYPE_NUMBER:   return 0x1; /*TO BE CHANGED FOR CONSTANT*/
+        case OPERAND_TYPE_LABEL:    return 0x3;
+        case OPERAND_TYPE_REGISTER: return 0x5;
+        case OPERAND_TYPE_OTHER:    return 0xFFF;
+    }
+    return -1;
+}
+
+int getOperandAmount(char* command) {
+    int i;
+    for(i = 0; i < NUMBER_OF_COMMANDS; i++) {
+        if (!strcmp(command, commands[i].command)) {
+            return commands[i].number_of_operands;
+        }
+    }
+    return -1; /*CHANGE LATER*/
 }
 
 void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {

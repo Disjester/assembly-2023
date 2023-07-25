@@ -71,6 +71,12 @@ char *my_strdup(const char *str, Error* error);
 
 CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, Error* error);
 
+short createBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error);
+
+int getOperandAmount(char* command);
+
+int getAdressingMethodByOperandType(OperandType operand_type);
+
 void freeLinkedList(CodeNode* head);
 
 int getLine(char* line, Error* error, FILE* file, int num_line);

@@ -22,7 +22,7 @@ CodeNode* preproccessor(char* file_name, Error* error) {
     }
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, error);
     if (*error != NO_ERROR) return NULL;
-    
+
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, error);
     if (*error != NO_ERROR) {
         return NULL;
@@ -163,7 +163,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
                 }
                 curr_code_node = curr_code_node->next;
                 num_line++;
-                *error = ERROR_ILLEGAL_NAME;
+                *error = ERROR_ILLEGAL_MACRO_NAME;
                 handleError(error, num_line);
                 continue;
             }
