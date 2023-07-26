@@ -95,6 +95,10 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
+                    if (temp_code->next != NULL)
+                    {
+                        temp_code =  temp_code->next;
+                    }
                     continue;
                 }
                 printf("CURRENT        MEMORY: ");
@@ -131,6 +135,10 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
+                    if (temp_code->next != NULL)
+                    {
+                        temp_code =  temp_code->next;
+                    }
                     continue;
                 }
                 printf("CURRENT        MEMORY: ");
@@ -185,6 +193,10 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
+                    if (temp_code->next != NULL)
+                    {
+                        temp_code =  temp_code->next;
+                    }
                     continue;
                 }
                 *IC += L;
@@ -341,6 +353,10 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
+                    if (temp_code->next != NULL)
+                    {
+                        temp_code =  temp_code->next;
+                    }
                     continue;
                 }
                 IC += L;
