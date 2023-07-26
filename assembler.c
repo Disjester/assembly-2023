@@ -402,7 +402,7 @@ short isDotType(char* word, Error* error){
 
 
 LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
-    *error = NO_ERROR;
+    
     if (LabelPtr != NULL)
     {
         do
@@ -470,7 +470,7 @@ bool isNumber(char* word){
 bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     
     int token_index = 1;
-    *error = NO_ERROR;
+    
     if (num_tokens < (2 + label))
     {
         *error = ERROR_MISSING_DATA_ARGUMENT;
@@ -569,7 +569,7 @@ char* removeColon(char* str) {
 short checkCommand(char* word, Error* error){
     
     int i = 0;
-    *error = NO_ERROR;
+    
     for (; i < NUM_OF_COMMANDS; i++)
     {
         if (!strcmp((char*)commands[i].command, word))
@@ -593,7 +593,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
 
     int L = 1;
 
-    *error = NO_ERROR;
+    
     /*ERROR unrecognized command name*/
     if (opcode == -1)
     {
@@ -743,7 +743,7 @@ OperandType checkOperand(char* operand, Error* error){
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
     int i = 0;
 
-    *error = NO_ERROR;
+    
     for (; i < NUM_OF_REGISTERS; i++)
     {
         if (!strcmp(registers[i], operand))
