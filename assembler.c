@@ -62,7 +62,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         if(isLabel(tokens[token_idx], true)) {
-            printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
+            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
             label_flag = true;
             token_idx++;
         }
@@ -272,7 +272,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
     while (temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
-            printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
+            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
             label_flag = true;
             token_idx++;
         }
@@ -659,11 +659,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
                     printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
                     return COMMAND_LINE_ERROR;
                 }
-                else
-                {
-                    L++;
-                    break;
-                }
+                break;
             }
             
             if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]))
