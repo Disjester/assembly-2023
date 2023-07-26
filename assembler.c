@@ -247,12 +247,12 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
             source_operand = destination_operand = 0x0;
             break;
         case 1:
-            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));;
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], error));;
             source_operand = 0x0;
             break;
         case 2:
-            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
-            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx]));
+            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], error));
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], error));
             break;
     }
     resulting_binary_word +=  source_operand;
