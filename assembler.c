@@ -63,6 +63,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
 
         if(isLabel(tokens[token_idx], true)) {
             /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
+            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
             label_flag = true;
             token_idx++;
         }
@@ -298,7 +299,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
     while (temp_code) {
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
-            printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);
+            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
             label_flag = true;
             token_idx++;
         }
@@ -604,7 +605,7 @@ char* removeColon(char* str) {
     return str;
 }
 
-short checkCommand(char* word, Error* error){
+short checkCommand(char* word){
     
     int i = 0;
 
@@ -616,13 +617,12 @@ short checkCommand(char* word, Error* error){
         }
         
     }
-    *error = ERROR_UNDEFINED_COMMAND;
     return -1;
 }
 
 int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
     
-    short opcode = checkCommand(tokens[label], error);
+    short opcode = checkCommand(tokens[label]);
     int count = 0;
     int operand_index = label+1; /*operand index*/
     int operand_result = -1;
@@ -686,11 +686,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
                     printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
                     return COMMAND_LINE_ERROR;
                 }
-                else
-                {
-                    L++;
-                    break;
-                }
+                break;
             }
             
             if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]))
@@ -772,7 +768,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
         }
         operand_result = -1;
     }
-    printf("CORRECT COMMAND LINE: %s\n", *tokens);
     return L;
 }
 
@@ -786,7 +781,7 @@ OperandType checkOperand(char* operand, Error* error){
     {
         if (!strcmp(registers[i], operand))
         {
-            printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_REGISTER);
+            /*printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_REGISTER);*/
             return OPERAND_TYPE_REGISTER;
         }
         
@@ -794,7 +789,7 @@ OperandType checkOperand(char* operand, Error* error){
     
     if (isNumber(operand))
     {
-        printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_NUMBER);
+        /*printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_NUMBER);*/
         return OPERAND_TYPE_NUMBER;
     }
     
