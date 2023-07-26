@@ -12,7 +12,7 @@
 #define ADDRESING_LABEL 1 
 #define ADDRESING_REGISTER 2
 
-#define COMMAND_LINE_ERROR -1 /*Change this later*/
+#define COMMAND_LINE_ERROR 0 /*Change this later*/
 
 #define DEFAULT_LINE_NUMER -1
 
