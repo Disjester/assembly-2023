@@ -228,7 +228,7 @@ short createBinaryWord(char** tokens, int num_tokens, int token_idx, Error* erro
 
 int getAdressingMethodByOperandType(OperandType operand_type) {
     switch (operand_type) {
-        case OPERAND_TYPE_NUMBER:   return 0x1; /*TO BE CHANGED FOR CONSTANT*/
+        case OPERAND_TYPE_NUMBER:   return 0x1; /*TO BE CHANGED TO CONSTANT*/
         case OPERAND_TYPE_LABEL:    return 0x3;
         case OPERAND_TYPE_REGISTER: return 0x5;
         case OPERAND_TYPE_OTHER:    return 0xFFF;
