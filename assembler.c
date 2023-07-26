@@ -71,6 +71,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
             case DOT_DATA:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
+                    if (*error == ERROR_MEMORY_ALLOCATION) return;
                     test_label_node = *labels;
                     printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
@@ -88,7 +89,13 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     }
                     printf("CURRENT   IC  AND  DC: %d, %d\n", *IC, *DC);
                 }
-                handleError(error, num_line); /*handlaing Error*/
+                /*errr handaling*/
+                if (*error)
+                {
+                    handleError(error, num_line);
+                    *error = NO_ERROR;
+                    continue;
+                }
                 printf("CURRENT        MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
                     printf("%d:%d ", i, memory[i]);
@@ -98,6 +105,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
             case DOT_STRING:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
+                    if (*error == ERROR_MEMORY_ALLOCATION) return;
                     test_label_node = *labels;
                     printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
@@ -117,7 +125,13 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     (*DC)++;
                     printf("CURRENT  IC   AND  DC: %d, %d\n", *IC, *DC);
                 }
-                handleError(error, num_line); /*handlaing Error*/
+                /*handlaing Error*/
+                if (*error)
+                {
+                    handleError(error, num_line);
+                    *error = NO_ERROR;
+                    continue;
+                }
                 printf("CURRENT        MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
                     printf("%d:%d ", memory[i], i);
@@ -129,6 +143,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 for (; place < num_tokens; place++) {
                     if (isLabel(tokens[place], false)) {
                         insertNewLabel(labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem, error);
+                        if (*error == ERROR_MEMORY_ALLOCATION) return;
                         printf("I SEE  EXTERNAL  HERE: %s\n", temp_code->code_row);
                     }
                     else {
@@ -148,6 +163,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
             case DOT_OTHER:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, error);
+                    if (*error == ERROR_MEMORY_ALLOCATION) return;
                     test_label_node = *labels;
                     printf("CURRENT  LABEL  TABLE: ");
                     while (test_label_node) {
@@ -171,7 +187,14 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                             break;
                     }
                 }
-                
+                /*handle error*/
+                if (*error)
+                {
+                    handleError(error, num_line);
+                    *error = NO_ERROR;
+                    continue;
+                }
+
                 *IC += L;
                 L = 0;
                 printf("THE IC IS : %d\n",*IC);
@@ -265,11 +288,13 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int num_tokens = 0;
     int L = 0;
+    int num_line = 0;
 
     printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n\n");
     temp_code = code;
     *IC = 0;
     while (temp_code) {
+        num_line++;
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
             /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
@@ -285,7 +310,12 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
                 {
                     L = checkCommandLine(tokens, num_tokens, label_flag, error);
                 }
-
+                if (*error)
+                {
+                    handleError(error, num_line);
+                    *error = NO_ERROR;
+                    continue;
+                }
                 IC += L;
                 break;
             case DOT_DATA:
@@ -297,6 +327,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
         token_idx = 0;
         label_flag = false;
         L = 0;
+        num_line++;
     }
     /*handleError(error);*/
     createOutputFiles(file_name, labels, error);
