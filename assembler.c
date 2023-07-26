@@ -745,7 +745,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
         }
         operand_result = -1;
     }
-    printf("CORRECT COMMAND LINE: %s\n", *tokens);
     return L;
 }
 
@@ -759,7 +758,7 @@ OperandType checkOperand(char* operand, Error* error){
     {
         if (!strcmp(registers[i], operand))
         {
-            printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_REGISTER);
+            /*printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_REGISTER);*/
             return OPERAND_TYPE_REGISTER;
         }
         
@@ -767,7 +766,7 @@ OperandType checkOperand(char* operand, Error* error){
     
     if (isNumber(operand))
     {
-        printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_NUMBER);
+        /*printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_NUMBER);*/
         return OPERAND_TYPE_NUMBER;
     }
     
