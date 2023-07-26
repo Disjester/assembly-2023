@@ -134,7 +134,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     else {
                         break;
                     }
-                    
                 }
                 test_label_node = *labels;
                 printf("CURRENT  LABEL  TABLE: ");
@@ -159,9 +158,18 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 }
                 if (checkCommandLine(tokens, num_tokens, label_flag, error) != COMMAND_LINE_ERROR)
                 {
-                    binary_word = createBinaryWord(tokens, num_tokens, token_idx, error);
+                    binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error);
                     pushToMemory(&memory_idx, memory, binary_word);
                     L = checkCommandLine(tokens, num_tokens, label_flag, error);
+                    switch (L) {
+                        case 1:
+                            break;
+                        case 2:
+                            
+                            break;
+                        case 3:
+                            break;
+                    }
                 }
                 
                 *IC += L;
@@ -182,7 +190,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
         }
         temp_label_node = temp_label_node->next;
     }
- 
+
     /**/
     test_label_node = *labels;
     printf("LABEL  TABLE  AFTER 1: ");
@@ -193,7 +201,11 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     printf("\n\n");
 }
 
-short createBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error) {
+short createOperandBinaryWord(OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, Error* error) {
+    
+}
+
+short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error) {
     short resulting_binary_word = 0;
     short source_operand, destination_operand;
     int temp_idx = token_idx;
@@ -204,17 +216,17 @@ short createBinaryWord(char** tokens, int num_tokens, int token_idx, Error* erro
     opcode = checkCommand(tokens[temp_idx++]);
 
     switch (operand_amount) {
-    case 0:
-        source_operand = destination_operand = 0x0;
-        break;
-    case 1:
-        destination_operand = 0x0;
-        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
-        break;
-    case 2:
-        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
-        destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx]));
-        break;
+        case 0:
+            source_operand = destination_operand = 0x0;
+            break;
+        case 1:
+            destination_operand = 0x0;
+            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
+            break;
+        case 2:
+            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx]));
+            break;
     }
     resulting_binary_word +=  source_operand;
     resulting_binary_word <<= 3;

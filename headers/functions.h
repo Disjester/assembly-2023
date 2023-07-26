@@ -71,7 +71,7 @@ char *my_strdup(const char *str, Error* error);
 
 CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, Error* error);
 
-short createBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error);
+short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error);
 
 int getOperandAmount(char* command);
 

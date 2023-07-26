@@ -154,7 +154,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, error);
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
-        if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
+        if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro")) {
             if (!isLabel(tokens[1], false) || checkCommand(tokens[1], error) != -1) {
                 while (strcmp(tokens[0], "endmcro")) {
                     curr_code_node = curr_code_node->next;
