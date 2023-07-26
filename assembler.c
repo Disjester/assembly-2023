@@ -236,15 +236,15 @@ void createOperandBinaryWord(int L, bool is_first_iteration, OperandType op_type
             break;
         case 2:
             if (op_type_source == OPERAND_TYPE_REGISTER && op_type_destination == OPERAND_TYPE_REGISTER) {
-                resulting_binary_word += (short) atoi(operand1 + 1);
+                resulting_binary_word += (short) atoi(operand1 + 2);
                 resulting_binary_word <<= 5;
-                resulting_binary_word += (short) atoi(operand2 + 1);
-                resulting_binary_word <<= 7;
+                resulting_binary_word += (short) atoi(operand2 + 2);
+                resulting_binary_word <<= 2;
                 pushToMemory(memory_idx, memory, resulting_binary_word);
             } else {
                 switch (op_type_destination) {
                     case OPERAND_TYPE_REGISTER:
-                        resulting_binary_word += (short) atoi(operand1 + 1);
+                        resulting_binary_word += (short) atoi(operand1 + 2);
                         resulting_binary_word <<= 7;
                         pushToMemory(memory_idx, memory, resulting_binary_word);
                         break;
@@ -291,11 +291,11 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
             break;
     }
     resulting_binary_word +=  source_operand;
-    resulting_binary_word <<= 3;
-    resulting_binary_word +=  opcode;
     resulting_binary_word <<= 4;
-    resulting_binary_word += destination_operand;
+    resulting_binary_word +=  opcode;
     resulting_binary_word <<= 3;
+    resulting_binary_word += destination_operand;
+    resulting_binary_word <<= 2;
     resulting_binary_word += 0; /*A.R.E. CHANGE IT, BORIS*/
     return resulting_binary_word;
 }
