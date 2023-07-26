@@ -49,12 +49,12 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     temp_code = code;
     while(temp_code) {
         if (temp_code->code_row[0] == ';') {
-            printf("I  SEE  COMMENT  HERE: %s\n", temp_code->code_row);
+            /*printf("I  SEE  COMMENT  HERE: %s\n", temp_code->code_row);*/
             temp_code = temp_code->next;
             continue;
         }
         if (temp_code->code_row[0] == '\n') {
-            printf("I SEE EMPTY LINE HERE: %s\n", temp_code->code_row);
+            /*printf("I SEE EMPTY LINE HERE: %s\n", temp_code->code_row);*/
             temp_code = temp_code->next;
             continue;
         }
@@ -62,6 +62,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         if(isLabel(tokens[token_idx], true)) {
+            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
             /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
             label_flag = true;
             token_idx++;
@@ -115,7 +116,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
-                    printf("I  SEE  STRING   HERE: %s\n", temp_code->code_row);
+                    /*printf("I  SEE  STRING   HERE: %s\n", temp_code->code_row);*/
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
                         pushToMemory(&memory_idx, memory, tokens[token_idx][i]);
@@ -123,7 +124,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     }
                     pushToMemory(&memory_idx, memory, '\0');
                     (*DC)++;
-                    printf("CURRENT  IC   AND  DC: %d, %d\n", *IC, *DC);
+                    /*printf("CURRENT  IC   AND  DC: %d, %d\n", *IC, *DC);*/
                 }
                 /*handlaing Error*/
                 if (*error)
@@ -177,15 +178,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error);
                     pushToMemory(&memory_idx, memory, binary_word);
                     L = checkCommandLine(tokens, num_tokens, label_flag, error);
-                    switch (L) {
-                        case 1:
-                            break;
-                        case 2:
-                            
-                            break;
-                        case 3:
-                            break;
-                    }
+                    createOperandBinaryWord(L, true, checkOperand(tokens[token_idx + 1], error), checkOperand(tokens[token_idx + 3], error), tokens[token_idx + 1], tokens[token_idx + 3], &memory_idx, memory, error);
                 }
                 /*handle error*/
                 if (*error)
@@ -194,7 +187,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     *error = NO_ERROR;
                     continue;
                 }
-
                 *IC += L;
                 L = 0;
                 printf("THE IC IS : %d\n",*IC);
@@ -224,8 +216,43 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     printf("\n\n");
 }
 
-short createOperandBinaryWord(OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, Error* error) {
-    
+void createOperandBinaryWord(int L, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error) {
+    short resulting_binary_word = 0x0;
+
+    switch (L) {
+        case 1:
+            break;
+        case 2:
+            if (op_type_source == OPERAND_TYPE_REGISTER && op_type_destination == OPERAND_TYPE_REGISTER) {
+                resulting_binary_word += (short) atoi(operand1 + 1);
+                resulting_binary_word <<= 5;
+                resulting_binary_word += (short) atoi(operand2 + 1);
+                resulting_binary_word <<= 7;
+                pushToMemory(memory_idx, memory, resulting_binary_word);
+            } else {
+                switch (op_type_destination) {
+                    case OPERAND_TYPE_REGISTER:
+                        resulting_binary_word += (short) atoi(operand1 + 1);
+                        resulting_binary_word <<= 7;
+                        pushToMemory(memory_idx, memory, resulting_binary_word);
+                        break;
+                    case OPERAND_TYPE_LABEL:
+                        if (!is_first_iteration) {
+                            break;
+                        }
+                        break;
+                    case OPERAND_TYPE_NUMBER:
+                        resulting_binary_word += (short) atoi(operand1);
+                        pushToMemory(memory_idx, memory, resulting_binary_word);
+                        break;
+                    case OPERAND_TYPE_OTHER:
+                        break;
+                }
+            }
+            break;
+        case 3:
+            break;
+    }
 }
 
 short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error) {
@@ -239,17 +266,17 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
     opcode = checkCommand(tokens[temp_idx++]);
 
     switch (operand_amount) {
-    case 0:
-        source_operand = destination_operand = 0x0;
-        break;
-    case 1:
-        destination_operand = 0x0;
-        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], error));
-        break;
-    case 2:
-        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], error));
-        destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], error));
-        break;
+        case 0:
+            source_operand = destination_operand = 0x0;
+            break;
+        case 1:
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));;
+            source_operand = 0x0;
+            break;
+        case 2:
+            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx]));
+            break;
     }
     resulting_binary_word +=  source_operand;
     resulting_binary_word <<= 3;
@@ -612,7 +639,7 @@ char* removeColon(char* str) {
 short checkCommand(char* word){
     
     int i = 0;
-    
+
     for (; i < NUM_OF_COMMANDS; i++)
     {
         if (!strcmp((char*)commands[i].command, word))
