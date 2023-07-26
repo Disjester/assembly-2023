@@ -209,11 +209,11 @@ short createBinaryWord(char** tokens, int num_tokens, int token_idx, Error* erro
         break;
     case 1:
         destination_operand = 0x0;
-        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
+        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], error));
         break;
     case 2:
-        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++]));
-        destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx]));
+        source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], error));
+        destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], error));
         break;
     }
     resulting_binary_word +=  source_operand;
@@ -566,7 +566,7 @@ char* removeColon(char* str) {
     return str;
 }
 
-short checkCommand(char* word, Error* error){
+short checkCommand(char* word){
     
     int i = 0;
     
@@ -578,13 +578,12 @@ short checkCommand(char* word, Error* error){
         }
         
     }
-    *error = ERROR_UNDEFINED_COMMAND;
     return -1;
 }
 
 int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
     
-    short opcode = checkCommand(tokens[label], error);
+    short opcode = checkCommand(tokens[label]);
     int count = 0;
     int operand_index = label+1; /*operand index*/
     int operand_result = -1;

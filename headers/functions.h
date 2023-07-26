@@ -22,7 +22,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error);
  * @param word 
  * @return short 
  */
-short checkCommand(char* word, Error* error);
+short checkCommand(char* word);
 
 OperandType checkOperand(char* operand, Error* error);
 /**

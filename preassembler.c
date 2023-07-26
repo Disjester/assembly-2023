@@ -155,7 +155,8 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
-            if (!isLabel(tokens[1], false) || checkCommand(tokens[1], error) != -1) {
+            if (!isLabel(tokens[1], false) || checkCommand(tokens[1]) != -1) {
+                
                 while (strcmp(tokens[0], "endmcro")) {
                     curr_code_node = curr_code_node->next;
                     num_line++;
@@ -224,7 +225,6 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
         curr_code_node = curr_code_node->next;
         num_line++;
     }
-    *error = NO_ERROR; /*temporary*/
 }
 
 void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens, Error* error)
@@ -313,5 +313,4 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
         prev_code = current_code;
         current_code = current_code->next;
     }
-    *error = NO_ERROR; /*temporary*/
 }
