@@ -53,11 +53,14 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         if (temp_code->code_row[0] == ';') {
             /*printf("I  SEE  COMMENT  HERE: %s\n", temp_code->code_row);*/
             temp_code = temp_code->next;
+            num_line++;
             continue;
         }
+        printf("--\n|%c|\n--", temp_code->code_row[0]);
         if (temp_code->code_row[0] == '\n') {
             /*printf("I SEE EMPTY LINE HERE: %s\n", temp_code->code_row);*/
             temp_code = temp_code->next;
+            num_line++;
             continue;
         }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
