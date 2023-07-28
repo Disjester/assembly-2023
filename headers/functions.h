@@ -35,7 +35,7 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
  */
 bool isLabel(char* word, bool colon);
 
-void createOutputFiles (char* file_name, LabelNode* labels, Error* error);
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, Error* error);
 
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
 
@@ -47,9 +47,9 @@ char* removeColon(char* str);
 
 void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, int* memory_idx, Error* error);
 
-void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error);
+void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error);
 
-void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name); 
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name);
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField);
 
@@ -77,6 +77,8 @@ int getOperandAmount(char* command);
 
 int getAdressingMethodByOperandType(OperandType operand_type);
 
+void convertToBase64(short num, char* result);
+
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error);
 
 void freeLinkedList(CodeNode* head);
@@ -88,6 +90,8 @@ void cleanLine(char* line, int length);
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, Error* error);
 
 void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, Error* error);
+
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx);
 
 void* allocateMemory(size_t size, Error* error);
 
