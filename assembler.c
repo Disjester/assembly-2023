@@ -216,9 +216,16 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
 
     temp_label_node = *labels;
     while (temp_label_node) {
-        if (temp_label_node->label_type == LABEL_TYPE_DATA) {
-            temp_label_node->memory_adress += 100;
-            temp_label_node->memory_adress += *IC;
+        switch (temp_label_node->label_type) {
+            
+            case LABEL_TYPE_DATA:
+                temp_label_node->memory_adress += *IC;
+                break;
+            case LABEL_TYPE_CODE:
+            case LABEL_TYPE_ENTRY:
+            case LABEL_TYPE_EXTERNAL:
+                temp_label_node->memory_adress += 100;
+                break;
         }
         temp_label_node = temp_label_node->next;
     }
