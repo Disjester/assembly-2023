@@ -23,6 +23,7 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
     {"stop", 0xF, 0, {0, 0, 0}, {0, 0, 0}}
 };
 
+static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
 
 void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
     CodeNode* temp_code;
@@ -40,6 +41,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     short binary_word;
     int L = 0;
     int num_line = 1;
+    char test_base64[3];
 
     if (*error == ERROR_MEMORY_ALLOCATION) return;
  
@@ -103,7 +105,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 }
                 printf("CURRENT        MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
-                    printf("%d:%d ", i, memory[i]);
+                    convertToBase64(memory[i], test_base64);
+                    printf("%d:%s ", i, test_base64);
                 }
                 printf("\n");
                 break;
@@ -143,7 +146,8 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 }
                 printf("CURRENT        MEMORY: ");
                 for (i = 100; i < memory_idx; i++) {
-                    printf("%d:%d ", memory[i], i);
+                    convertToBase64(memory[i], test_base64);
+                    printf("%d:%s ", i, test_base64);
                 }
                 printf("\n");
                 break;
@@ -365,6 +369,12 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
     resulting_binary_word <<= 2;
     resulting_binary_word += 0; /*A.R.E. CHANGE IT, BORIS*/
     return resulting_binary_word;
+}
+
+void convertToBase64(short num, char* result) {
+    result[0] = base64_chars[(num >> 8) & 0x3F];
+    result[1] = base64_chars[(num >> 2) & 0x3F];
+    result[2] = '\0';
 }
 
 int getAdressingMethodByOperandType(OperandType operand_type) {

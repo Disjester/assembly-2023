@@ -77,6 +77,8 @@ int getOperandAmount(char* command);
 
 int getAdressingMethodByOperandType(OperandType operand_type);
 
+void convertToBase64(short num, char* result);
+
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error);
 
 void freeLinkedList(CodeNode* head);
