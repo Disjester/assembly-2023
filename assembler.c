@@ -25,6 +25,7 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
 
 
 void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
+    bool is_first_itteration_flag = true;
     CodeNode* temp_code;
     LabelNode* test_label_node;
     LabelNode* temp_label_node;
@@ -181,12 +182,12 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     }
                     printf("\n");
                 }
-                if (checkCommandLine(tokens, num_tokens, label_flag, error) != COMMAND_LINE_ERROR)
+                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
                 {
-                    binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error);
+                    binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
                     pushToMemory(&memory_idx, memory, binary_word);
-                    L = checkCommandLine(tokens, num_tokens, label_flag, error);
-                    createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], error), checkOperand(tokens[token_idx + 3], error), tokens[token_idx + 1], tokens[token_idx + 3], &memory_idx, memory, error);
+                    L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag);
+                    createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], &memory_idx, memory, error);
                 }
                 /*handle error*/
                 if (*error)
@@ -334,7 +335,7 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
     }
 }
 
-short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error) {
+short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr) {
     short resulting_binary_word = 0;
     short source_operand, destination_operand;
     int temp_idx = token_idx;
@@ -349,12 +350,12 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
             source_operand = destination_operand = 0x0;
             break;
         case 1:
-            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], error));;
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], labelPtr, error, is_first_itteration));;
             source_operand = 0x0;
             break;
         case 2:
-            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], error));
-            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], error));
+            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], labelPtr, error, is_first_itteration));
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], labelPtr, error, is_first_itteration));
             break;
     }
     resulting_binary_word +=  source_operand;
@@ -388,7 +389,8 @@ int getOperandAmount(char* command) {
 }
 
 void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
-    CodeNode* temp_code; 
+    CodeNode* temp_code;
+    bool is_first_itteration_flag = false; 
     int token_idx = 0;
     bool label_flag = false;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
@@ -412,9 +414,9 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
                 updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
             case DOT_OTHER:
-                if (checkCommandLine(tokens, num_tokens, label_flag, error) != COMMAND_LINE_ERROR)
+                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
                 {
-                    L = checkCommandLine(tokens, num_tokens, label_flag, error);
+                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
                 }
                 if (*error)
                 {
@@ -734,7 +736,7 @@ short checkCommand(char* word){
     return -1;
 }
 
-int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
+int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration){
     
     short opcode = checkCommand(tokens[label]);
     int count = 0;
@@ -781,11 +783,11 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
     {
         if (!source_flag)
         {
-            operand_result = checkOperand(tokens[operand_index + count + 1], error);
+            operand_result = checkOperand(tokens[operand_index + count + 1], LabelPtr, error, is_first_iteration);
         }
         else
         {           
-            operand_result = checkOperand(tokens[operand_index + count], error);
+            operand_result = checkOperand(tokens[operand_index + count], LabelPtr, error, is_first_iteration);
         }
         
         switch (operand_result)
@@ -885,7 +887,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error){
     return L;
 }
 
-OperandType checkOperand(char* operand, Error* error){
+OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool is_first_iteration){
     
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
     int i = 0;
@@ -907,10 +909,19 @@ OperandType checkOperand(char* operand, Error* error){
         return OPERAND_TYPE_NUMBER;
     }
     
-    if (isLabel(operand, false))
+    if (is_first_iteration)
+    {
+        if (isLabel(operand, false))
+        {
+            return OPERAND_TYPE_LABEL;
+        }
+    }
+
+    else if (getLabelType(operand, LabelPtr, error))
     {
         return OPERAND_TYPE_LABEL;
     }
+    
 
     /*handle error*/
     

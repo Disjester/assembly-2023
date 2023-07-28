@@ -14,7 +14,7 @@
  * @param label - Is the line starts with a label ? 
  * @return int  - > returns L = the number of memory words in the command line , -1 otherwise
  */
-int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error);
+int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration);
 
 /**
  * @brief returns opcode of a command if it is, otherwise returns -1
@@ -24,7 +24,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, Error* error);
  */
 short checkCommand(char* word);
 
-OperandType checkOperand(char* operand, Error* error);
+OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool is_first_iteration);
 /**
  * @brief checks if the string is a label
  * 
@@ -71,7 +71,7 @@ char *my_strdup(const char *str, Error* error);
 
 CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, Error* error);
 
-short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error);
+short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr);
 
 int getOperandAmount(char* command);
 
