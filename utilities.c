@@ -74,6 +74,51 @@ bool handleError(Error* error, int num_line) {
         case ERROR_DUPLICATED_MACRO_DEFINITION:
             fprintf(stderr, "ERROR ON %d: DUPLICATED MACRO DEFINITION\n", num_line);
             return true;
+        case ERROR_EXTRANEOS_TEXT:
+            fprintf(stderr, "ERROR ON %d: EXTRANEOS_TEXT\n", num_line);
+            return true;
+        case ERROR_ILLEGAL_COMMA:
+            fprintf(stderr, "ERROR ON %d: ILLEGAL_COMMA\n", num_line);
+            return true;
+        case ERROR_ILLEGAL_LABEL_NAME:
+            fprintf(stderr, "ERROR ON %d: ILLEGAL_LABEL_NAME\n", num_line);
+            return true;
+        case ERROR_ILLEGAL_OPERAND_TYPE:
+            fprintf(stderr, "ERROR ON %d: ILLEGAL_OPERAND_TYPE\n", num_line);
+            return true;
+        case ERROR_INCORRECT_OPERAND_TYPE:
+            fprintf(stderr, "ERROR ON %d: INCORRECT_OPERAND_TYPE\n", num_line);
+            return true;
+        case ERROR_MAXED_OUT_LINE_LENGTH:
+            fprintf(stderr, "ERROR ON %d: MAXED_OUT_LINE_LENGTH\n", num_line);
+            return true;
+        case ERROR_MISSING_COMMA:
+            fprintf(stderr, "ERROR ON %d: ERROR_MISSING_COMMA\n", num_line);
+            return true;
+        case ERROR_MISSING_DATA_ARGUMENT:
+            fprintf(stderr, "ERROR ON %d: MISSING_DATA_ARGUMENT\n", num_line);
+            return true;
+        case ERROR_UNDEFINED_COMMAND:
+            fprintf(stderr, "ERROR ON %d: UNDEFINED_COMMAND\n", num_line);
+            return true;
+        case ERROR_UNDEFINED_VARIABLE:
+            fprintf(stderr, "ERROR ON %d: UNDEFINED_VARIABLE\n", num_line);
+            return true;
+        case ERROR_UNRECOGNIZED_LABEL:
+            fprintf(stderr, "ERROR ON %d: UNRECOGNIZED_LABEL\n", num_line);
+            return true;
+        case ERROR_WRONG_AMOUNT_OF_OPERANDS:
+            fprintf(stderr, "ERROR ON %d: WRONG_AMOUNT_OF_OPERANDS\n", num_line);
+            return true;
+        case ERROR_WRONG_ARGUMENT_FORMAT:
+            fprintf(stderr, "ERROR ON %d: WRONG_ARGUMENT_FORMAT\n", num_line);
+            return true;
+        case ERROR_WRONG_NUM_OF_COMMAS:
+            fprintf(stderr, "ERROR ON %d: WRONG_NUM_OF_COMMAS\n", num_line);
+            return true;
+        case ERROR_MISSING_VARIABLE:
+            fprintf(stderr, "ERROR ON %d: ERROR_MISSING_VARIABLE\n", num_line);
+            return true;
         default:
             return false;
     }
