@@ -186,7 +186,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error);
                     pushToMemory(&memory_idx, memory, binary_word);
                     L = checkCommandLine(tokens, num_tokens, label_flag, error);
-                    createOperandBinaryWord(L, labels, true, checkOperand(tokens[token_idx + 1], error), checkOperand(tokens[token_idx + 3], error), tokens[token_idx + 1], tokens[token_idx + 3], &memory_idx, memory, error);
+                    createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], error), checkOperand(tokens[token_idx + 3], error), tokens[token_idx + 1], tokens[token_idx + 3], &memory_idx, memory, error);
                 }
                 /*handle error*/
                 if (*error)
