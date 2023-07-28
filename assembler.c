@@ -553,7 +553,7 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
         {
             if (!strcmp(label, LabelPtr->label_name))
             {
-                printf("found Label %s is of type: %d\n", label, LabelPtr->label_type);
+                /*printf("found Label %s is of type: %d\n", label, LabelPtr->label_type);*/
                 return LabelPtr->label_type;
             }
             LabelPtr = LabelPtr->next;
@@ -562,7 +562,7 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
     }
     
     *error = ERROR_UNRECOGNIZED_LABEL;
-    printf("error, haven't found the label %s\n", label);
+    /*printf("error, haven't found the label %s\n", label);*/
     return 0;
 
 }
@@ -618,7 +618,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     if (num_tokens < (2 + label))
     {
         *error = ERROR_MISSING_DATA_ARGUMENT;
-        printf("The line is missing arguments\n");
+        /*printf("The line is missing arguments\n");*/
         return false;
     }
     
@@ -626,7 +626,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     {
         if (num_tokens > (2 + label))
         {
-            printf("too many arguments\n");
+            /*printf("too many arguments\n");*/
             *error = ERROR_EXTRANEOS_TEXT;
             return false;
         }
@@ -904,7 +904,8 @@ OperandType checkOperand(char* operand, Error* error){
     }
 
     /*handle error*/
-    printf("ILLEGAL        OPERAND: %s\n", operand);
+    
+    /*printf("ILLEGAL        OPERAND: %s\n", operand);*/
     *error = ERROR_ILLEGAL_OPERAND_TYPE;    
     return OPERAND_TYPE_OTHER;
 }
