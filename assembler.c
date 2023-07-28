@@ -217,6 +217,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     temp_label_node = *labels;
     while (temp_label_node) {
         if (temp_label_node->label_type == LABEL_TYPE_DATA) {
+            temp_label_node->memory_adress += 100;
             temp_label_node->memory_adress += *IC;
         }
         temp_label_node = temp_label_node->next;
@@ -925,7 +926,6 @@ OperandType checkOperand(char* operand, Error* error){
     /*handle error*/
     
     /*printf("ILLEGAL        OPERAND: %s\n", operand);*/
-    *error = ERROR_ILLEGAL_OPERAND_TYPE;    
     return OPERAND_TYPE_OTHER;
 }
 
