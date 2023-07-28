@@ -372,8 +372,8 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
 }
 
 void convertToBase64(short num, char* result) {
-    result[0] = base64_chars[(num >> 8) & 0x3F];
-    result[1] = base64_chars[(num >> 2) & 0x3F];
+    result[0] = base64_chars[(num >> 6) & 0x3F];
+    result[1] = base64_chars[num & 0x3F];
     result[2] = '\0';
 }
 
