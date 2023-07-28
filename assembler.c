@@ -228,7 +228,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     printf("\n\n");
 }
 
-void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error) {
+void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error) {
     short resulting_binary_word = 0x0;
     LabelNode* temp_label_node;
 
@@ -236,14 +236,14 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
         case 1:
             break;
         case 2:
-            if (op_type_source == OPERAND_TYPE_REGISTER && op_type_destination == OPERAND_TYPE_REGISTER) {
+            if (op_type_1 == OPERAND_TYPE_REGISTER && op_type_2 == OPERAND_TYPE_REGISTER) {
                 resulting_binary_word += (short) atoi(operand1 + 2);
                 resulting_binary_word <<= 5;
                 resulting_binary_word += (short) atoi(operand2 + 2);
                 resulting_binary_word <<= 2;
                 pushToMemory(memory_idx, memory, resulting_binary_word);
             } else {
-                switch (op_type_destination) {
+                switch (op_type_1) {
                     case OPERAND_TYPE_REGISTER:
                         resulting_binary_word += (short) atoi(operand1 + 2);
                         resulting_binary_word <<= 7;
@@ -256,9 +256,12 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                                 if (!strcmp(temp_label_node->label_name, operand1)) {
                                     resulting_binary_word += temp_label_node->memory_adress;
                                     resulting_binary_word <<= 2;
+                                    pushToMemory(memory_idx, memory, resulting_binary_word);
                                 }
                                 temp_label_node = temp_label_node->next;
                             }
+                        } else {
+                            pushToMemory(memory_idx, memory, 0xFFF);
                         }
                         break;
                     case OPERAND_TYPE_NUMBER:
@@ -271,7 +274,7 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
             }
             break;
         case 3:
-            switch (op_type_source) {
+            switch (op_type_1) {
                     case OPERAND_TYPE_REGISTER:
                         resulting_binary_word += (short) atoi(operand1 + 2);
                         resulting_binary_word <<= 7;
@@ -284,9 +287,12 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                                 if (!strcmp(temp_label_node->label_name, operand1)) {
                                     resulting_binary_word += temp_label_node->memory_adress;
                                     resulting_binary_word <<= 2;
+                                    pushToMemory(memory_idx, memory, resulting_binary_word);
                                 }
                                 temp_label_node = temp_label_node->next;
                             }
+                        } else {
+                            pushToMemory(memory_idx, memory, 0xFFF);
                         }
                         break;
                     case OPERAND_TYPE_NUMBER:
@@ -296,7 +302,7 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                     case OPERAND_TYPE_OTHER:
                         break;
             }
-            switch (op_type_destination) {
+            switch (op_type_2) {
                     case OPERAND_TYPE_REGISTER:
                         resulting_binary_word += (short) atoi(operand2 + 2);
                         resulting_binary_word <<= 7;
@@ -309,9 +315,12 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                                 if (!strcmp(temp_label_node->label_name, operand2)) {
                                     resulting_binary_word += temp_label_node->memory_adress;
                                     resulting_binary_word <<= 2;
+                                    pushToMemory(memory_idx, memory, resulting_binary_word);
                                 }
                                 temp_label_node = temp_label_node->next;
                             }
+                        } else {
+                            pushToMemory(memory_idx, memory, 0xFFF);
                         }
                         break;
                     case OPERAND_TYPE_NUMBER:
