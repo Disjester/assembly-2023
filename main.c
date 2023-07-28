@@ -9,6 +9,7 @@ int main (int argc, char** argv) {
     Error error = NO_ERROR;
     LabelNode* labels = NULL;
     short memory[MAX_MEMORY_SIZE];
+    int memory_idx = 100;
     int DC, IC;
 
     code = preproccessor(argv[1], &error);
@@ -17,11 +18,11 @@ int main (int argc, char** argv) {
         return 0;
     }
     
-    firstIteration(memory, code, &labels, &DC, &IC, &error);
+    firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &error);
     if (error != NO_ERROR) {
         return 0;
     }
-    secondIteration(memory, code, labels, &DC, &IC, &error, argv[1]);
+    secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[1]);
     if (error != NO_ERROR) {
         return 0;
     }

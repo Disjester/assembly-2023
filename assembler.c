@@ -25,7 +25,7 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
 
 static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
 
-void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
+void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
     CodeNode* temp_code;
     LabelNode* test_label_node;
     LabelNode* temp_label_node;
@@ -36,7 +36,6 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int num_tokens = 0;
     int token_idx = 0;
-    int memory_idx = 100;
     short data[100];
     short binary_word;
     int L = 0;
@@ -87,7 +86,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     printf("I   SEE   DATA   HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
-                        pushToMemory(&memory_idx, memory, atoi(tokens[i]));
+                        pushToMemory(memory_idx, memory, atoi(tokens[i]));
                         (*DC)++;
                     }
                     printf("CURRENT   IC  AND  DC: %d, %d\n", *IC, *DC);
@@ -104,7 +103,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     continue;
                 }
                 printf("CURRENT        MEMORY: ");
-                for (i = 100; i < memory_idx; i++) {
+                for (i = 100; i < *memory_idx; i++) {
                     convertToBase64(memory[i], test_base64);
                     printf("%d:%s ", i, test_base64);
                 }
@@ -126,10 +125,10 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     /*printf("I  SEE  STRING   HERE: %s\n", temp_code->code_row);*/
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
-                        pushToMemory(&memory_idx, memory, tokens[token_idx][i]);
+                        pushToMemory(memory_idx, memory, tokens[token_idx][i]);
                         (*DC)++;
                     }
-                    pushToMemory(&memory_idx, memory, '\0');
+                    pushToMemory(memory_idx, memory, '\0');
                     (*DC)++;
                     /*printf("CURRENT  IC   AND  DC: %d, %d\n", *IC, *DC);*/
                 }
@@ -145,7 +144,7 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                     continue;
                 }
                 printf("CURRENT        MEMORY: ");
-                for (i = 100; i < memory_idx; i++) {
+                for (i = 100; i < *memory_idx; i++) {
                     convertToBase64(memory[i], test_base64);
                     printf("%d:%s ", i, test_base64);
                 }
@@ -188,9 +187,9 @@ void firstIteration(short* memory, CodeNode* code, LabelNode** labels, int* DC, 
                 if (checkCommandLine(tokens, num_tokens, label_flag, error) != COMMAND_LINE_ERROR)
                 {
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error);
-                    pushToMemory(&memory_idx, memory, binary_word);
+                    pushToMemory(memory_idx, memory, binary_word);
                     L = checkCommandLine(tokens, num_tokens, label_flag, error);
-                    createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], error), checkOperand(tokens[token_idx + 3], error), tokens[token_idx + 1], tokens[token_idx + 3], &memory_idx, memory, error);
+                    createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], error), checkOperand(tokens[token_idx + 3], error), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
                 }
                 /*handle error*/
                 if (*error)
@@ -403,7 +402,7 @@ int getOperandAmount(char* command) {
     return -1; /*CHANGE LATER*/
 }
 
-void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
     CodeNode* temp_code; 
     int token_idx = 0;
     bool label_flag = false;
@@ -456,7 +455,7 @@ void secondIteration(short* memory, CodeNode* code, LabelNode* labels, int* DC, 
         num_line++;
     }
     /*handleError(error);*/
-    createOutputFiles(file_name, labels, error);
+    createOutputFiles(file_name, labels, memory, memory_idx, error);
 }
 
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx) {
@@ -475,9 +474,35 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
     }
 }
 
-void createOutputFiles (char* file_name, LabelNode* labels, Error* error) {
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, Error* error) {
     createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
     createFileWithLabelType(file_name, labels, LABEL_TYPE_EXTERNAL ,error);
+    createFileWithMemoryDump(file_name, memory, memory_idx);
+}
+
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx) {
+    FILE *fptr;
+    int i;
+    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
+    char base64[3];
+
+    cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
+    strcat(output_file_name, "output/");
+    strcat(output_file_name, file_name);
+    strcat(output_file_name, ".ob");
+
+    fptr = fopen(output_file_name, "w");
+
+    if (!fptr) {
+        /*ERROR*/
+        return;
+    }
+
+    for (i = 100; i < *memory_idx; i++) { /*MAGIC NUMBER*/
+        convertToBase64(memory[i], base64);
+        fprintf(fptr, "%s\n", base64);
+    }
+    fclose(fptr);
 }
 
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error) {
@@ -514,7 +539,6 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
         labels = labels->next;
     }
     fclose(fptr);
-    return;
 }
 
 bool isLabel(char* word, bool colon){
