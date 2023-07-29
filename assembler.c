@@ -91,7 +91,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     printf("CURRENT   IC  AND  DC: %d, %d\n", *IC, *DC);
                 }
                 /*errr handaling*/
-                if (*error)
+                if (*error != NO_ERROR)
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
@@ -132,7 +132,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     /*printf("CURRENT  IC   AND  DC: %d, %d\n", *IC, *DC);*/
                 }
                 /*handlaing Error*/
-                if (*error)
+                if (*error != NO_ERROR)
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
@@ -191,7 +191,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
                 }
                 /*handle error*/
-                if (*error)
+                if (*error != NO_ERROR)
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
@@ -431,7 +431,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 {
                     L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
                 }
-                if (*error)
+                if (*error != NO_ERROR)
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
