@@ -146,6 +146,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     convertToBase64(memory[i], test_base64);
                     printf("%d:%s ", i, test_base64);
                 }
+                /*random comment*/
                 printf("\n");
                 break;
             case DOT_EXTERN:
