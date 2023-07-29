@@ -729,7 +729,14 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
 }
 
 void pushToMemory(int* memory_idx, short* memory, short memoryField) {
+    if (memory_idx >= 1024) /* change from magic number*/
+    {
+        *error = ERROR_MAXED_OUT_MEMORY;
+        return;
+    }
+    
     memory[(*memory_idx)++] = memoryField;
+    
 }
 
 void cleanMemory(short* memory) {
