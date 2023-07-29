@@ -1,4 +1,6 @@
 ;comment 1/3
+
+
 MAIN: mov @r3 ,LENGTH
 STR:    .string "abcdef"
 
