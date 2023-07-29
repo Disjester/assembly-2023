@@ -35,7 +35,7 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
  */
 bool isLabel(char* word, bool colon);
 
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, Error* error);
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, Error* error);
 
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
 
@@ -91,7 +91,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
 
 void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, Error* error);
 
-void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx);
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC);
 
 void* allocateMemory(size_t size, Error* error);
 
