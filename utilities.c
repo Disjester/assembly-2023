@@ -119,6 +119,9 @@ bool handleError(Error* error, int num_line) {
         case ERROR_MISSING_VARIABLE:
             fprintf(stderr, "ERROR ON %d: ERROR_MISSING_VARIABLE\n", num_line);
             return true;
+        case ERROR_MAXED_OUT_MEMORY:
+            fprintf(stderr, "ERROR ON %d: MAXED OUT MEMMORY\n", num_line);
+            return true;
         default:
             return false;
     }

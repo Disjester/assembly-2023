@@ -51,7 +51,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name);
 
-void pushToMemory(int* memory_counter, short* memory, short memoryField);
+void pushToMemory(int* memory_counter, short* memory, short memoryField, Error* error);
 
 bool validateVariableName (char *name);
 
