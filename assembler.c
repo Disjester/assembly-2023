@@ -447,7 +447,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                     }
                     continue;
                 }
-                IC += L;
+                *IC += L;
                 break;
             case DOT_DATA:
             case DOT_EXTERN:
