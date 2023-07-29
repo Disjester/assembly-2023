@@ -56,7 +56,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             num_line++;
             continue;
         }
-        printf("--\n|%c|\n--", temp_code->code_row[0]);
         if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0') {
             /*printf("I SEE EMPTY LINE HERE: %s\n", temp_code->code_row);*/
             temp_code = temp_code->next;
