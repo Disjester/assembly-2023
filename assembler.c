@@ -274,6 +274,7 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                         break;
                     case OPERAND_TYPE_NUMBER:
                         resulting_binary_word += (short) atoi(operand1);
+                        resulting_binary_word <<= 2;
                         pushToMemory(memory_idx, memory, resulting_binary_word);
                         break;
                     case OPERAND_TYPE_OTHER:
@@ -283,63 +284,65 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
             break;
         case 3:
             switch (op_type_1) {
-                    case OPERAND_TYPE_REGISTER:
-                        resulting_binary_word += (short) atoi(operand1 + 2);
-                        resulting_binary_word <<= 7;
-                        pushToMemory(memory_idx, memory, resulting_binary_word);
-                        break;
-                    case OPERAND_TYPE_LABEL:
-                        if (!is_first_iteration) {
-                            temp_label_node = labels;
-                            while (temp_label_node) {
-                                if (!strcmp(temp_label_node->label_name, operand1)) {
-                                    resulting_binary_word += temp_label_node->memory_adress;
-                                    resulting_binary_word <<= 2;
-                                    pushToMemory(memory_idx, memory, resulting_binary_word);
-                                }
-                                temp_label_node = temp_label_node->next;
+                case OPERAND_TYPE_REGISTER:
+                    resulting_binary_word += (short) atoi(operand1 + 2);
+                    resulting_binary_word <<= 7;
+                    pushToMemory(memory_idx, memory, resulting_binary_word);
+                    break;
+                case OPERAND_TYPE_LABEL:
+                    if (!is_first_iteration) {
+                        temp_label_node = labels;
+                        while (temp_label_node) {
+                            if (!strcmp(temp_label_node->label_name, operand1)) {
+                                resulting_binary_word += temp_label_node->memory_adress;
+                                resulting_binary_word <<= 2;
+                                pushToMemory(memory_idx, memory, resulting_binary_word);
                             }
-                        } else {
-                            pushToMemory(memory_idx, memory, 0xFFF);
+                            temp_label_node = temp_label_node->next;
                         }
-                        break;
-                    case OPERAND_TYPE_NUMBER:
-                        resulting_binary_word += (short) atoi(operand1);
-                        pushToMemory(memory_idx, memory, resulting_binary_word);
-                        break;
-                    case OPERAND_TYPE_OTHER:
-                        break;
+                    } else {
+                        pushToMemory(memory_idx, memory, 0xFFF);
+                    }
+                    break;
+                case OPERAND_TYPE_NUMBER:
+                    resulting_binary_word += (short) atoi(operand1);
+                    resulting_binary_word <<= 2;
+                    pushToMemory(memory_idx, memory, resulting_binary_word);
+                    break;
+                case OPERAND_TYPE_OTHER:
+                    break;
             }
             switch (op_type_2) {
-                    case OPERAND_TYPE_REGISTER:
-                        resulting_binary_word += (short) atoi(operand2 + 2);
-                        resulting_binary_word <<= 7;
-                        pushToMemory(memory_idx, memory, resulting_binary_word);
-                        break;
-                    case OPERAND_TYPE_LABEL:
-                        if (!is_first_iteration) {
-                            temp_label_node = labels;
-                            while (temp_label_node) {
-                                if (!strcmp(temp_label_node->label_name, operand2)) {
-                                    resulting_binary_word += temp_label_node->memory_adress;
-                                    resulting_binary_word <<= 2;
-                                    pushToMemory(memory_idx, memory, resulting_binary_word);
-                                }
-                                temp_label_node = temp_label_node->next;
+                case OPERAND_TYPE_REGISTER:
+                    resulting_binary_word += (short) atoi(operand2 + 2);
+                    resulting_binary_word <<= 7;
+                    pushToMemory(memory_idx, memory, resulting_binary_word);
+                    break;
+                case OPERAND_TYPE_LABEL:
+                    if (!is_first_iteration) {
+                        temp_label_node = labels;
+                        while (temp_label_node) {
+                            if (!strcmp(temp_label_node->label_name, operand2)) {
+                                resulting_binary_word += temp_label_node->memory_adress;
+                                resulting_binary_word <<= 2;
+                                pushToMemory(memory_idx, memory, resulting_binary_word);
                             }
-                        } else {
-                            pushToMemory(memory_idx, memory, 0xFFF);
+                            temp_label_node = temp_label_node->next;
                         }
-                        break;
-                    case OPERAND_TYPE_NUMBER:
-                        resulting_binary_word += (short) atoi(operand2);
-                        pushToMemory(memory_idx, memory, resulting_binary_word);
-                        break;
-                    case OPERAND_TYPE_OTHER:
-                        break;
+                    } else {
+                        pushToMemory(memory_idx, memory, 0xFFF);
+                    }
+                    break;
+                case OPERAND_TYPE_NUMBER:
+                    resulting_binary_word += (short) atoi(operand2);
+                    resulting_binary_word <<= 2;
+                    pushToMemory(memory_idx, memory, resulting_binary_word);
+                    break;
+                case OPERAND_TYPE_OTHER:
+                    break;
             }
             break;
-    }
+    }resulting_binary_word <<= 2;
 }
 
 short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr) {
@@ -410,6 +413,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int num_tokens = 0;
     int L = 0;
     int num_line = 0;
+    int i;
+    LabelNode* temp_label_node;
 
     printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n\n");
     temp_code = code;
