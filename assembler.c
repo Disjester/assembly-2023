@@ -64,8 +64,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         if(isLabel(tokens[token_idx], true)) {
-            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
-            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
             label_flag = true;
             token_idx++;
         }
