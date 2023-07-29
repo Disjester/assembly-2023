@@ -416,8 +416,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int num_tokens = 0;
     int L = 0;
     int num_line = 0;
-    int i;
-    LabelNode* temp_label_node;
 
     printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n\n");
     temp_code = code;
