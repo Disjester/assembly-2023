@@ -125,7 +125,7 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line) {
     }
     /*The case where the line is empty*/
     if (i == 0 && x == '\n') {
-        line[0] = '\n';
+        line[0] = '\0';
         return 1;
     }
     return i;
