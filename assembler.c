@@ -37,7 +37,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int num_tokens = 0;
     int token_idx = 0;
-    short data[100];
     short binary_word;
     int L = 0;
     int num_line = 1;
@@ -183,7 +182,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     }
                     printf("\n");
                 }
-                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
+                if (checkCommandL
+    short ine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
                 {
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
                     pushToMemory(memory_idx, memory, binary_word);
@@ -219,9 +219,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 temp_label_node->memory_adress += *IC;
             case LABEL_TYPE_CODE:
             case LABEL_TYPE_ENTRY:
-            case LABEL_TYPE_EXTERNAL:
                 temp_label_node->memory_adress += 100;
                 break;
+            case LABEL_TYPE_EXTERNAL:
             case LABEL_TYPE_NOT_FOUND:
                 /* *error = ERROR_UNRECOGNIZED_LABEL; */
                 break;
@@ -345,7 +345,7 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                     break;
             }
             break;
-    }resulting_binary_word <<= 2;
+    }
 }
 
 short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr) {
@@ -375,9 +375,9 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
     resulting_binary_word <<= 4;
     resulting_binary_word +=  opcode;
     resulting_binary_word <<= 3;
-    resulting_binary_word += destination_operand;
+    resulting_binary_word +=  destination_operand;
     resulting_binary_word <<= 2;
-    resulting_binary_word += 0; /*A.R.E. CHANGE IT, BORIS*/
+    resulting_binary_word +=  0; /*A.R.E. CHANGE IT, BORIS*/
     return resulting_binary_word;
 }
 
@@ -460,7 +460,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         L = 0;
     }
     /*handleError(error);*/
-    createOutputFiles(file_name, labels, memory, memory_idx, error);
+    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, error);
 }
 
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx) {
@@ -479,13 +479,13 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
     }
 }
 
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, Error* error) {
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, Error* error) {
     createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
     createFileWithLabelType(file_name, labels, LABEL_TYPE_EXTERNAL ,error);
-    createFileWithMemoryDump(file_name, memory, memory_idx);
+    createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC);
 }
 
-void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx) {
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC) {
     FILE *fptr;
     int i;
     char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
@@ -502,7 +502,7 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx) {
         /*ERROR*/
         return;
     }
-
+    fprintf(fptr, "%d %d\n", IC, DC);
     for (i = 100; i < *memory_idx; i++) { /*MAGIC NUMBER*/
         convertToBase64(memory[i], base64);
         fprintf(fptr, "%s\n", base64);
