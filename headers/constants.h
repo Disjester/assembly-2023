@@ -60,6 +60,7 @@ typedef enum bool{
 }bool;
 
 typedef enum LabelType {
+    LABEL_TYPE_NOT_FOUND,
     LABEL_TYPE_CODE,
     LABEL_TYPE_DATA,
     LABEL_TYPE_EXTERNAL,

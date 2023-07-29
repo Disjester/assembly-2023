@@ -222,6 +222,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case LABEL_TYPE_EXTERNAL:
                 temp_label_node->memory_adress += 100;
                 break;
+            case LABEL_TYPE_NOT_FOUND:
+                /* *error = ERROR_UNRECOGNIZED_LABEL; */
+                break;
         }
         temp_label_node = temp_label_node->next;
     }
@@ -452,7 +455,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         token_idx = 0;
         label_flag = false;
         L = 0;
-        num_line++;
     }
     /*handleError(error);*/
     createOutputFiles(file_name, labels, memory, memory_idx, error);
@@ -521,6 +523,7 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
             strcat(output_file_name, ".ext");
             break;
         default:
+            /* *error = ERROR_UNRECOGNIZED_LABEL;*/
             /*Error*/
             break;
     }
@@ -612,7 +615,7 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
     
     *error = ERROR_UNRECOGNIZED_LABEL;
     /*printf("error, haven't found the label %s\n", label);*/
-    return 0;
+    return LABEL_TYPE_NOT_FOUND;
 
 }
 
@@ -955,7 +958,7 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
         }
     }
 
-    else if (getLabelType(operand, LabelPtr, error))
+    else if (getLabelType(operand, LabelPtr, error) != LABEL_TYPE_NOT_FOUND)
     {
         return OPERAND_TYPE_LABEL;
     }
