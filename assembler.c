@@ -79,12 +79,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     }
                 }
                 /*errr handaling*/
-                if (*error != NO_ERROR)
-                {
+                if (*error != NO_ERROR) {
                     handleError(error, num_line);
                     *error = NO_ERROR;
-                    if (temp_code->next != NULL)
-                    {
+                    if (!temp_code->next) {
                         temp_code =  temp_code->next;
                     }
                     continue;
@@ -105,8 +103,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     (*DC)++;
                 }
                 /*handlaing Error*/
-                if (*error != NO_ERROR)
-                {
+                if (*error != NO_ERROR) {
                     handleError(error, num_line);
                     *error = NO_ERROR;
                     if (!temp_code->next) {
@@ -134,8 +131,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, error);
                     if (*error == ERROR_MEMORY_ALLOCATION) return;
                 }
-                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
-                {
+                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR) {
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
                     pushToMemory(memory_idx, memory, binary_word, error);
                     L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag);
@@ -203,16 +199,13 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
             case DOT_OTHER:
-                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
-                {
+                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR) {
                     L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
                 }
-                if (*error != NO_ERROR)
-                {
+                if (*error != NO_ERROR) {
                     handleError(error, num_line);
                     *error = NO_ERROR;
-                    if (temp_code->next != NULL)
-                    {
+                    if (temp_code->next != NULL) {
                         temp_code =  temp_code->next;
                     }
                     continue;
@@ -310,6 +303,11 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                     break;
             }
             switch (op_type_2) {
+        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0') {
+            temp_code = temp_code->next;
+            num_line++;
+            continue;
+        }
                 case OPERAND_TYPE_REGISTER:
                     resulting_binary_word += (short) atoi(operand2 + 2);
                     resulting_binary_word <<= 7;
@@ -468,7 +466,6 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
             /*Error*/
             break;
     }
-
     fptr = fopen(output_file_name, "w");
 
     if (!fptr) {
@@ -488,15 +485,12 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
 bool isLabel(char* word, bool colon){
     bool flag = false;
     int i = 0;
-    if (!isalpha(word[i++]))
-    {
+    if (!isalpha(word[i++])) {
         return flag;
     }
     
-    for (; word[i] != '\0'; i++)
-    {
-        if (colon && word[i] == ':' && word[i+1] == '\0')
-        {
+    for (; word[i] != '\0'; i++) {
+        if (colon && word[i] == ':' && word[i+1] == '\0') {
             flag = true;
             return flag;
         }
@@ -509,68 +503,46 @@ bool isLabel(char* word, bool colon){
     return flag;
 }
 
-
 short isDotType(char* word, Error* error){
-    if (!strcmp(word, ".data"))
-    {
+    if (!strcmp(word, ".data")) {
         return DOT_DATA;
     }
-    if (!strcmp(word, ".string"))
-    {
+    if (!strcmp(word, ".string")) {
         return DOT_STRING;
     }
-    if (!strcmp(word, ".entry"))
-    {
-        return DOT_ENTRY;
-    }
-    
+    if (!strcmp(word, ".entry")) return DOT_ENTRY;
+
     return (!strcmp(word, ".extern")) ? DOT_EXTERN:DOT_OTHER;
 }
 
-
 LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
-    
-    if (LabelPtr != NULL)
-    {
-        do
-        {
-            if (!strcmp(label, LabelPtr->label_name))
-            {
+
+    if (LabelPtr != NULL) {
+        do {
+            if (!strcmp(label, LabelPtr->label_name)) {
                 /*printf("found Label %s is of type: %d\n", label, LabelPtr->label_type);*/
                 return LabelPtr->label_type;
             }
             LabelPtr = LabelPtr->next;
-        }
-        while (LabelPtr != NULL);
+        } while (LabelPtr != NULL);
     }
-    
     *error = ERROR_UNRECOGNIZED_LABEL;
-    /*printf("error, haven't found the label %s\n", label);*/
     return LABEL_TYPE_NOT_FOUND;
-
 }
 
 bool isString(char* string){
     int i = 0;
     bool quote = false;
-    if (string[i++] != '"')
-    {
+
+    if (string[i++] != '"') {
         return false;
     }
-    for ( ; i < strlen(string); i++)
-    {
-        if (quote)
-        {
-            return false;
-        }
-        
-        if (string[i] == '"')
-        { 
-            quote = true;
-        }
-        
-    }
 
+    for ( ; i < strlen(string); i++) {
+        if (quote) return false;
+        
+        if (string[i] == '"') quote = true;
+    }
     return quote;
 }
 
@@ -579,78 +551,54 @@ bool isNumber(char* word){
     int len = strlen(word);
 
     /* Check for a minus sign at the beginning*/
-    if (word[i] == '-')
-        i++;  /* Skip the minus sign */
+    if (word[i] == '-') i++;  /* Skip the minus sign */
     
-    for ( ; i < len; i++)
-    {
-        if (!isdigit(word[i]))
-        {
+    for ( ; i < len; i++) {
+        if (!isdigit(word[i])) {
             return false; /* not a number*/
         }
-        
     }
     return true;
-    
 }
 
 bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
-    
     int token_index = 1;
     
-    if (num_tokens < (2 + label))
-    {
+    if (num_tokens < (2 + label)) {
         *error = ERROR_MISSING_DATA_ARGUMENT;
-        /*printf("The line is missing arguments\n");*/
         return false;
     }
     
-    if (isDotType(tokens[0 + label], error) == DOT_STRING)
-    {
-        if (num_tokens > (2 + label))
-        {
-            /*printf("too many arguments\n");*/
+    if (isDotType(tokens[0 + label], error) == DOT_STRING) {
+        if (num_tokens > (2 + label)) {
             *error = ERROR_EXTRANEOS_TEXT;
             return false;
         }
-        if (isString(tokens[1 + label]))
-        {
+        if (isString(tokens[1 + label])) {
             return true;
         }
-        
     }
     
-    if (isDotType(tokens[0 + label], error) == DOT_DATA)
-    {
-        if (num_tokens % 2 == (1 + label))
-        {
+    if (isDotType(tokens[0 + label], error) == DOT_DATA) {
+        if (num_tokens % 2 == (1 + label)) {
             *error = ERROR_WRONG_NUM_OF_COMMAS;
-            printf("wrong number of ',' \n");
             return false;
         }
-
         token_index += label;
 
-        for (; token_index< num_tokens; token_index+=2)
-        {
-            if (!isNumber(tokens[token_index]))
-            {
+        for (; token_index< num_tokens; token_index+=2) {
+            if (!isNumber(tokens[token_index])) {
                 return false;
             }
-
         }
-        for (; token_index + 1 < num_tokens; token_index += 2)
-        {
-            if (strcmp(tokens[token_index], ","))
-            {
+        for (; token_index + 1 < num_tokens; token_index += 2) {
+            if (strcmp(tokens[token_index], ",")) {
                 *error = ERROR_MISSING_COMMA;
-                printf("Missing a ,");
                 return false;
             }
         }
         return true;
     }
-
     return false;
 }
 
