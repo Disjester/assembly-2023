@@ -18,8 +18,8 @@ int main (int argc, char** argv) {
         labels = NULL;
         memory_idx = 100;
         DC = IC = 0;
+        
         code = preproccessor(argv[1], &error);
-
         if (error != NO_ERROR) continue;
         
         firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &error);
