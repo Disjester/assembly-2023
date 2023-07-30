@@ -28,7 +28,6 @@ static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
     bool is_first_itteration_flag = true;
     CodeNode* temp_code;
-    LabelNode* test_label_node;
     LabelNode* temp_label_node;
     bool label_flag = false;
     int i;
@@ -40,11 +39,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     short binary_word;
     int L = 0;
     int num_line = 1;
-    char test_base64[3];
 
     if (*error == ERROR_MEMORY_ALLOCATION) return;
  
-    printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n\n");
+    printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n");
     *DC = *IC = 0;
     cleanMemory(memory);
     temp_code = code;
@@ -72,22 +70,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
                     if (*error == ERROR_MEMORY_ALLOCATION) return;
-                    test_label_node = *labels;
-                    printf("CURRENT  LABEL  TABLE: ");
-                    while (test_label_node) {
-                        printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
-                        test_label_node = test_label_node->next;
-                    }
-                    printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
-                    printf("I   SEE   DATA   HERE: %s\n", temp_code->code_row);
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
                         pushToMemory(memory_idx, memory, atoi(tokens[i]), error);
                         (*DC)++;
                     }
-                    printf("CURRENT   IC  AND  DC: %d, %d\n", *IC, *DC);
                 }
                 /*errr handaling*/
                 if (*error != NO_ERROR)
@@ -100,27 +89,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     }
                     continue;
                 }
-                printf("CURRENT        MEMORY: ");
-                for (i = 100; i < *memory_idx; i++) {
-                    convertToBase64(memory[i], test_base64);
-                    printf("%d:%s ", i, test_base64);
-                }
-                printf("\n");
                 break;
             case DOT_STRING:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
                     if (*error == ERROR_MEMORY_ALLOCATION) return;
-                    test_label_node = *labels;
-                    printf("CURRENT  LABEL  TABLE: ");
-                    while (test_label_node) {
-                        printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
-                        test_label_node = test_label_node->next;
-                    }
-                    printf("\n");
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
-                    /*printf("I  SEE  STRING   HERE: %s\n", temp_code->code_row);*/
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
                         pushToMemory(memory_idx, memory, tokens[token_idx][i], error);
@@ -128,7 +103,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     }
                     pushToMemory(memory_idx, memory, '\0', error);
                     (*DC)++;
-                    /*printf("CURRENT  IC   AND  DC: %d, %d\n", *IC, *DC);*/
                 }
                 /*handlaing Error*/
                 if (*error != NO_ERROR)
@@ -141,13 +115,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     }
                     continue;
                 }
-                printf("CURRENT        MEMORY: ");
-                for (i = 100; i < *memory_idx; i++) {
-                    convertToBase64(memory[i], test_base64);
-                    printf("%d:%s ", i, test_base64);
-                }
-                /*random comment*/
-                printf("\n");
                 break;
             case DOT_EXTERN:
                 place = 1;
@@ -155,19 +122,11 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     if (isLabel(tokens[place], false)) {
                         insertNewLabel(labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem, error);
                         if (*error == ERROR_MEMORY_ALLOCATION) return;
-                        printf("I SEE  EXTERNAL  HERE: %s\n", temp_code->code_row);
                     }
                     else {
                         break;
                     }
                 }
-                test_label_node = *labels;
-                printf("CURRENT  LABEL  TABLE: ");
-                while (test_label_node) {
-                    printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
-                    test_label_node = test_label_node->next;
-                }
-                printf("\n");
                 break;
             case DOT_ENTRY:
                 break;
@@ -175,13 +134,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, error);
                     if (*error == ERROR_MEMORY_ALLOCATION) return;
-                    test_label_node = *labels;
-                    printf("CURRENT  LABEL  TABLE: ");
-                    while (test_label_node) {
-                        printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
-                        test_label_node = test_label_node->next;
-                    }
-                    printf("\n");
                 }
                 if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
                 {
@@ -203,7 +155,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 }
                 *IC += L;
                 L = 0;
-                printf("THE IC IS : %d\n",*IC);
                 break;
         }
         token_idx = 0;
@@ -228,15 +179,62 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         }
         temp_label_node = temp_label_node->next;
     }
+}
 
-    /**/
-    test_label_node = *labels;
-    printf("LABEL  TABLE  AFTER 1: ");
-    while (test_label_node) {
-        printf("%s:%d ", test_label_node->label_name, test_label_node->memory_adress);
-        test_label_node = test_label_node->next;
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
+    CodeNode* temp_code;
+    bool is_first_itteration_flag = false; 
+    int token_idx = 0;
+    bool label_flag = false;
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
+    int num_tokens = 0;
+    int L = 0;
+    int num_line = 0;
+
+    printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n");
+    temp_code = code;
+    *IC = 0;
+    while (temp_code) {
+        num_line++;
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
+        if(isLabel(tokens[token_idx], true)) {
+            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
+            label_flag = true;
+            token_idx++;
+        }
+        switch (isDotType(tokens[token_idx], error)) {
+            case DOT_ENTRY:
+                updateEntryLabels(labels, tokens, num_tokens, token_idx);
+                break;
+            case DOT_OTHER:
+                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
+                {
+                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
+                }
+                if (*error != NO_ERROR)
+                {
+                    handleError(error, num_line);
+                    *error = NO_ERROR;
+                    if (temp_code->next != NULL)
+                    {
+                        temp_code =  temp_code->next;
+                    }
+                    continue;
+                }
+                *IC += L;
+                break;
+            case DOT_DATA:
+            case DOT_EXTERN:
+            case DOT_STRING:
+                break;
+        }
+        temp_code = temp_code->next;
+        token_idx = 0;
+        label_flag = false;
+        L = 0;
     }
-    printf("\n\n");
+    /*handleError(error);*/
+    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, error);
 }
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error) {
@@ -346,62 +344,6 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
             }
             break;
     }
-}
-
-void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
-    CodeNode* temp_code;
-    bool is_first_itteration_flag = false; 
-    int token_idx = 0;
-    bool label_flag = false;
-    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
-    int num_tokens = 0;
-    int L = 0;
-    int num_line = 0;
-
-    printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n\n");
-    temp_code = code;
-    *IC = 0;
-    while (temp_code) {
-        num_line++;
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
-        if(isLabel(tokens[token_idx], true)) {
-            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
-            label_flag = true;
-            token_idx++;
-        }
-        switch (isDotType(tokens[token_idx], error)) {
-            case DOT_ENTRY:
-                updateEntryLabels(labels, tokens, num_tokens, token_idx);
-                break;
-            case DOT_OTHER:
-                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
-                {
-                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
-                }
-                if (*error != NO_ERROR)
-                {
-                    handleError(error, num_line);
-                    *error = NO_ERROR;
-                    if (temp_code->next != NULL)
-                    {
-                        temp_code =  temp_code->next;
-                    }
-                    continue;
-                }
-                *IC += L;
-                break;
-            case DOT_DATA:
-            case DOT_EXTERN:
-            case DOT_STRING:
-                break;
-        }
-        temp_code = temp_code->next;
-        token_idx = 0;
-        label_flag = false;
-        L = 0;
-    }
-    /*handleError(error);*/
-    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, error);
 }
 
 short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr) {
