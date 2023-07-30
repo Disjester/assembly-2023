@@ -11,21 +11,22 @@ int main (int argc, char** argv) {
     short memory[MAX_MEMORY_SIZE];
     int memory_idx = 100;
     int DC, IC;
+    int i;
 
-    code = preproccessor(argv[1], &error);
+    for (i = 1; i <= argc; i++) {
+        error = NO_ERROR;
+        labels = NULL;
+        memory_idx = 100;
+        DC = IC = 0;
+        code = preproccessor(argv[1], &error);
 
-    if (error != NO_ERROR) {
-        return 0;
-    }
-    
-    firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &error);
-    if (error != NO_ERROR) {
-        return 0;
-    }
-    secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[1]);
-    if (error != NO_ERROR) {
-        return 0;
-    }
+        if (error != NO_ERROR) continue;
+        
+        firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &error);
+        if (error != NO_ERROR) continue;
 
+        secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[1]);
+        if (error != NO_ERROR) continue;
+    }
     return 1;
 }
