@@ -109,8 +109,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 {
                     handleError(error, num_line);
                     *error = NO_ERROR;
-                    if (temp_code->next != NULL)
-                    {
+                    if (!temp_code->next) {
                         temp_code =  temp_code->next;
                     }
                     continue;
@@ -143,12 +142,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
                 }
                 /*handle error*/
-                if (*error != NO_ERROR)
-                {
+                if (*error != NO_ERROR) {
                     handleError(error, num_line);
                     *error = NO_ERROR;
-                    if (temp_code->next != NULL)
-                    {
+                    if (temp_code->next != NULL) {
                         temp_code =  temp_code->next;
                     }
                     continue;
@@ -668,7 +665,7 @@ void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* erro
 void cleanMemory(short* memory) {
     int i;
 
-    for (i = 0; i <= MAX_MEMORY_SIZE; i++) {
+    for (i = 0; i < MAX_MEMORY_SIZE; i++) {
         memory[i] = -1;
     }
 }
