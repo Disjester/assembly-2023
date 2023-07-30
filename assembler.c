@@ -348,6 +348,62 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
     }
 }
 
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
+    CodeNode* temp_code;
+    bool is_first_itteration_flag = false; 
+    int token_idx = 0;
+    bool label_flag = false;
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
+    int num_tokens = 0;
+    int L = 0;
+    int num_line = 0;
+
+    printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n\n");
+    temp_code = code;
+    *IC = 0;
+    while (temp_code) {
+        num_line++;
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
+        if(isLabel(tokens[token_idx], true)) {
+            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
+            label_flag = true;
+            token_idx++;
+        }
+        switch (isDotType(tokens[token_idx], error)) {
+            case DOT_ENTRY:
+                updateEntryLabels(labels, tokens, num_tokens, token_idx);
+                break;
+            case DOT_OTHER:
+                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
+                {
+                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
+                }
+                if (*error != NO_ERROR)
+                {
+                    handleError(error, num_line);
+                    *error = NO_ERROR;
+                    if (temp_code->next != NULL)
+                    {
+                        temp_code =  temp_code->next;
+                    }
+                    continue;
+                }
+                *IC += L;
+                break;
+            case DOT_DATA:
+            case DOT_EXTERN:
+            case DOT_STRING:
+                break;
+        }
+        temp_code = temp_code->next;
+        token_idx = 0;
+        label_flag = false;
+        L = 0;
+    }
+    /*handleError(error);*/
+    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, error);
+}
+
 short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr) {
     short resulting_binary_word = 0;
     short source_operand, destination_operand;
@@ -405,62 +461,6 @@ int getOperandAmount(char* command) {
         }
     }
     return -1; /*CHANGE LATER*/
-}
-
-void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
-    CodeNode* temp_code;
-    bool is_first_itteration_flag = false; 
-    int token_idx = 0;
-    bool label_flag = false;
-    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
-    int num_tokens = 0;
-    int L = 0;
-    int num_line = 0;
-
-    printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n\n");
-    temp_code = code;
-    *IC = 0;
-    while (temp_code) {
-        num_line++;
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
-        if(isLabel(tokens[token_idx], true)) {
-            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
-            label_flag = true;
-            token_idx++;
-        }
-        switch (isDotType(tokens[token_idx], error)) {
-            case DOT_ENTRY:
-                updateEntryLabels(labels, tokens, num_tokens, token_idx);
-                break;
-            case DOT_OTHER:
-                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR)
-                {
-                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
-                }
-                if (*error != NO_ERROR)
-                {
-                    handleError(error, num_line);
-                    *error = NO_ERROR;
-                    if (temp_code->next != NULL)
-                    {
-                        temp_code =  temp_code->next;
-                    }
-                    continue;
-                }
-                *IC += L;
-                break;
-            case DOT_DATA:
-            case DOT_EXTERN:
-            case DOT_STRING:
-                break;
-        }
-        temp_code = temp_code->next;
-        token_idx = 0;
-        label_flag = false;
-        L = 0;
-    }
-    /*handleError(error);*/
-    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, error);
 }
 
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx) {
