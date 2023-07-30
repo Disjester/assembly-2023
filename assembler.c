@@ -198,7 +198,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         num_line++;
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if(isLabel(tokens[token_idx], true)) {
-            /*printf("I  SEE   LABEL   HERE: %s\n",temp_code->code_row);*/
             label_flag = true;
             token_idx++;
         }
@@ -505,21 +504,11 @@ bool isLabel(char* word, bool colon){
             return flag;
         }
         
-        if (!isalpha(word[i]) && !isdigit(word[i]))
-        {
+        if (!isalpha(word[i]) && !isdigit(word[i])) {
             return flag;
         }
-        
     }
-    if (colon)
-    {
-        flag = false;
-    }
-    else
-    {
-        flag = true;
-    }
-    
+    flag = colon ? false : true;
     return flag;
 }
 
@@ -669,12 +658,10 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
 }
 
 void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error) {
-    if (*memory_idx >= 1024)
-    {
+    if (*memory_idx >= 1024) {
         *error = ERROR_MAXED_OUT_MEMORY;
         return;
     }
-    
     memory[(*memory_idx)++] = memoryField;
 }
 
@@ -687,10 +674,10 @@ void cleanMemory(short* memory) {
 }
 
 void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, Error* error) {
-    
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;
+
     if (temp_label) {
         while(temp_label && temp_label->next) {
             temp_label = temp_label->next;
@@ -714,218 +701,145 @@ char* removeColon(char* str) {
 }
 
 short checkCommand(char* word){
-    
     int i = 0;
 
-    for (; i < NUM_OF_COMMANDS; i++)
-    {
-        if (!strcmp((char*)commands[i].command, word))
-        {
+    for (; i < NUM_OF_COMMANDS; i++) {
+        if (!strcmp((char*)commands[i].command, word)) {
             return commands[i].opcode;
         }
-        
     }
     return -1;
 }
 
-int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration){
-    
+int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration) {
     short opcode = checkCommand(tokens[label]);
     int count = 0;
     int operand_index = label+1; /*operand index*/
     int operand_result = -1;
     bool register_flag = false;
     bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
-
     int L = 1;
 
-    
     /*ERROR unrecognized command name*/
-    if (opcode == -1)
-    {
+    if (opcode == -1) {
         return COMMAND_LINE_ERROR;
     }
 
     /* ERROR wrong amount of operands for the command */
-    if ((num_tokens <= 2 + label) && (num_tokens - label - 1) != commands[opcode].number_of_operands)
-    {
+    if ((num_tokens <= 2 + label) && (num_tokens - label - 1) != commands[opcode].number_of_operands) {
         *error = ERROR_WRONG_AMOUNT_OF_OPERANDS;
         return COMMAND_LINE_ERROR;
     }
     
     /*ERROR illegal comma*/
-    if (!strcmp(tokens[num_tokens-1], ","))
-    {
+    if (!strcmp(tokens[num_tokens-1], ",")) {
         *error = ERROR_ILLEGAL_COMMA;
-        printf("ERROR ILLEGAL COMMA HERE:");
-        printLine(tokens, num_tokens);
         return COMMAND_LINE_ERROR;
     }
     
-    if (num_tokens > 2 + label && (num_tokens - label - 2) != commands[opcode].number_of_operands)
-    {
+    if (num_tokens > 2 + label && (num_tokens - label - 2) != commands[opcode].number_of_operands) {
         *error = ERROR_WRONG_AMOUNT_OF_OPERANDS;
-        printf("ERROR INCORRECT NUMBER OF OPERANDS HERE: ");
-        printLine(tokens, num_tokens);
         return COMMAND_LINE_ERROR;
     }
     
-
-    for (; count < commands[opcode].number_of_operands; count++)
-    {
-        if (!source_flag)
-        {
+    for (; count < commands[opcode].number_of_operands; count++) {
+        if (!source_flag) {
             operand_result = checkOperand(tokens[operand_index + count + 1], LabelPtr, error, is_first_iteration);
         }
-        else
-        {           
+        else {           
             operand_result = checkOperand(tokens[operand_index + count], LabelPtr, error, is_first_iteration);
         }
         
-        switch (operand_result)
-        {
-        case OPERAND_TYPE_LABEL:
-            L++;
-            if (commands[opcode].number_of_operands < 2)
-            {
-                if (!commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])
-                {
+        switch (operand_result) {
+            case OPERAND_TYPE_LABEL:
+                L++;
+                if (commands[opcode].number_of_operands < 2) {
+                    if (!commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]) {
+                        *error = ERROR_INCORRECT_OPERAND_TYPE;
+                        return COMMAND_LINE_ERROR;
+                    }
+                    break;
+                }
+                
+                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
-                    printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
-                    return COMMAND_LINE_ERROR;
+                    return COMMAND_LINE_ERROR; 
                 }
                 break;
-            }
-            
-            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]))
-            {
-                *error = ERROR_INCORRECT_OPERAND_TYPE;
-                printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
-                return COMMAND_LINE_ERROR; 
-            }
-            
-            break;
-
-        case OPERAND_TYPE_REGISTER:
-
-            if (commands[opcode].number_of_operands < 2)
-            {
-                if (!commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])
+            case OPERAND_TYPE_REGISTER:
+                if (commands[opcode].number_of_operands < 2)
                 {
+                    if (!commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]) {
+                        *error = ERROR_INCORRECT_OPERAND_TYPE;
+                        return COMMAND_LINE_ERROR;
+                    }
+                    else {
+                        L++;
+                        break;
+                    }
+                }
+
+                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
-                    printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
-                    return COMMAND_LINE_ERROR;
+                    return COMMAND_LINE_ERROR; 
                 }
-                else
-                {
+
+                if (!register_flag) {
                     L++;
-                    break;
+                    register_flag = true;
                 }
-            }
+                break;
 
-            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]))
-            {
-                *error = ERROR_INCORRECT_OPERAND_TYPE;
-                printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
-                return COMMAND_LINE_ERROR; 
-            }
+            case OPERAND_TYPE_NUMBER:
+                if (commands[opcode].number_of_operands < 2) {
+                    if (!commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]) {
+                        *error = ERROR_INCORRECT_OPERAND_TYPE;
+                        return COMMAND_LINE_ERROR;
+                    }
+                    else {
+                        L++;
+                        break;
+                    }
+                }
 
-            if (!register_flag)
-            {
+                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])) {
+                    *error = ERROR_INCORRECT_OPERAND_TYPE;
+                    return COMMAND_LINE_ERROR; 
+                }
                 L++;
-                register_flag = true;
+                break;
+            default:
+                *error = ERROR_ILLEGAL_OPERAND_TYPE;
+                return COMMAND_LINE_ERROR;
             }
-            break;
+        if (source_flag) source_flag = false;
 
-        case OPERAND_TYPE_NUMBER:
-            if (commands[opcode].number_of_operands < 2)
-            {
-                if (!commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])
-                {
-                    *error = ERROR_INCORRECT_OPERAND_TYPE;
-                    printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
-                    return COMMAND_LINE_ERROR;
-                }
-                else
-                {
-                    L++;
-                    break;
-                }
-            }
-
-            if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]))
-            {
-                *error = ERROR_INCORRECT_OPERAND_TYPE;
-                printf("INCORRECT OPERAND FOR %s: %s\n",commands[opcode].command, tokens[operand_index + count]);
-                return COMMAND_LINE_ERROR; 
-            }
-
-            L++;
-            break;
-
-        default:
-            *error = ERROR_ILLEGAL_OPERAND_TYPE;
-            printf("ERROR IN OPERAND %s\n", tokens[operand_index + count]);
-            return COMMAND_LINE_ERROR;
-            break;
-        }
-        
-        if (source_flag)
-        {
-            source_flag = false;
-        }
         operand_result = -1;
     }
     return L;
 }
 
-OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool is_first_iteration){
-    
+OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool is_first_iteration){    
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
     int i = 0;
 
-    
-    for (; i < NUM_OF_REGISTERS; i++)
-    {
-        if (!strcmp(registers[i], operand))
-        {
-            /*printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_REGISTER);*/
+    for (; i < NUM_OF_REGISTERS; i++) {
+        if (!strcmp(registers[i], operand)) {
             return OPERAND_TYPE_REGISTER;
         }
-        
     }
-    
-    if (isNumber(operand))
-    {
-        /*printf("THE OPERAND %s is of type: %d\n", operand, OPERAND_TYPE_NUMBER);*/
+
+    if (isNumber(operand)) {
         return OPERAND_TYPE_NUMBER;
     }
-    
-    if (is_first_iteration)
-    {
-        if (isLabel(operand, false))
-        {
+
+    if (is_first_iteration) {
+        if (isLabel(operand, false)) {
             return OPERAND_TYPE_LABEL;
         }
-    }
-
-    else if (getLabelType(operand, LabelPtr, error) != LABEL_TYPE_NOT_FOUND)
-    {
+    } else if (getLabelType(operand, LabelPtr, error) != LABEL_TYPE_NOT_FOUND) {
         return OPERAND_TYPE_LABEL;
     }
-    
-
     /*handle error*/
-    
-    /*printf("ILLEGAL        OPERAND: %s\n", operand);*/
     return OPERAND_TYPE_OTHER;
-}
-
-void printLine(char** tokens, int num_tokens){
-    int i = 0;
-    for (; i < num_tokens; i++)
-    {
-        printf("%s ",tokens[i]);
-    }
-    printf("\n");
 }
