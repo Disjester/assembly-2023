@@ -13,19 +13,19 @@ int main (int argc, char** argv) {
     int DC, IC;
     int i;
 
-    for (i = 1; i <= argc; i++) {
+    for (i = 1; i < argc; i++) {
         error = NO_ERROR;
         labels = NULL;
         memory_idx = 100;
         DC = IC = 0;
-        
-        code = preproccessor(argv[1], &error);
+
+        code = preproccessor(argv[i], &error);
         if (error != NO_ERROR) continue;
         
         firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &error);
         if (error != NO_ERROR) continue;
 
-        secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[1]);
+        secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[i]);
         if (error != NO_ERROR) continue;
     }
     return 1;
