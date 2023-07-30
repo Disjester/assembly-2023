@@ -277,6 +277,7 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
                         break;
                     case OPERAND_TYPE_OTHER:
+                        /*ERROR???*/
                         break;
                 }
             }
@@ -316,11 +317,6 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                     break;
             }
             switch (op_type_2) {
-        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0') {
-            temp_code = temp_code->next;
-            num_line++;
-            continue;
-        }
                 case OPERAND_TYPE_REGISTER:
                     resulting_binary_word += (short) atoi(operand2 + 2);
                     resulting_binary_word <<= 7;
