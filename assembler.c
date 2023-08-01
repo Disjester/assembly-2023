@@ -30,6 +30,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     CodeNode* temp_code;
     LabelNode* temp_label_node;
     bool label_flag = false;
+    int data_memory_idx = 100;
     int i;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
     int place;
@@ -39,12 +40,14 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     short binary_word;
     int L = 0;
     int num_line = 1;
+    short data_memory[MAX_MEMORY_SIZE];
 
     if (*error == ERROR_MEMORY_ALLOCATION) return;
  
     printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n");
     *DC = *IC = 0;
     cleanMemory(memory);
+    cleanMemory(data_memory);
     temp_code = code;
     while(temp_code) {
         if (temp_code->code_row[0] == ';') {
@@ -74,7 +77,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
-                        pushToMemory(memory_idx, memory, atoi(tokens[i]), error);
+                        pushToMemory(&data_memory_idx, data_memory, atoi(tokens[i]), error);
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
                         (*DC)++;
                     }
@@ -97,11 +100,11 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
-                        pushToMemory(memory_idx, memory, tokens[token_idx][i], error);
+                        pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][i], error);
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
                         (*DC)++;
                     }
-                    pushToMemory(memory_idx, memory, '\0', error);
+                    pushToMemory(&data_memory_idx, data_memory, '\0', error);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
                     (*DC)++;
                 }
@@ -159,6 +162,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         num_line++;
         temp_code = temp_code->next;
     }
+
+    moveDataToMemory(data_memory, &data_memory_idx, memory, memory_idx, error);
+    if (*error == ERROR_MAXED_OUT_MEMORY) return;
 
     temp_label_node = *labels;
     while (temp_label_node) {
@@ -800,4 +806,26 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
     }
     /*handle error*/
     return OPERAND_TYPE_OTHER;
+}
+
+void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error){
+    *data_memory_idx = 100;
+       while (*data_memory_idx < MAX_MEMORY_SIZE && *memory_idx < MAX_MEMORY_SIZE) {
+        memory[*memory_idx] = data_memory[*data_memory_idx];
+        printf("THE MEMORY : %d\n", memory[*memory_idx]);
+        (*memory_idx)++;
+        (*data_memory_idx)++;
+        
+        if ( *data_memory_idx == MAX_MEMORY_SIZE ||  data_memory[*data_memory_idx] == -1)
+        {
+            break;
+        }
+        
+    }
+
+    if (*data_memory_idx >= MAX_MEMORY_SIZE || *memory_idx >= MAX_MEMORY_SIZE) {
+        printf("Source array is full.\n");
+        *error = ERROR_MAXED_OUT_MEMORY;
+        return;
+    }
 }
