@@ -35,6 +35,8 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
  */
 bool isLabel(char* word, bool colon);
 
+void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error);
+
 void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, Error* error);
 
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
