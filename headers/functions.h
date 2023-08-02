@@ -53,6 +53,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField, Error* error);
 
+int getOperandsNumberByOpcode(short opcode);
+
 bool validateVariableName (char *name);
 
 CodeNode* preproccessor(char *file_name, Error* error);

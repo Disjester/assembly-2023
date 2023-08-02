@@ -180,6 +180,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
     CodeNode* temp_code;
+    LabelNode* temp_label;
     bool is_first_itteration_flag = false; 
     int token_idx = 0;
     bool label_flag = false;
@@ -187,6 +188,11 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int num_tokens = 0;
     int L = 0;
     int num_line = 0;
+    int words_to_check;
+    int update_memory_idx = 100;
+    int i;
+    int check_counter;
+    short curr_memory;
 
     printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n");
     temp_code = code;
@@ -205,6 +211,69 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
             case DOT_OTHER:
                 if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR) {
                     L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
+                    check_counter = L;
+                    curr_memory = memory[update_memory_idx];
+                    /*Source*/
+                    printf("Memory: %d, %s\n", memory[update_memory_idx], tokens[token_idx]);
+                    if ((curr_memory & 0x600 == 0x600)) {
+                        update_memory_idx++;
+                        check_counter--;
+                        if (memory[update_memory_idx] == 0xFFF) {
+                            temp_label = labels;
+                            while (temp_label) {
+                                if (!strcmp(tokens[token_idx+1], temp_label->label_name)) {
+                                    if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
+                                        memory[update_memory_idx] = 0x001;
+                                        update_memory_idx++;
+                                        check_counter--;
+                                    } else {
+                                        memory[update_memory_idx] = temp_label->memory_adress;
+                                        memory[update_memory_idx] <<= 2;
+                                        memory[update_memory_idx] += 2;
+                                        update_memory_idx++;
+                                        check_counter--;
+                                    }
+                                    break;
+                                }
+                                temp_label = temp_label->next;
+                            }
+                        }
+                    } else {
+                        if ((curr_memory & 0xE00) != 0x000) {
+                            update_memory_idx++;
+                            check_counter--;
+                        }
+                    }
+                    if ((curr_memory & 0xE00) != 0x000) {
+                        token_idx += 3;
+                    } else {
+                        token_idx++;
+                    }
+                    /*Destination*/
+                    if ((curr_memory & 0x00C) == 0x00C) {
+                        update_memory_idx++;
+                        check_counter--;
+                        if (memory[update_memory_idx] == 0xFFF) {
+                            temp_label = labels;
+                            while (temp_label) {
+                                if (!strcmp(tokens[token_idx], temp_label->label_name)) {
+                                    if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
+                                        memory[update_memory_idx] = 0x001;
+                                        update_memory_idx++;
+                                        check_counter--;
+                                    } else {
+                                        memory[update_memory_idx] = temp_label->memory_adress;
+                                        memory[update_memory_idx] <<= 2;
+                                        memory[update_memory_idx] += 2;
+                                        update_memory_idx++;
+                                        check_counter--;
+                                    }
+                                }
+                                temp_label = temp_label->next;
+                            }
+                        }
+                    }
+                    update_memory_idx += check_counter;
                 }
                 if (*error != NO_ERROR) {
                     handleError(error, num_line);
@@ -384,6 +453,17 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
     resulting_binary_word <<= 2;
     resulting_binary_word +=  0; /*A.R.E. CHANGE IT, BORIS*/
     return resulting_binary_word;
+}
+
+int getOperandsNumberByOpcode(short opcode) {
+    int i;
+
+    for (i = 0; i < NUMBER_OF_COMMANDS; i++) {
+        if (commands[i].opcode == opcode) {
+            return commands[i].number_of_operands;
+        }
+    }
+    return -1; /*MAGIC*/
 }
 
 void convertToBase64(short num, char* result) {
