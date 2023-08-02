@@ -220,7 +220,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                     check_counter = L;
                     curr_memory = memory[update_memory_idx];
                     /*Source*/
-                    printf("Memory: %d, %s\n", memory[update_memory_idx], tokens[token_idx]);
                     if ((curr_memory & 0x600 == 0x600)) {
                         update_memory_idx++;
                         check_counter--;
