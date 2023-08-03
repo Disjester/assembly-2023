@@ -589,7 +589,6 @@ short isDotType(char* word, Error* error){
 }
 
 LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
-
     if (LabelPtr != NULL) {
         do {
             if (!strcmp(label, LabelPtr->label_name)) {
@@ -675,7 +674,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
 }
 
 void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error) {
-    if (*memory_idx >= 1024) {
+    if (*memory_idx >= MAX_MEMORY_SIZE) {
         *error = ERROR_MAXED_OUT_MEMORY;
         return;
     }
