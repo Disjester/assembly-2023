@@ -148,6 +148,11 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_ENTRY:
                 break;
             case DOT_OTHER:
+                if (stop_flag)
+                {
+                    *error = ERROR_CODE_AFTER_STOP;
+                    handleError(error, num_line);
+                }
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, error);
                     if (*error == ERROR_MEMORY_ALLOCATION){
@@ -156,11 +161,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     }
                 }
                 if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag) != COMMAND_LINE_ERROR) {
-                    if (stop_flag)
-                    {
-                        *error = ERROR_CODE_AFTER_STOP;
-                        handleError(error, num_line);
-                    }
                     
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
                     pushToMemory(memory_idx, memory, binary_word, error);
@@ -721,17 +721,13 @@ short checkCommand(char* word){
 int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag) {
     short opcode = checkCommand(tokens[label]);
 
-
-
-
-    
     int count = 0;
     int operand_index = label+1; /*operand index*/
     int operand_result = -1;
     bool register_flag = false;
     bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
     int L = 1;
-    
+
     if (opcode == 0xF)
     {
         *stop_flag = true;
