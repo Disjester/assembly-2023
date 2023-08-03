@@ -73,7 +73,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             label_flag = true;
             token_idx++;
         }
-         
+        
         switch (isDotType(tokens[token_idx], error)) {
             case DOT_DATA:
                 if (label_flag) {
@@ -300,6 +300,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                                         update_memory_idx++;
                                         check_counter--;
                                     }
+                                    break;
                                 }
                                 temp_label = temp_label->next;
                             }
@@ -338,7 +339,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error) {
     short resulting_binary_word = 0x0;
-    LabelNode* temp_label_node;
 
     switch (L) {
         case 1:
@@ -352,109 +352,51 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                 pushToMemory(memory_idx, memory, resulting_binary_word, error);
                 if (*error == ERROR_MAXED_OUT_MEMORY) return;
             } else {
-                switch (op_type_1) {
-                    case OPERAND_TYPE_REGISTER:
-                        resulting_binary_word += (short) atoi(operand1 + 2);
-                        resulting_binary_word <<= 7;
-                        pushToMemory(memory_idx, memory, resulting_binary_word, error);
-                        if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                        break;
-                    case OPERAND_TYPE_LABEL:
-                        if (!is_first_iteration) {
-                            temp_label_node = labels;
-                            while (temp_label_node) {
-                                if (!strcmp(temp_label_node->label_name, operand1)) {
-                                    resulting_binary_word += temp_label_node->memory_adress;
-                                    resulting_binary_word <<= 2;
-                                    pushToMemory(memory_idx, memory, resulting_binary_word, error);
-                                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                                }
-                                temp_label_node = temp_label_node->next;
-                            }
-                        } else {
-                            pushToMemory(memory_idx, memory, 0xFFF, error);
-                            if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                        }
-                        break;
-                    case OPERAND_TYPE_NUMBER:
-                        resulting_binary_word += (short) atoi(operand1);
+                createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error);
+            }
+            break;
+        case 3: 
+            createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error);
+            createBinaryWordByType(labels, op_type_2, operand2, memory, memory_idx, is_first_iteration, error);
+            break;
+    }
+}
+
+void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error) {
+    short resulting_binary_word = 0x0;
+    LabelNode* temp_label_node;
+
+    switch (op_type) {
+        case OPERAND_TYPE_REGISTER:
+            resulting_binary_word += (short) atoi(operand + 2);
+            resulting_binary_word <<= 7;
+            pushToMemory(memory_idx, memory, resulting_binary_word, error);
+            if (*error == ERROR_MAXED_OUT_MEMORY) return;
+            break;
+        case OPERAND_TYPE_LABEL:
+            if (!is_first_iteration) {
+                temp_label_node = labels;
+                while (temp_label_node) {
+                    if (!strcmp(temp_label_node->label_name, operand)) {
+                        resulting_binary_word += temp_label_node->memory_adress;
                         resulting_binary_word <<= 2;
                         pushToMemory(memory_idx, memory, resulting_binary_word, error);
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                        break;
-                    case OPERAND_TYPE_OTHER:
-                        /*ERROR???*/
-                        break;
+                    }
+                    temp_label_node = temp_label_node->next;
                 }
+            } else {
+                pushToMemory(memory_idx, memory, 0xFFF, error);
+                if (*error == ERROR_MAXED_OUT_MEMORY) return;
             }
             break;
-        case 3:
-            switch (op_type_1) {
-                case OPERAND_TYPE_REGISTER:
-                    resulting_binary_word += (short) atoi(operand1 + 2);
-                    resulting_binary_word <<= 7;
-                    pushToMemory(memory_idx, memory, resulting_binary_word, error);
-                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    break;
-                case OPERAND_TYPE_LABEL:
-                    if (!is_first_iteration) {
-                        temp_label_node = labels;
-                        while (temp_label_node) {
-                            if (!strcmp(temp_label_node->label_name, operand1)) {
-                                resulting_binary_word += temp_label_node->memory_adress;
-                                resulting_binary_word <<= 2;
-                                pushToMemory(memory_idx, memory, resulting_binary_word, error);
-                                if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                            }
-                            temp_label_node = temp_label_node->next;
-                        }
-                    } else {
-                        pushToMemory(memory_idx, memory, 0xFFF, error);
-                        if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    }
-                    break;
-                case OPERAND_TYPE_NUMBER:
-                    resulting_binary_word += (short) atoi(operand1);
-                    resulting_binary_word <<= 2;
-                    pushToMemory(memory_idx, memory, resulting_binary_word, error);
-                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    break;
-                case OPERAND_TYPE_OTHER:
-                    break;
-            }
-            switch (op_type_2) {
-                case OPERAND_TYPE_REGISTER:
-                    resulting_binary_word += (short) atoi(operand2 + 2);
-                    resulting_binary_word <<= 7;
-                    pushToMemory(memory_idx, memory, resulting_binary_word, error);
-                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    break;
-                case OPERAND_TYPE_LABEL:
-                    if (!is_first_iteration) {
-                        temp_label_node = labels;
-                        while (temp_label_node) {
-                            if (!strcmp(temp_label_node->label_name, operand2)) {
-                                resulting_binary_word += temp_label_node->memory_adress;
-                                resulting_binary_word <<= 2;
-                                pushToMemory(memory_idx, memory, resulting_binary_word, error);
-                                if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                            }
-                            temp_label_node = temp_label_node->next;
-                        }
-                    } else {
-                        pushToMemory(memory_idx, memory, 0xFFF, error);
-                        if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    }
-                    break;
-                case OPERAND_TYPE_NUMBER:
-                    resulting_binary_word += (short) atoi(operand2);
-                    resulting_binary_word <<= 2;
-                    pushToMemory(memory_idx, memory, resulting_binary_word, error);
-                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    break;
-                case OPERAND_TYPE_OTHER:
-                    break;
-            }
+        case OPERAND_TYPE_NUMBER:
+            resulting_binary_word += (short) atoi(operand);
+            resulting_binary_word <<= 2;
+            pushToMemory(memory_idx, memory, resulting_binary_word, error);
+            if (*error == ERROR_MAXED_OUT_MEMORY) return;
+            break;
+        case OPERAND_TYPE_OTHER:
             break;
     }
 }
@@ -930,13 +872,10 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
         (*memory_idx)++;
         (*data_memory_idx)++;
         
-        if ( *data_memory_idx == MAX_MEMORY_SIZE ||  data_memory[*data_memory_idx] == -1)
-        {
+        if ( *data_memory_idx == MAX_MEMORY_SIZE ||  data_memory[*data_memory_idx] == -1) {
             break;
-        }
-        
+        }   
     }
-
     if (*data_memory_idx >= MAX_MEMORY_SIZE || *memory_idx >= MAX_MEMORY_SIZE) {
         *error = ERROR_MAXED_OUT_MEMORY;
         return;

@@ -39,6 +39,8 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
 
 void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, Error* error);
 
+void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error);
+
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
 
 void cleanMemory(short* memory);
