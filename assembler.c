@@ -44,7 +44,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 
     if (*error == ERROR_MEMORY_ALLOCATION) return;
  
-    printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n");
     *DC = *IC = 0;
     cleanMemory(memory);
     cleanMemory(data_memory);
@@ -187,7 +186,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals) {
     CodeNode* temp_code;
     LabelNode* temp_label;
-    LabelNode* external_new;
     bool is_first_itteration_flag = false; 
     int token_idx = 0;
     bool label_flag = false;
@@ -195,13 +193,10 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int num_tokens = 0;
     int L = 0;
     int num_line = 0;
-    int words_to_check;
     int update_memory_idx = 100;
-    int i;
     int check_counter;
     short curr_memory;
 
-    printf("!!!   BEGGINING OF THE SECOND ITERATION   !!!\n");
     temp_code = code;
     *IC = 0;
     while (temp_code) {
@@ -221,7 +216,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                     check_counter = L;
                     curr_memory = memory[update_memory_idx];
                     /*Source*/
-                    if ((curr_memory & 0x600 == 0x600)) {
+                    if ((curr_memory & 0x600) == 0x600) {
                         update_memory_idx++;
                         check_counter--;
                         if (memory[update_memory_idx] == 0xFFF) {
@@ -621,7 +616,6 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
     if (LabelPtr != NULL) {
         do {
             if (!strcmp(label, LabelPtr->label_name)) {
-                /*printf("found Label %s is of type: %d\n", label, LabelPtr->label_type);*/
                 return LabelPtr->label_type;
             }
             LabelPtr = LabelPtr->next;
@@ -894,7 +888,6 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
     *data_memory_idx = 100;
        while (*data_memory_idx < MAX_MEMORY_SIZE && *memory_idx < MAX_MEMORY_SIZE) {
         memory[*memory_idx] = data_memory[*data_memory_idx];
-        printf("THE MEMORY : %d\n", memory[*memory_idx]);
         (*memory_idx)++;
         (*data_memory_idx)++;
         
@@ -906,7 +899,6 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
     }
 
     if (*data_memory_idx >= MAX_MEMORY_SIZE || *memory_idx >= MAX_MEMORY_SIZE) {
-        printf("Source array is full.\n");
         *error = ERROR_MAXED_OUT_MEMORY;
         return;
     }

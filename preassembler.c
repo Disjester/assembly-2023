@@ -8,7 +8,6 @@ CodeNode* preproccessor(char* file_name, Error* error) {
     MacroNode* macros = NULL;
     FILE* fptr;
     char** tokens;
-
     int num_tokens = 0;
 
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
