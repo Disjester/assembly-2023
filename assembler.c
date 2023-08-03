@@ -730,17 +730,13 @@ short checkCommand(char* word){
 int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag) {
     short opcode = checkCommand(tokens[label]);
 
-
-
-
-    
     int count = 0;
     int operand_index = label+1; /*operand index*/
     int operand_result = -1;
     bool register_flag = false;
     bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
     int L = 1;
-    
+
     if (opcode == 0xF)
     {
         *stop_flag = true;
