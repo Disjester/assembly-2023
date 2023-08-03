@@ -211,6 +211,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals) {
     CodeNode* temp_code;
     LabelNode* temp_label;
+    bool* stop_flag = false;
     bool is_first_itteration_flag = false; 
     int token_idx = 0;
     bool label_flag = false;
@@ -727,10 +728,10 @@ short checkCommand(char* word){
 
 int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag) {
     short opcode = checkCommand(tokens[label]);
-    if (opcode == 0xF)
-    {
-        *stop_flag = true;
-    }
+
+
+
+
     
     int count = 0;
     int operand_index = label+1; /*operand index*/
@@ -738,7 +739,11 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
     bool register_flag = false;
     bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
     int L = 1;
-
+    
+    if (opcode == 0xF)
+    {
+        *stop_flag = true;
+    }
     /*ERROR unrecognized command name*/
     if (opcode == -1) {
         return COMMAND_LINE_ERROR;
