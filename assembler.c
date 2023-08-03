@@ -27,7 +27,7 @@ static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno
 
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
     bool is_first_itteration_flag = true;
-    bool* stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
+    bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
     CodeNode* temp_code;
     LabelNode* temp_label_node;
     bool label_flag = false;
@@ -211,7 +211,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals) {
     CodeNode* temp_code;
     LabelNode* temp_label;
-    bool* stop_flag = false;
+    bool stop_flag = false;
     bool is_first_itteration_flag = false; 
     int token_idx = 0;
     bool label_flag = false;
