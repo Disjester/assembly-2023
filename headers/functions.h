@@ -5,7 +5,6 @@
 #include "structures.h"
 #include <stdio.h>
 
-
 /**
  * @brief takes a line of code with command, and checks if its legal
  * 
