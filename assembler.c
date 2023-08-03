@@ -202,9 +202,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     }
 }
 
-void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name) {
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals) {
     CodeNode* temp_code;
     LabelNode* temp_label;
+    LabelNode* external_new;
     bool is_first_itteration_flag = false; 
     int token_idx = 0;
     bool label_flag = false;
@@ -251,6 +252,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                                 if (!strcmp(tokens[token_idx+1], temp_label->label_name)) {
                                     if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
                                         memory[update_memory_idx] = 0x001;
+                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, error);
                                         update_memory_idx++;
                                         check_counter--;
                                     } else {
@@ -286,6 +288,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                                 if (!strcmp(tokens[token_idx], temp_label->label_name)) {
                                     if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
                                         memory[update_memory_idx] = 0x001;
+                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, error);
                                         update_memory_idx++;
                                         check_counter--;
                                     } else {
@@ -540,9 +543,9 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
     }
 }
 
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, Error* error) {
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, Error* error) {
     createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
-    createFileWithLabelType(file_name, labels, LABEL_TYPE_EXTERNAL ,error);
+    createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL ,error);
     createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC);
 }
 

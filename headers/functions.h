@@ -37,7 +37,7 @@ bool isLabel(char* word, bool colon);
 
 void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error);
 
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, Error* error);
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, Error* error);
 
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
 
@@ -51,7 +51,7 @@ void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, i
 
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error);
 
-void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name);
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals);
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField, Error* error);
 
