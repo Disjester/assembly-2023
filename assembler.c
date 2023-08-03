@@ -42,7 +42,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     int num_line = 1;
     short data_memory[MAX_MEMORY_SIZE];
 
-    if (*error == ERROR_MEMORY_ALLOCATION) return;
+    if (*error == ERROR_MEMORY_ALLOCATION) {
+            handleError(error, num_line);
+            return;
+    }
  
     printf("!!!   BEGGINING OF THE FIRST ITERATION   !!!\n");
     *DC = *IC = 0;
@@ -61,7 +64,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             continue;
         }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
-        if (*error == ERROR_MEMORY_ALLOCATION) return;
+        if (*error == ERROR_MEMORY_ALLOCATION) {
+                handleError(error, num_line);
+                return;
+        }
 
         if(isLabel(tokens[token_idx], true)) {
             label_flag = true;
@@ -72,7 +78,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_DATA:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
-                    if (*error == ERROR_MEMORY_ALLOCATION) return;
+                    if (*error == ERROR_MEMORY_ALLOCATION) {
+                            handleError(error, num_line);
+                            return;
+                    }
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
@@ -95,7 +104,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_STRING:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
-                    if (*error == ERROR_MEMORY_ALLOCATION) return;
+                    if (*error == ERROR_MEMORY_ALLOCATION) {
+                            handleError(error, num_line);
+                            return;
+                    }
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
@@ -123,7 +135,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 for (; place < num_tokens; place++) {
                     if (isLabel(tokens[place], false)) {
                         insertNewLabel(labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem, error);
-                        if (*error == ERROR_MEMORY_ALLOCATION) return;
+                        if (*error == ERROR_MEMORY_ALLOCATION) {
+                            handleError(error, num_line);
+                            return;
+                        }
                     }
                     else {
                         break;
@@ -135,7 +150,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_OTHER:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, error);
-                    if (*error == ERROR_MEMORY_ALLOCATION) return;
+                    if (*error == ERROR_MEMORY_ALLOCATION){
+                        handleError(error, num_line);
+                        return;
+                    }
                 }
                 if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR) {
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
@@ -206,6 +224,10 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     while (temp_code) {
         num_line++;
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
+        if (*error == ERROR_MEMORY_ALLOCATION){
+            handleError(error, num_line);
+            return;
+        } 
         if(isLabel(tokens[token_idx], true)) {
             label_flag = true;
             token_idx++;
@@ -302,6 +324,11 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     }
     /*handleError(error);*/
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, error);
+    
+    if (*error == ERROR_FILE_HANDLE){
+        handleError(error, num_line);
+        return;
+    } 
 }
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error) {
