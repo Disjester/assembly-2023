@@ -424,12 +424,9 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
             destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], labelPtr, error, is_first_itteration));
             break;
     }
-    resulting_binary_word +=  source_operand;
-    resulting_binary_word <<= 4;
-    resulting_binary_word +=  opcode;
-    resulting_binary_word <<= 3;
-    resulting_binary_word +=  destination_operand;
-    resulting_binary_word <<= 2;
+    resulting_binary_word +=  (source_operand << 9);
+    resulting_binary_word +=  (opcode << 5);
+    resulting_binary_word +=  (destination_operand << 2);
     resulting_binary_word +=  0; /*A.R.E. CHANGE IT, BORIS*/
     return resulting_binary_word;
 }
@@ -560,7 +557,6 @@ bool isLabel(char* word, bool colon){
     if (!isalpha(word[i++])) {
         return flag;
     }
-    
     for (; word[i] != '\0'; i++) {
         if (colon && word[i] == ':' && word[i+1] == '\0') {
             flag = true;
@@ -575,16 +571,12 @@ bool isLabel(char* word, bool colon){
     return flag;
 }
 
-short isDotType(char* word, Error* error){
-    if (!strcmp(word, ".data")) {
-        return DOT_DATA;
-    }
-    if (!strcmp(word, ".string")) {
-        return DOT_STRING;
-    }
+DotType isDotType(char* word, Error* error){
+    if (!strcmp(word, ".data")) return DOT_DATA;
+    if (!strcmp(word, ".string")) return DOT_STRING;
     if (!strcmp(word, ".entry")) return DOT_ENTRY;
-
-    return (!strcmp(word, ".extern")) ? DOT_EXTERN:DOT_OTHER;
+    if (!strcmp(word, ".extern")) return DOT_EXTERN;
+    return DOT_OTHER;
 }
 
 LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
