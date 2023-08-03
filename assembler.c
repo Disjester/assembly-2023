@@ -27,6 +27,7 @@ static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno
 
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
     bool is_first_itteration_flag = true;
+    bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
     CodeNode* temp_code;
     LabelNode* temp_label_node;
     bool label_flag = false;
@@ -155,6 +156,12 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     }
                 }
                 if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR) {
+                    if (checkCommand(tokens[label_flag]) == 0xF)
+                    {
+                        *error = ERROR_CODE_AFTER_STOP;
+                        handleError(error, num_line);
+                    }
+                    
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
                     pushToMemory(memory_idx, memory, binary_word, error);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;

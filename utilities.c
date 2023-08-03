@@ -122,6 +122,9 @@ bool handleError(Error* error, int num_line) {
         case ERROR_MAXED_OUT_MEMORY:
             fprintf(stderr, "ERROR ON %d: MAXED OUT MEMMORY\n", num_line);
             return true;
+        case ERROR_CODE_AFTER_STOP:
+            fprintf(stderr, "ERROR ON %d: CODE LINE AFTER STOP\n", num_line);
+            return true;
         default:
             return false;
     }
