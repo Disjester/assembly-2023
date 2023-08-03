@@ -27,7 +27,7 @@ static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno
 
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
     bool is_first_itteration_flag = true;
-    bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
+    bool* stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
     CodeNode* temp_code;
     LabelNode* temp_label_node;
     bool label_flag = false;
@@ -155,8 +155,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                         return;
                     }
                 }
-                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR) {
-                    if (checkCommand(tokens[label_flag]) == 0xF)
+                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag) != COMMAND_LINE_ERROR) {
+                    if (stop_flag)
                     {
                         *error = ERROR_CODE_AFTER_STOP;
                         handleError(error, num_line);
@@ -165,7 +165,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
                     pushToMemory(memory_idx, memory, binary_word, error);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag);
+                    L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag);
                     createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
                 }
                 /*handle error*/
@@ -240,8 +240,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
             case DOT_OTHER:
-                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag) != COMMAND_LINE_ERROR) {
-                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag);
+                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag) != COMMAND_LINE_ERROR) {
+                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag);
                     check_counter = L;
                     curr_memory = memory[update_memory_idx];
                     /*Source*/
@@ -726,8 +726,13 @@ short checkCommand(char* word){
     return -1;
 }
 
-int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration) {
+int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag) {
     short opcode = checkCommand(tokens[label]);
+    if (opcode == 0xF)
+    {
+        *stop_flag = true;
+    }
+    
     int count = 0;
     int operand_index = label+1; /*operand index*/
     int operand_result = -1;
