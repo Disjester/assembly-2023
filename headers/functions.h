@@ -14,7 +14,7 @@
  * @param label - Is the line starts with a label ? 
  * @return int  - > returns L = the number of memory words in the command line , -1 otherwise
  */
-int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration);
+int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag);
 
 /**
  * @brief returns opcode of a command if it is, otherwise returns -1
