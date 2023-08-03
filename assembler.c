@@ -328,7 +328,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         label_flag = false;
         L = 0;
     }
-    /*handleError(error);*/
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, error);
     
     if (*error == ERROR_FILE_HANDLE){
