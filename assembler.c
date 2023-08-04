@@ -222,7 +222,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int update_memory_idx = 100;
     int check_counter;
     short curr_memory;
-
+    
     temp_code = code;
     *IC = 0;
     while (temp_code) {

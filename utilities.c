@@ -21,6 +21,7 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
         (*num_tokens)++;
         token = strtok(NULL, " ");
     }
+    /*printTokens(tokens, num_tokens);*/
     free(temp);
 }
 
@@ -129,3 +130,14 @@ bool handleError(Error* error, int num_line) {
             return false;
     }
 }
+
+/*
+void printTokens(char** tokens, int* num_tokens){
+    int i = 0;
+    for ( ; i < *num_tokens; i++)
+    {
+        printf("%s ",tokens[i]);
+    }
+    printf("\n");
+}
+*/
