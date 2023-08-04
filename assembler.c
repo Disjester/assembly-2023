@@ -148,8 +148,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_ENTRY:
                 break;
             case DOT_OTHER:
-                if (stop_flag)
-                {
+                if (stop_flag) {
                     *error = ERROR_CODE_AFTER_STOP;
                     handleError(error, num_line);
                 }
@@ -226,6 +225,18 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     temp_code = code;
     *IC = 0;
     while (temp_code) {
+
+        if (temp_code->code_row[0] == ';') {
+            temp_code = temp_code->next;
+            num_line++;
+            continue;
+        }
+        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0') {
+            temp_code = temp_code->next;
+            num_line++;
+            continue;
+        }
+
         num_line++;
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if (*error == ERROR_MEMORY_ALLOCATION){
@@ -424,12 +435,9 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
             destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], labelPtr, error, is_first_itteration));
             break;
     }
-    resulting_binary_word +=  source_operand;
-    resulting_binary_word <<= 4;
-    resulting_binary_word +=  opcode;
-    resulting_binary_word <<= 3;
-    resulting_binary_word +=  destination_operand;
-    resulting_binary_word <<= 2;
+    resulting_binary_word +=  (source_operand << 9);
+    resulting_binary_word +=  (opcode << 5);
+    resulting_binary_word +=  (destination_operand << 2);
     resulting_binary_word +=  0; /*A.R.E. CHANGE IT, BORIS*/
     return resulting_binary_word;
 }
@@ -560,7 +568,6 @@ bool isLabel(char* word, bool colon){
     if (!isalpha(word[i++])) {
         return flag;
     }
-    
     for (; word[i] != '\0'; i++) {
         if (colon && word[i] == ':' && word[i+1] == '\0') {
             flag = true;
@@ -575,16 +582,12 @@ bool isLabel(char* word, bool colon){
     return flag;
 }
 
-short isDotType(char* word, Error* error){
-    if (!strcmp(word, ".data")) {
-        return DOT_DATA;
-    }
-    if (!strcmp(word, ".string")) {
-        return DOT_STRING;
-    }
+DotType isDotType(char* word, Error* error){
+    if (!strcmp(word, ".data")) return DOT_DATA;
+    if (!strcmp(word, ".string")) return DOT_STRING;
     if (!strcmp(word, ".entry")) return DOT_ENTRY;
-
-    return (!strcmp(word, ".extern")) ? DOT_EXTERN:DOT_OTHER;
+    if (!strcmp(word, ".extern")) return DOT_EXTERN;
+    return DOT_OTHER;
 }
 
 LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
@@ -780,15 +783,13 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                     }
                     break;
                 }
-                
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
                 }
                 break;
             case OPERAND_TYPE_REGISTER:
-                if (commands[opcode].number_of_operands < 2)
-                {
+                if (commands[opcode].number_of_operands < 2) {
                     if (!commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]) {
                         *error = ERROR_INCORRECT_OPERAND_TYPE;
                         return COMMAND_LINE_ERROR;
@@ -798,7 +799,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                         break;
                     }
                 }
-
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
@@ -809,7 +809,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                     register_flag = true;
                 }
                 break;
-
             case OPERAND_TYPE_NUMBER:
                 if (commands[opcode].number_of_operands < 2) {
                     if (!commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]) {
@@ -821,7 +820,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                         break;
                     }
                 }
-
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
