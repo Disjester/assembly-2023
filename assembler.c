@@ -148,8 +148,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_ENTRY:
                 break;
             case DOT_OTHER:
-                if (stop_flag)
-                {
+                if (stop_flag) {
                     *error = ERROR_CODE_AFTER_STOP;
                     handleError(error, num_line);
                 }
@@ -772,15 +771,13 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                     }
                     break;
                 }
-                
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
                 }
                 break;
             case OPERAND_TYPE_REGISTER:
-                if (commands[opcode].number_of_operands < 2)
-                {
+                if (commands[opcode].number_of_operands < 2) {
                     if (!commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]) {
                         *error = ERROR_INCORRECT_OPERAND_TYPE;
                         return COMMAND_LINE_ERROR;
@@ -790,7 +787,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                         break;
                     }
                 }
-
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
@@ -801,7 +797,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                     register_flag = true;
                 }
                 break;
-
             case OPERAND_TYPE_NUMBER:
                 if (commands[opcode].number_of_operands < 2) {
                     if (!commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]) {
@@ -813,7 +808,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                         break;
                     }
                 }
-
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
