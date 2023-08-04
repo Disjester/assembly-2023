@@ -225,6 +225,18 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     temp_code = code;
     *IC = 0;
     while (temp_code) {
+
+        if (temp_code->code_row[0] == ';') {
+            temp_code = temp_code->next;
+            num_line++;
+            continue;
+        }
+        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0') {
+            temp_code = temp_code->next;
+            num_line++;
+            continue;
+        }
+
         num_line++;
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if (*error == ERROR_MEMORY_ALLOCATION){
