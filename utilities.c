@@ -11,15 +11,20 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
     temp = allocateMemory((length + 1) * sizeof(char), error);
     if (*error == ERROR_MEMORY_ALLOCATION) return;
     strcpy(temp, input);  /* Copy input string into temp */
-
-    token = strtok(temp, " ");
+    
+    token = strtok(temp, " \r");
     *num_tokens = 0;
     while (token != NULL && *num_tokens < MAX_TOKENS) {
         tokens[*num_tokens] = my_strdup(token, error);  /* Duplicate and store token */
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         (*num_tokens)++;
-        token = strtok(NULL, " ");
+        token = strtok(NULL, " \r");
+    }
+
+    if (strcmp(tokens[0], "endmcro"));
+    {
+        printf("2nd comparison OK\n");
     }
     /*printTokens(tokens, num_tokens);*/
     free(temp);
