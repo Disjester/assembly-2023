@@ -760,7 +760,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
         return COMMAND_LINE_ERROR;
     }
     
-    if (num_tokens > 2 + label && (num_tokens - label - 2) != commands[opcode].number_of_operands) {
+    if ((num_tokens > 2 + label) && (num_tokens - label - 2) != commands[opcode].number_of_operands) {
         *error = ERROR_WRONG_AMOUNT_OF_OPERANDS;
         return COMMAND_LINE_ERROR;
     }

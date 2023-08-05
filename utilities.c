@@ -22,10 +22,6 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error) {
         token = strtok(NULL, " \r");
     }
 
-    if (strcmp(tokens[0], "endmcro"));
-    {
-        printf("2nd comparison OK\n");
-    }
     /*printTokens(tokens, num_tokens);*/
     free(temp);
 }
