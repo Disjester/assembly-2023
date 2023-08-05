@@ -22,7 +22,6 @@ CodeNode* preproccessor(char* file_name, Error* error) {
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, error);
     if (*error != NO_ERROR) return NULL;
     
-    printf("got to here\n");
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, error);/*error undefined command - fix it later: now permament no error*/
     if (*error != NO_ERROR) {
         return NULL;

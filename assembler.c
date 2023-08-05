@@ -58,7 +58,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             num_line++;
             continue;
         }
-        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0') {
+        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0' || temp_code->code_row[0] == '\r') {
             temp_code = temp_code->next;
             num_line++;
             continue;
@@ -231,7 +231,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
             num_line++;
             continue;
         }
-        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0') {
+        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0' || temp_code->code_row[0] == '\r') {
             temp_code = temp_code->next;
             num_line++;
             continue;
@@ -749,7 +749,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
     }
 
     /* ERROR wrong amount of operands for the command */
-    if ((num_tokens <= 2 + label) && (num_tokens - label - 1) != commands[opcode].number_of_operands) {
+    if ((num_tokens <= 2 + label) && ((num_tokens - label - 1) != commands[opcode].number_of_operands)) {
         *error = ERROR_WRONG_AMOUNT_OF_OPERANDS;
         return COMMAND_LINE_ERROR;
     }
