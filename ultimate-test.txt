@@ -39,9 +39,10 @@ LOOP: jmp L1
 L1:     inc K
 .entry LOOP
         jmp     W
-END:    stop
 
+L1: inc LENGTH
 STR:    .string "abcdef"
+NOSTR: .string 5, 75
 LENGTH:     .data 6,-9,15
 K:          .data 22
 .extern L3
