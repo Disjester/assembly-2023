@@ -95,7 +95,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line);
                     *error = NO_ERROR;
-                    if (!temp_code->next) {
+                    if (temp_code->next) {
                         temp_code =  temp_code->next;
                     }
                     continue;
@@ -124,7 +124,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line);
                     *error = NO_ERROR;
-                    if (!temp_code->next) {
+                    if (temp_code->next) {
                         temp_code =  temp_code->next;
                     }
                     continue;
