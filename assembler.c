@@ -44,8 +44,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     short data_memory[MAX_MEMORY_SIZE];
 
     if (*error == ERROR_MEMORY_ALLOCATION) {
-            handleError(error, num_line);
-            return;
+        handleError(error, num_line);
+        return;
     }
  
     *DC = *IC = 0;
@@ -225,19 +225,17 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     temp_code = code;
     *IC = 0;
     while (temp_code) {
+        num_line++;
 
         if (temp_code->code_row[0] == ';') {
             temp_code = temp_code->next;
-            num_line++;
             continue;
         }
         if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0' || temp_code->code_row[0] == '\r') {
             temp_code = temp_code->next;
-            num_line++;
             continue;
         }
 
-        num_line++;
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
         if (*error == ERROR_MEMORY_ALLOCATION){
             handleError(error, num_line);
