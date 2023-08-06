@@ -302,8 +302,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 free(temp);
                 tokenizeInput(current_code->code_row, tokens, pnum_tokens, error);
                 if (*error != NO_ERROR) return;
-                if (*pnum_tokens == 1 && !strcmp(tokens[0], "endmcro"))
-                {
+                if (*pnum_tokens == 1 && !strcmp(tokens[0], "endmcro")) {
                     prev_code->next = current_code->next;
                     break;
                 }
