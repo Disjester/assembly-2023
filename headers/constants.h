@@ -17,6 +17,7 @@
 #define FIRST_WORD 0
 #define SECOND_WORD 1
 
+#define MASK64 0x3F
 #define DEFAULT_ERROR_VALUE -1
 #define DEFAULT_MEMORY_VALUE -1
 

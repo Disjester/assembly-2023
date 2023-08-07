@@ -452,8 +452,8 @@ int getOperandsNumberByOpcode(short opcode) {
 }
 
 void convertToBase64(short num, char* result) {
-    result[0] = base64_chars[(num >> 6) & 0x3F];
-    result[1] = base64_chars[num & 0x3F];
+    result[0] = base64_chars[(num >> 6) & MASK64];
+    result[1] = base64_chars[num & MASK64];
     result[2] = '\0';
 }
 
