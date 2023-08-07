@@ -55,9 +55,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             num_line++;
             continue;
         }
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION) {
-                handleError(error, num_line);
+                handleError(error, num_line, is_print);
                 return;
         }
 
@@ -340,7 +340,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     if (!stop_flag)
     {
         *error = ERROR_NO_STOP_COMMAND;
-        handleError(error, num_line);
+        handleError(error, num_line, is_print);
         *error = NO_ERROR;
     }
 }
@@ -474,12 +474,6 @@ int getOperandAmount(char* command) {
         }
     }
     return DEFAULT_ERROR_VALUE; /*CHANGE LATER*/
-}
-
-void incrementTokenCounter(int* token_idx, int num_tokens, int step, Error* error) {
-    if (*token_idx + step >= num_tokens) {
-        *error = ERROR_NOT_ENOUGH_ARGUMENTS;
-    }
 }
 
 void incrementTokenCounter(int* token_idx, int num_tokens, int step, Error* error) {
