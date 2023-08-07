@@ -476,9 +476,10 @@ int getOperandAmount(char* command) {
     return DEFAULT_ERROR_VALUE; /*CHANGE LATER*/
 }
 
-void incrementTokenCounter(int* token_idx, int num_tokens, int step, Error* error) {
+void incrementTokenCounter(int* token_idx, int num_tokens, int num_line, int step, bool* is_print, Error* error) {
     if (*token_idx + step >= num_tokens) {
         *error = ERROR_NOT_ENOUGH_ARGUMENTS;
+        handleError(error, num_line, is_print);
     }
 }
 
