@@ -504,12 +504,11 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
 }
 
 void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error) {
-    if (*error != NO_ERROR) {
-
+    if (*is_print) {
+        createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
+        createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL ,error);
+        createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC);
     }
-    createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
-    createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL ,error);
-    createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC);
 }
 
 void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC) {
