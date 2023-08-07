@@ -98,6 +98,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     if (temp_code->next) {
                         temp_code =  temp_code->next;
                     }
+                    num_line++;
                     continue;
                 }
                 break;
@@ -127,6 +128,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     if (temp_code->next) {
                         temp_code =  temp_code->next;
                     }
+                    num_line++;
                     continue;
                 }
                 break;
@@ -174,6 +176,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     if (temp_code->next != NULL) {
                         temp_code =  temp_code->next;
                     }
+                    num_line++;
                     continue;
                 }
                 *IC += L;
@@ -331,6 +334,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                     if (temp_code->next != NULL) {
                         temp_code =  temp_code->next;
                     }
+                    num_line++;
                     continue;
                 }
                 *IC += L;
@@ -351,7 +355,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         handleError(error, num_line);
         return;
     }
-     
+
     if (!stop_flag)
     {
         *error = ERROR_NO_STOP_COMMAND;
@@ -665,7 +669,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     }
     
     if (isDotType(tokens[FIRST_WORD + label], error) == DOT_DATA) {
-        if (num_tokens % 2 == (1 + label)) {
+        if (num_tokens % 2 == (!label)) {
             *error = ERROR_WRONG_NUM_OF_COMMAS;
             return false;
         }
@@ -673,6 +677,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
 
         for (; token_index< num_tokens; token_index+=2) {
             if (!isNumber(tokens[token_index])) {
+                *error = ERROR_WRONG_ARGUMENT_FORMAT;
                 return false;
             }
         }

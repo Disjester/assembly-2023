@@ -12,19 +12,13 @@ file ps.as ;
 .extern W
 MAIN: mov @r3 ,LENGTH
 MAIN2: mov @r1
-MAIN3: mov 
-MAIN4: 
-LOOP: jmp L1
-        mcro m1
-            sub @r1, @r4
-            bne L3
-        endmcro
-        prn -5
-        bne W
-        m1
+MAIN3: mov,
+MAIN4: mov @r5, 
+MAIN5: 
+LOOP: jmp 5
 L1:     inc K
 .entry LOOP
-        jmp     W
+        jmp  ,   W
 L1: inc LENGTH
 STR:    .string "abcdef"
 NOSTR: .string 5, 75
@@ -32,4 +26,5 @@ LENGTH:     .data 6,-9,15
 NODATA: .data 
 BADATA: .data "abcdef"
 K:          .data 22
+
 .extern L3
