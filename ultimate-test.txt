@@ -13,7 +13,8 @@ file ps.as ;
 MAIN: mov @r3 ,LENGTH
 MAIN2: mov @r1
 MAIN3: mov 
-MAIN4: 
+MAIN4:
+MAIN
 LOOP: jmp L1
         mcro m1
             sub @r1, @r4

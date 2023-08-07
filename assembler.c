@@ -25,7 +25,7 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
 
 static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
 
-void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error) {
+void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error) {
     bool is_first_itteration_flag = true;
     bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
     CodeNode* temp_code;
@@ -35,52 +35,41 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     int i;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
     int place;
-    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
     int num_tokens = 0;
     int token_idx = 0;
     short binary_word;
     int L = 0;
     int num_line = 1;
     short data_memory[MAX_MEMORY_SIZE];
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
 
-    if (*error == ERROR_MEMORY_ALLOCATION) {
-        handleError(error, num_line);
-        return;
-    }
+    if (*error == ERROR_MEMORY_ALLOCATION) return;
  
     *DC = *IC = 0;
     cleanMemory(memory);
     cleanMemory(data_memory);
     temp_code = code;
     while(temp_code) {
-        if (temp_code->code_row[0] == ';') {
+        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0' || temp_code->code_row[0] == '\r' || temp_code->code_row[0] == ';') {
             temp_code = temp_code->next;
             num_line++;
             continue;
         }
-        if (temp_code->code_row[0] == '\n' || temp_code->code_row[0] == '\0' || temp_code->code_row[0] == '\r') {
-            temp_code = temp_code->next;
-            num_line++;
-            continue;
-        }
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
-        if (*error == ERROR_MEMORY_ALLOCATION) {
-                handleError(error, num_line);
-                return;
-        }
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
+        if (*error == ERROR_MEMORY_ALLOCATION) return;
 
         if(isLabel(tokens[token_idx], true)) {
             label_flag = true;
             token_idx++;
         }
-        
+
         switch (isDotType(tokens[token_idx], error)) {
             case DOT_DATA:
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error);
                     if (*error == ERROR_MEMORY_ALLOCATION) {
-                            handleError(error, num_line);
-                            return;
+                        handleError(error, num_line, is_print);
+                        return;
                     }
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
@@ -93,7 +82,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 }
                 /*errr handaling*/
                 if (*error != NO_ERROR) {
-                    handleError(error, num_line);
+                    handleError(error, num_line, is_print);
                     *error = NO_ERROR;
                     if (temp_code->next) {
                         temp_code =  temp_code->next;
@@ -103,9 +92,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 break;
             case DOT_STRING:
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, error);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error);
                     if (*error == ERROR_MEMORY_ALLOCATION) {
-                            handleError(error, num_line);
+                            handleError(error, num_line, is_print);
                             return;
                     }
                 }
@@ -122,7 +111,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 }
                 /*handlaing Error*/
                 if (*error != NO_ERROR) {
-                    handleError(error, num_line);
+                    handleError(error, num_line, is_print);
                     *error = NO_ERROR;
                     if (temp_code->next) {
                         temp_code =  temp_code->next;
@@ -134,9 +123,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 place = 1;
                 for (; place < num_tokens; place++) {
                     if (isLabel(tokens[place], false)) {
-                        insertNewLabel(labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem, error);
+                        insertNewLabel(labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error);
                         if (*error == ERROR_MEMORY_ALLOCATION) {
-                            handleError(error, num_line);
+                            handleError(error, num_line, is_print);
                             return;
                         }
                     }
@@ -150,12 +139,12 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_OTHER:
                 if (stop_flag) {
                     *error = ERROR_CODE_AFTER_STOP;
-                    handleError(error, num_line);
+                    handleError(error, num_line, is_print);
                 }
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, error);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, is_print, error);
                     if (*error == ERROR_MEMORY_ALLOCATION){
-                        handleError(error, num_line);
+                        handleError(error, num_line, is_print);
                         return;
                     }
                 }
@@ -169,7 +158,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 }
                 /*handle error*/
                 if (*error != NO_ERROR) {
-                    handleError(error, num_line);
+                    handleError(error, num_line, is_print);
                     *error = NO_ERROR;
                     if (temp_code->next != NULL) {
                         temp_code =  temp_code->next;
@@ -207,14 +196,14 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     }
 }
 
-void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals) {
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print) {
     CodeNode* temp_code;
     LabelNode* temp_label;
     bool stop_flag = false;
     bool is_first_itteration_flag = false; 
     int token_idx = 0;
     bool label_flag = false;
-    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), error);
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     int num_tokens = 0;
     int L = 0;
     int num_line = 0;
@@ -236,9 +225,9 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
             continue;
         }
 
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens, error);
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION){
-            handleError(error, num_line);
+            handleError(error, num_line, is_print);
             return;
         } 
         if(isLabel(tokens[token_idx], true)) {
@@ -264,7 +253,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                                 if (!strcmp(tokens[token_idx+1], temp_label->label_name)) {
                                     if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
                                         memory[update_memory_idx] = 0x001;
-                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, error);
+                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, is_print, error);
                                         update_memory_idx++;
                                         check_counter--;
                                     } else {
@@ -300,7 +289,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                                 if (!strcmp(tokens[token_idx], temp_label->label_name)) {
                                     if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
                                         memory[update_memory_idx] = 0x001;
-                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, error);
+                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, is_print, error);
                                         update_memory_idx++;
                                         check_counter--;
                                     } else {
@@ -319,7 +308,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                     update_memory_idx += check_counter;
                 }
                 if (*error != NO_ERROR) {
-                    handleError(error, num_line);
+                    handleError(error, num_line, is_print);
                     *error = NO_ERROR;
                     if (temp_code->next != NULL) {
                         temp_code =  temp_code->next;
@@ -338,10 +327,10 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         label_flag = false;
         L = 0;
     }
-    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, error);
+    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error);
     
     if (*error == ERROR_FILE_HANDLE){
-        handleError(error, num_line);
+        handleError(error, num_line, is_print);
         return;
     } 
 }
@@ -477,6 +466,12 @@ int getOperandAmount(char* command) {
     return -1; /*CHANGE LATER*/
 }
 
+void incrementTokenCounter(int* token_idx, int num_tokens, int step, Error* error) {
+    if (*token_idx + step >= num_tokens) {
+        *error = ERROR_NOT_ENOUGH_ARGUMENTS;
+    }
+}
+
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx) {
     LabelNode* temp_label;
     
@@ -493,7 +488,10 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
     }
 }
 
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, Error* error) {
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error) {
+    if (*error != NO_ERROR) {
+
+    }
     createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
     createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL ,error);
     createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC);
@@ -561,23 +559,20 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
 }
 
 bool isLabel(char* word, bool colon){
-    bool flag = false;
     int i = 0;
+
     if (!isalpha(word[i++])) {
-        return flag;
+        return false;
     }
     for (; word[i] != '\0'; i++) {
         if (colon && word[i] == ':' && word[i+1] == '\0') {
-            flag = true;
-            return flag;
+            return true;
         }
-        
         if (!isalpha(word[i]) && !isdigit(word[i])) {
-            return flag;
+            return false;
         }
     }
-    flag = colon ? false : true;
-    return flag;
+    return !colon;
 }
 
 DotType isDotType(char* word, Error* error){
@@ -689,7 +684,7 @@ void cleanMemory(short* memory) {
     }
 }
 
-void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, Error* error) {
+void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error) {
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;
@@ -698,13 +693,13 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
         while(temp_label && temp_label->next) {
             temp_label = temp_label->next;
         }
-        new_label = (LabelNode*) allocateMemory(sizeof(LabelNode), error);
+        new_label = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
         new_label->label_name = label_name;
         new_label->label_type = label_type;
         new_label->memory_adress = *memory_idx;
         temp_label->next = new_label;
     } else {
-        *labels = (LabelNode*) allocateMemory(sizeof(LabelNode), error);
+        *labels = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
         (*labels)->label_name = label_name;
         (*labels)->label_type = label_type;
         (*labels)->memory_adress = *memory_idx;

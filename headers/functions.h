@@ -37,7 +37,7 @@ bool isLabel(char* word, bool colon);
 
 void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error);
 
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, Error* error);
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error);
 
 void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error);
 
@@ -49,11 +49,11 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
 
 char* removeColon(char* str);
 
-void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, int* memory_idx, Error* error);
+void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error);
 
-void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, Error* error);
+void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error);
 
-void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals);
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print);
 
 void pushToMemory(int* memory_counter, short* memory, short memoryField, Error* error);
 
@@ -61,7 +61,7 @@ int getOperandsNumberByOpcode(short opcode);
 
 bool validateVariableName (char *name);
 
-CodeNode* preproccessor(char *file_name, Error* error);
+CodeNode* preproccessor(char *file_name, bool* is_print, Error* error);
 
 /**
  * @brief takes a string , and splits it into words base on whiteSpaces.
@@ -71,11 +71,11 @@ CodeNode* preproccessor(char *file_name, Error* error);
  * @param tokens the array of strings in which you would save your tokens - need to have memory already allocated
  * @param num_tokens a pointer to where you save the number of tokens 
  */
-void tokenizeInput(char *input, char **tokens, int *num_tokens, Error* error);
+void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, Error* error);
 
-char *my_strdup(const char *str, Error* error);
+char *my_strdup(const char *str, bool* is_print, Error* error);
 
-CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, Error* error);
+CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
 
 short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr);
 
@@ -89,19 +89,19 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
 
 void freeLinkedList(CodeNode* head);
 
-int getLine(char* line, Error* error, FILE* file, int num_line);
+int getLine(char* line, Error* error, FILE* file, int num_line, bool* is_print);
 
 void cleanLine(char* line, int length);
 
-void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, Error* error);
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, bool* is_print, Error* error);
 
-void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, Error* error);
+void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
 
 void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC);
 
-void* allocateMemory(size_t size, Error* error);
+void* allocateMemory(size_t size, bool* is_print, Error* error);
 
-bool handleError(Error* error, int num_line);
+bool handleError(Error* error, int num_line, bool* is_print);
 
 /**
  * @brief checks if a line is a correct data line or not
