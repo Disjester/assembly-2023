@@ -8,7 +8,7 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     MacroNode* macros = NULL;
     FILE* fptr;
     char** tokens;
-    int num_tokens = 0;
+    int num_tokens = DEFAULT_VALUE;
 
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     if (*error != NO_ERROR) return NULL;
@@ -36,7 +36,7 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
 CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens, bool* is_print, Error* error) {
     char buffer[MAX_LINE_LENGTH]; 
     CodeNode *head = NULL, *temp = NULL, *node = NULL;
-    int num_line = 1;
+    int num_line = STARTING_LINE;
 
     while(getLine(buffer, error, fptr, num_line, is_print)) {
         if (*error == ERROR_MAXED_OUT_LINE_LENGTH) {
@@ -84,7 +84,7 @@ void freeLinkedList(CodeNode* head) {
 
 int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) {
     char x; /*current symbol in the input stream*/
-    int i = 0;
+    int i = DEFAULT_VALUE;
     cleanLine(line, MAX_LINE_LENGTH);
     while ((x = fgetc(fptr)) != '\n' && x != EOF) {
         if (i == MAX_LINE_LENGTH) {
@@ -99,11 +99,11 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) 
         /*substitution of whitespaces instead of tabs*/
         x = (x == '\t') ? ' ' : x;
         /*removing whitespaces at the beggining of the line*/
-        if (i == 0 && x == ' ') {
+        if (i == DEFAULT_VALUE && x == ' ') {
             continue;
         }
 
-        if (i != 0 && x == ',') {
+        if (i != DEFAULT_VALUE && x == ',') {
             if (line[i-1] != ' ') {
                 line[i++] = ' ';
             }
@@ -112,19 +112,19 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) 
             continue;
         }
         
-        if (i != 0 && line[i-1] == ':' && x != ' ') {
+        if (i != DEFAULT_VALUE && line[i-1] == ':' && x != ' ') {
             line[i++] = ' ';
         }
         /*removing of duplications of whitespaces*/
-        if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
+        if ((i != DEFAULT_VALUE) && line[i-1] == ' ' && (x == ' ')) {
             continue;
         }
         /*putting a char to the string*/
         line[i++] = x;
     }
     /*The case where the line is empty*/
-    if (i == 0 && x == '\n') {
-        line[0] = '\0';
+    if (i == DEFAULT_VALUE && x == '\n') {
+        line[FIRST_CHARACTER] = '\0';
         return 1;
     }
     return i;
@@ -132,7 +132,7 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) 
 
 void cleanLine(char* line, int length) {
     int i;
-    for (i = 0; i < length; i++) {
+    for (i = DEFAULT_VALUE; i < length; i++) {
         line[i] = '\0';
     }
 }
@@ -144,7 +144,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
     CodeNode* new_code_node;
     CodeNode* new_code_node_head;
     CodeNode* curr_code_node;
-    int num_line = 1;
+    int num_line = STARTING_LINE;
 
     temp_macro_node = NULL;
     curr_code_node = *code_node;
@@ -153,10 +153,10 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
-        if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro") ) {
-            if (!isLabel(tokens[1], false) || checkCommand(tokens[1]) != -1) {
+        if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro") ) {
+            if (!isLabel(tokens[SECOND_WORD], false) || checkCommand(tokens[SECOND_WORD]) != DEFAULT_ERROR_VALUE) {
                 
-                while (strcmp(tokens[0], "endmcro")) {
+                while (strcmp(tokens[FIRST_WORD], "endmcro")) {
                     curr_code_node = curr_code_node->next;
                     num_line++;
                     tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, is_print, error);
@@ -170,7 +170,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
             }
             test_macro_node = *macro_node;
             while (test_macro_node) {
-                if (!strcmp(tokens[1], test_macro_node->macro_name)) {
+                if (!strcmp(tokens[SECOND_WORD], test_macro_node->macro_name)) {
                     *error = ERROR_DUPLICATED_MACRO_DEFINITION;
                     handleError(error, num_line, is_print);
                 }
@@ -183,7 +183,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
             new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
             if (*error == ERROR_MEMORY_ALLOCATION) return;
 
-            new_macro_node->macro_name = my_strdup(tokens[1], is_print, error);
+            new_macro_node->macro_name = my_strdup(tokens[SECOND_WORD], is_print, error);
             if (*error == ERROR_MEMORY_ALLOCATION) return;
 
             curr_code_node = curr_code_node->next;
@@ -195,7 +195,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
             if (*error == ERROR_MEMORY_ALLOCATION) return;
             
             new_code_node_head = new_code_node;
-            while(curr_code_node && strcmp(tokens[0], "endmcro")) {
+            while(curr_code_node && strcmp(tokens[FIRST_WORD], "endmcro")) {
                 if (new_code_node->code_row) {
                     new_code_node->next = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
                     if (*error == ERROR_MEMORY_ALLOCATION) return;
@@ -253,7 +253,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
 
             while (current_macro)
             {
-                if (!strcmp(current_macro->macro_name, tokens[0]))
+                if (!strcmp(current_macro->macro_name, tokens[FIRST_WORD]))
                 {
                     /* Replace the macro name with the code lines */
                     current_macro_code = current_macro->code_node;
@@ -292,7 +292,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 current_code = prev_code;
             }
         }
-        else if (*pnum_tokens == 2 && !strcmp(tokens[0], "mcro"))
+        else if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro"))
         {
             while (true)
             {
@@ -301,7 +301,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 free(temp);
                 tokenizeInput(current_code->code_row, tokens, pnum_tokens, is_print, error);
                 if (*error != NO_ERROR) return;
-                if (*pnum_tokens == 1 && !strcmp(tokens[0], "endmcro")) {
+                if (*pnum_tokens == 1 && !strcmp(tokens[FIRST_WORD], "endmcro")) {
                     prev_code->next = current_code->next;
                     break;
                 }

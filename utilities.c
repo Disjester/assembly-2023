@@ -130,12 +130,16 @@ bool handleError(Error* error, int num_line, bool* is_print) {
         case ERROR_NOT_ENOUGH_ARGUMENTS:
             fprintf(stderr, "ERROR ON %d: NOT ENOUGH ARGUMENTS\n", num_line);
             break;
+        case ERROR_NO_STOP_COMMAND:
+            fprintf(stderr, "ERROR        NO   STOP COMMAND\n");
+            break;
         case NO_ERROR:
             break;
     }
     if (*error != NO_ERROR) {
         *is_print = false;
         return true;
+        
     } else {
         return false;
     }

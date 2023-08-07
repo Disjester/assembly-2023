@@ -18,7 +18,7 @@ int main (int argc, char** argv) {
     for (i = 1; i < argc; i++) {
         error = NO_ERROR;
         labels = NULL;
-        memory_idx = 100;
+        memory_idx = MEMORY_INDEX;
         DC = IC = 0;
         is_print = true;
         externals = NULL;
