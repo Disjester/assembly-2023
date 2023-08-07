@@ -6,27 +6,30 @@
 
 int main (int argc, char** argv) {
     CodeNode* code;
-    Error error = NO_ERROR;
-    LabelNode* labels = NULL;
-    LabelNode* externals = NULL;
+    Error error;
+    LabelNode* labels;
+    LabelNode* externals;
     short memory[MAX_MEMORY_SIZE];
-    int memory_idx = MEMORY_INDEX;
+    int memory_idx;
     int DC, IC;
     int i;
+    bool is_print;
 
     for (i = 1; i < argc; i++) {
         error = NO_ERROR;
         labels = NULL;
         memory_idx = MEMORY_INDEX;
         DC = IC = 0;
+        is_print = true;
+        externals = NULL;
 
-        code = preproccessor(argv[i], &error);
+        code = preproccessor(argv[i], &is_print, &error);
         if (error != NO_ERROR) continue;
         
-        firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &error);
+        firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &is_print, &error);
         if (error != NO_ERROR) continue;
 
-        secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[i], externals);
+        secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[i], externals, &is_print);
         if (error != NO_ERROR) continue;
     }
     return 1;
