@@ -10,6 +10,8 @@
 
 #define MEMORY_INDEX 100
 
+#define COMMAND_STOP 0xF
+
 #define DEFAULT_VALUE 0 
 
 #define FIRST_CHARACTER 0
@@ -53,7 +55,8 @@ typedef enum error {
     ERROR_WRONG_NUM_OF_COMMAS, /*IN USE*/
     ERROR_UNRECOGNIZED_LABEL, /*IN USE*/
     ERROR_MAXED_OUT_MEMORY, /*IN USE*/
-    ERROR_CODE_AFTER_STOP /*IN USE*/
+    ERROR_CODE_AFTER_STOP, /*IN USE*/
+    ERROR_NO_STOP_COMMAND /*IN USE*/
 } Error;
 
 typedef enum DotType{

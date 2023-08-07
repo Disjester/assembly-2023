@@ -127,6 +127,9 @@ bool handleError(Error* error, int num_line) {
         case ERROR_CODE_AFTER_STOP:
             fprintf(stderr, "ERROR ON %d: CODE LINE AFTER STOP\n", num_line);
             return true;
+        case ERROR_NO_STOP_COMMAND:
+            fprintf(stderr, "ERROR        NO   STOP COMMAND\n");
+            return true;
         default:
             return false;
     }

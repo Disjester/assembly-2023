@@ -205,6 +205,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         }
         temp_label_node = temp_label_node->next;
     }
+    if (!stop_flag)
+    {
+        *error = ERROR_NO_STOP_COMMAND;
+        handleError(error, num_line);
+        *error = NO_ERROR;
+    }
+    
 }
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals) {
@@ -343,7 +350,14 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     if (*error == ERROR_FILE_HANDLE){
         handleError(error, num_line);
         return;
-    } 
+    }
+     
+    if (!stop_flag)
+    {
+        *error = ERROR_NO_STOP_COMMAND;
+        handleError(error, num_line);
+        *error = NO_ERROR;
+    }
 }
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error) {
@@ -737,7 +751,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
     bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
     int L = 1;
 
-    if (opcode == 0xF)
+    if (opcode == COMMAND_STOP)
     {
         *stop_flag = true;
     }
