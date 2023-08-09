@@ -23,13 +23,11 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     if (*error != NO_ERROR) return NULL;
     
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, is_print, error);/*error undefined command - fix it later: now permament no error*/
-    if (*error != NO_ERROR) {
-        return NULL;
-    }
+    if (*error != NO_ERROR) return NULL;
+    
     macrosToValues(&code, &macros, tokens, &num_tokens, is_print, error);
-        if (*error != NO_ERROR) {
-        return NULL;
-    }
+    if (*error != NO_ERROR) return NULL;
+
     return code;
 }
 
@@ -41,6 +39,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
     while(getLine(buffer, error, fptr, num_line, is_print)) {
         if (*error == ERROR_MAXED_OUT_LINE_LENGTH) {
             num_line++;
+            *error = NO_ERROR;
             continue;
         }
         /*Create a new node*/
@@ -149,7 +148,6 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
     temp_macro_node = NULL;
     curr_code_node = *code_node;
     while (curr_code_node) {
-
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
@@ -241,20 +239,16 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     prev_code = NULL;
     temp = NULL;
 
-    while (current_code)
-    {
+    while (current_code) {
         tokenizeInput(current_code->code_row, tokens, pnum_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
-        if (*pnum_tokens == 1)
-        {
+        if (*pnum_tokens == 1) {
             current_macro = *macros;
             macro_replaced = false;
 
-            while (current_macro)
-            {
-                if (!strcmp(current_macro->macro_name, tokens[FIRST_WORD]))
-                {
+            while (current_macro) {
+                if (!strcmp(current_macro->macro_name, tokens[FIRST_WORD])) {
                     /* Replace the macro name with the code lines */
                     current_macro_code = current_macro->code_node;
 
@@ -281,8 +275,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 current_macro = current_macro->next;
             }
             /* Remove the current code node if a macro was replaced */
-            if (macro_replaced)
-            {
+            if (macro_replaced) {
                 if (prev_code)
                     prev_code->next = current_code->next;
                 else
@@ -292,10 +285,8 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 current_code = prev_code;
             }
         }
-        else if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro"))
-        {
-            while (true)
-            {
+        else if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro")) {
+            while (true) {
                 temp = current_code;
                 current_code = current_code->next;
                 free(temp);

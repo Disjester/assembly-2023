@@ -34,7 +34,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     int data_memory_idx = MEMORY_INDEX;
     int i;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
-    int place;
     int num_tokens = DEFAULT_VALUE;
     int token_idx = DEFAULT_VALUE;
     short binary_word;
@@ -60,8 +59,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION) {
-                handleError(error, num_line, is_print);
-                return;
+            handleError(error, num_line, is_print);
+            return;
         }
 
         if(isLabel(tokens[token_idx], true)) {
@@ -136,14 +135,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 }
                 break;
             case DOT_EXTERN:
-                place = 1;
-                for (; place < num_tokens; place++) {
-                    if (isLabel(tokens[place], false)) {
-                        insertNewLabel(labels, tokens[place], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error);
-                        if (*error == ERROR_MEMORY_ALLOCATION) {
-                            handleError(error, num_line, is_print);
-                            return;
-                        }
+                for (i = 1; i < num_tokens; i++) {
+                    if (isLabel(tokens[i], false)) {
+                        insertNewLabel(labels, tokens[i], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error);
+                        if (*error == ERROR_MEMORY_ALLOCATION) return;
                         if (*error == ERROR_DUPLICATE_LABEL)
                         {
                             /*handleError(error, num_line, is_print);*/
@@ -456,7 +451,7 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
     resulting_binary_word +=  (source_operand << 9);
     resulting_binary_word +=  (opcode << 5);
     resulting_binary_word +=  (destination_operand << 2);
-    resulting_binary_word +=  0; /*A.R.E. CHANGE IT, BORIS*/
+    resulting_binary_word +=  0;
     return resulting_binary_word;
 }
 
@@ -468,7 +463,7 @@ int getOperandsNumberByOpcode(short opcode) {
             return commands[i].number_of_operands;
         }
     }
-    return DEFAULT_ERROR_VALUE; /*MAGIC*/
+    return DEFAULT_ERROR_VALUE;
 }
 
 void convertToBase64(short num, char* result) {
@@ -497,9 +492,10 @@ int getOperandAmount(char* command) {
     return DEFAULT_ERROR_VALUE; /*CHANGE LATER*/
 }
 
-void incrementTokenCounter(int* token_idx, int num_tokens, int step, Error* error) {
+void incrementTokenCounter(int* token_idx, int num_tokens, int num_line, int step, bool* is_print, Error* error) {
     if (*token_idx + step >= num_tokens) {
         *error = ERROR_NOT_ENOUGH_ARGUMENTS;
+        handleError(error, num_line, is_print);
     }
 }
 
@@ -520,12 +516,11 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
 }
 
 void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error) {
-    if (*error != NO_ERROR) {
-
+    if (*is_print) {
+        createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
+        createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL ,error);
+        createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC);
     }
-    createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
-    createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL ,error);
-    createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC);
 }
 
 void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC) {
