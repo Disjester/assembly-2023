@@ -77,49 +77,49 @@ bool handleError(Error* error, int num_line, bool* is_print) {
             fprintf(stderr, "ERROR ON %d: DUPLICATED MACRO DEFINITION\n", num_line);
             break;
         case ERROR_EXTRANEOS_TEXT:
-            fprintf(stderr, "ERROR ON %d: EXTRANEOS_TEXT\n", num_line);
+            fprintf(stderr, "ERROR ON %d: EXTRANEOS TEXT\n", num_line);
             break;
         case ERROR_ILLEGAL_COMMA:
-            fprintf(stderr, "ERROR ON %d: ILLEGAL_COMMA\n", num_line);
+            fprintf(stderr, "ERROR ON %d: ILLEGAL COMMA\n", num_line);
             break;
         case ERROR_ILLEGAL_LABEL_NAME:
-            fprintf(stderr, "ERROR ON %d: ILLEGAL_LABEL_NAME\n", num_line);
+            fprintf(stderr, "ERROR ON %d: ILLEGAL LABEL NAME\n", num_line);
             break;
         case ERROR_ILLEGAL_OPERAND_TYPE:
-            fprintf(stderr, "ERROR ON %d: ILLEGAL_OPERAND_TYPE\n", num_line);
+            fprintf(stderr, "ERROR ON %d: ILLEGAL OPERAND TYPE\n", num_line);
             break;
         case ERROR_INCORRECT_OPERAND_TYPE:
-            fprintf(stderr, "ERROR ON %d: INCORRECT_OPERAND_TYPE\n", num_line);
+            fprintf(stderr, "ERROR ON %d: INCORRECT OPERAND TYPE\n", num_line);
             break;
         case ERROR_MAXED_OUT_LINE_LENGTH:
-            fprintf(stderr, "ERROR ON %d: MAXED_OUT_LINE_LENGTH\n", num_line);
+            fprintf(stderr, "ERROR ON %d: MAXED OUT LINE LENGTH\n", num_line);
             break;
         case ERROR_MISSING_COMMA:
-            fprintf(stderr, "ERROR ON %d: ERROR_MISSING_COMMA\n", num_line);
+            fprintf(stderr, "ERROR ON %d: ERROR MISSING COMMA\n", num_line);
             break;
         case ERROR_MISSING_DATA_ARGUMENT:
-            fprintf(stderr, "ERROR ON %d: MISSING_DATA_ARGUMENT\n", num_line);
+            fprintf(stderr, "ERROR ON %d: MISSING DATA ARGUMENT\n", num_line);
             break;
         case ERROR_UNDEFINED_COMMAND:
-            fprintf(stderr, "ERROR ON %d: UNDEFINED_COMMAND\n", num_line);
+            fprintf(stderr, "ERROR ON %d: UNDEFINED COMMAND\n", num_line);
             break;
         case ERROR_UNDEFINED_VARIABLE:
-            fprintf(stderr, "ERROR ON %d: UNDEFINED_VARIABLE\n", num_line);
+            fprintf(stderr, "ERROR ON %d: UNDEFINED VARIABLE\n", num_line);
             break;
         case ERROR_UNRECOGNIZED_LABEL:
-            fprintf(stderr, "ERROR ON %d: UNRECOGNIZED_LABEL\n", num_line);
+            fprintf(stderr, "ERROR ON %d: UNRECOGNIZED LABEL\n", num_line);
             break;
         case ERROR_WRONG_AMOUNT_OF_OPERANDS:
-            fprintf(stderr, "ERROR ON %d: WRONG_AMOUNT_OF_OPERANDS\n", num_line);
+            fprintf(stderr, "ERROR ON %d: WRONG AMOUNT OF OPERANDS\n", num_line);
             break;
         case ERROR_WRONG_ARGUMENT_FORMAT:
-            fprintf(stderr, "ERROR ON %d: WRONG_ARGUMENT_FORMAT\n", num_line);
+            fprintf(stderr, "ERROR ON %d: WRONG ARGUMENT FORMAT\n", num_line);
             break;
         case ERROR_WRONG_NUM_OF_COMMAS:
-            fprintf(stderr, "ERROR ON %d: WRONG_NUM_OF_COMMAS\n", num_line);
+            fprintf(stderr, "ERROR ON %d: WRONG NUM OF COMMAS\n", num_line);
             break;
         case ERROR_MISSING_VARIABLE:
-            fprintf(stderr, "ERROR ON %d: ERROR_MISSING_VARIABLE\n", num_line);
+            fprintf(stderr, "ERROR ON %d: ERROR MISSING VARIABLE\n", num_line);
             break;
         case ERROR_MAXED_OUT_MEMORY:
             fprintf(stderr, "ERROR ON %d: MAXED OUT MEMMORY\n", num_line);
@@ -133,6 +133,8 @@ bool handleError(Error* error, int num_line, bool* is_print) {
         case ERROR_NO_STOP_COMMAND:
             fprintf(stderr, "ERROR        NO   STOP COMMAND\n");
             break;
+        case ERROR_DUPLICATE_LABEL:
+            fprintf(stderr, "ERROR ON %d: DUPLICATED LABEL\n", num_line);
         case NO_ERROR:
             break;
     }

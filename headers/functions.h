@@ -135,6 +135,8 @@ DotType isDotType(char* word, Error* error);
 
 LabelType getLabelType(char* label, LabelNode* LabelNode, Error* error);
 
+void nextLine(CodeNode** temp_code, int* num_line);
+
 /*void printTokens(char** tokens, int* num_tokens);*/
 
 #endif
