@@ -236,7 +236,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     *IC = DEFAULT_VALUE;
     while (temp_code) {
         num_line++;
-
+        token_idx = DEFAULT_VALUE;
+        label_flag = false;
         if (temp_code->code_row[FIRST_CHARACTER] == ';') {
             temp_code = temp_code->next;
             continue;
@@ -342,8 +343,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 break;
         }
         temp_code = temp_code->next;
-        token_idx = DEFAULT_VALUE;
-        label_flag = false;
         L = DEFAULT_VALUE;
     }
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error);
@@ -720,6 +719,7 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
         *error = ERROR_DUPLICATE_LABEL;
         return;
     }
+    *error = NO_ERROR;
     if (temp_label) {
         while(temp_label && temp_label->next) {
             temp_label = temp_label->next;
