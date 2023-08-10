@@ -135,6 +135,14 @@ DotType isDotType(char* word, Error* error);
 
 LabelType getLabelType(char* label, LabelNode* LabelNode, Error* error);
 
+void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeNode* code_node3, MacroNode* macro_node, LabelNode* label_node);
+
+void freeMemoryCodeNode(CodeNode* code_node);
+
+void freeMemoryMacroNode(MacroNode* macro_node);
+
+void freeMemoryLabelNode(LabelNode* label_node);
+
 /*void printTokens(char** tokens, int* num_tokens);*/
 
 #endif

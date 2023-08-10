@@ -145,13 +145,47 @@ bool handleError(Error* error, int num_line, bool* is_print) {
     }
 }
 
-/*
-void printTokens(char** tokens, int* num_tokens){
-    int i = 0;
-    for ( ; i < *num_tokens; i++)
-    {
-        printf("%s ",tokens[i]);
-    }
-    printf("\n");
+void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeNode* code_node3, MacroNode* macro_node, LabelNode* label_node) {
+    if (tokens) free(tokens);
+
+    freeMemoryCodeNode(code_node1);
+    freeMemoryCodeNode(code_node2);
+    freeMemoryCodeNode(code_node3);
+
+    freeMemoryMacroNode(macro_node);
+
+    freeMemoryLabelNode(label_node);
 }
-*/
+
+void freeMemoryCodeNode(CodeNode* code_node) {
+    if (code_node) {
+        freeMemoryCodeNode(code_node->next);
+    }
+    if (!code_node) {
+        return;
+    }
+    free(code_node->code_row);
+    free(code_node);
+}
+
+void freeMemoryMacroNode(MacroNode* macro_node) {
+    if (macro_node) {
+        freeMemoryMacroNode(macro_node->next);
+    }
+    if (!macro_node) {
+        return;
+    }
+    freeMemoryCodeNode(macro_node->code_node);
+    free(macro_node->macro_name);
+    free(macro_node);
+}
+
+void freeMemoryLabelNode(LabelNode* label_node) {
+    if (label_node) {
+        freeMemoryLabelNode(label_node);
+    }
+    if (!label_node) {
+        return;
+    }
+    free(label_node);
+}

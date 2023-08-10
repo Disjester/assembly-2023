@@ -11,29 +11,42 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     int num_tokens = DEFAULT_VALUE;
 
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
-    if (*error != NO_ERROR) return NULL;
+    if (*error != NO_ERROR) {
+        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        return NULL;
+    }
 
     fptr = fopen(file_name, "r");
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
         handleError(error, DEFAULT_LINE_NUMER, is_print);
+        freeMemory(tokens, code, NULL, NULL, macros, NULL);
         return NULL;
     }
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, is_print, error);
-    if (*error != NO_ERROR) return NULL;
+    if (*error != NO_ERROR) {
+        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        return NULL;
+    }
     
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, is_print, error);/*error undefined command - fix it later: now permament no error*/
-    if (*error != NO_ERROR) return NULL;
+    if (*error != NO_ERROR) {
+        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        return NULL;
+    }
     
     macrosToValues(&code, &macros, tokens, &num_tokens, is_print, error);
-    if (*error != NO_ERROR) return NULL;
+    if (*error != NO_ERROR) {
+        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        return NULL;
+    }
 
     return code;
 }
 
 CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens, bool* is_print, Error* error) {
     char buffer[MAX_LINE_LENGTH]; 
-    CodeNode *head = NULL, *temp = NULL, *node = NULL;
+    CodeNode *head = NULL, *temp = NULL, *code_node = NULL;
     int num_line = STARTING_LINE;
 
     while(getLine(buffer, error, fptr, num_line, is_print)) {
@@ -43,29 +56,33 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
             continue;
         }
         /*Create a new node*/
-        node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
+        code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
 
-        if (*error != NO_ERROR) return NULL;
+        if (*error != NO_ERROR) {
+            freeMemory(tokens, code_node, NULL, NULL, NULL, NULL);
+            return NULL;
+        }
 
         /*printing the contents of the buffer, to see what's inside*/
-        node->code_row = (char*) allocateMemory(strlen(buffer) + 1, is_print, error);
+        code_node->code_row = (char*) allocateMemory(strlen(buffer) + 1, is_print, error);
         if (*error != NO_ERROR) {
+            freeMemory(tokens, code_node, NULL, NULL, NULL, NULL);
             return NULL;
         }
 
         /* Copy the string from buffer to the new node*/
-        strcpy(node->code_row, buffer);
+        strcpy(code_node->code_row, buffer);
         
         /* If this is the first node, it is the head of the list*/
         if(!head) {
-            head = node;
+            head = code_node;
         } else {
             /* Otherwise, add the new node to the end of the list*/
-            temp->next = node;
+            temp->next = code_node;
         }
         
         /* Move the temporary pointer to the new node*/
-        temp = node;
+        temp = code_node;
         num_line++;
     }
     return head;
