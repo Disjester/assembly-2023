@@ -59,8 +59,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             continue;
         }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
-        if (*error == ERROR_MEMORY_ALLOCATION) {
-            handleError(error, num_line, is_print);
+        if (*error != NO_ERROR) {
+            freeMemory(tokens, code, NULL, NULL, NULL, NULL);
             return;
         }
 
@@ -180,30 +180,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     pushToMemory(memory_idx, memory, binary_word, error);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
                     L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag);
-                    if (num_tokens >= 4)
-                    {
-                        operand_num = 2;
-                    }
-                    else
-                    {
-                        operand_num = L-1;
-                    }
-                    
-                    
-                    /* L-1 = operand_num*/
-                    switch (operand_num)
-                    {
-                    case 0:
-                        createOperandBinaryWord(L, *labels, true, OPERAND_TYPE_OTHER, OPERAND_TYPE_OTHER, (char*) NULL, (char*) NULL, memory_idx, memory, error);
-                        break;
-                    case 1:
-                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), OPERAND_TYPE_OTHER, tokens[token_idx + 1], (char*) NULL, memory_idx, memory, error);
-                        break;
-                    case 2:
-                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
-                        break;
-                    }
-                    
+                    createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
                 }
                 /*handle error*/
                 if (*error != NO_ERROR) {
