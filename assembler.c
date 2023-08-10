@@ -32,6 +32,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     LabelNode* temp_label_node;
     bool label_flag = false;
     int data_memory_idx = MEMORY_INDEX;
+    int operand_num = 0;
     int i;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
     int num_tokens = DEFAULT_VALUE;
@@ -179,7 +180,30 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     pushToMemory(memory_idx, memory, binary_word, error);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
                     L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag);
-                    createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
+                    if (num_tokens >= 4)
+                    {
+                        operand_num = 2;
+                    }
+                    else
+                    {
+                        operand_num = L-1;
+                    }
+                    
+                    
+                    /* L-1 = operand_num*/
+                    switch (operand_num)
+                    {
+                    case 0:
+                        createOperandBinaryWord(L, *labels, true, OPERAND_TYPE_OTHER, OPERAND_TYPE_OTHER, (char*) NULL, (char*) NULL, memory_idx, memory, error);
+                        break;
+                    case 1:
+                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), OPERAND_TYPE_OTHER, tokens[token_idx + 1], (char*) NULL, memory_idx, memory, error);
+                        break;
+                    case 2:
+                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
+                        break;
+                    }
+                    
                 }
                 /*handle error*/
                 if (*error != NO_ERROR) {
@@ -711,14 +735,46 @@ void cleanMemory(short* memory) {
 }
 
 void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error) {
+    LabelType duplicated_label_type = LABEL_TYPE_NOT_FOUND;
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;
+    
 
-    if (getLabelType(label_name, *labels, error)){
+    /*checks if entry label exists in other label types*/
+    duplicated_label_type =  getLabelType(label_name, *labels, error);
+    if ((label_type == LABEL_TYPE_ENTRY) && (duplicated_label_type == LABEL_TYPE_EXTERNAL) &&  duplicated_label_type != LABEL_TYPE_NOT_FOUND)
+    {
         *error = ERROR_DUPLICATE_LABEL;
         return;
     }
+
+    /*checks if external label exists in other label types*/
+    if ((label_type == LABEL_TYPE_EXTERNAL) && (duplicated_label_type != LABEL_TYPE_EXTERNAL) &&  duplicated_label_type != LABEL_TYPE_NOT_FOUND)
+    {
+        *error = ERROR_DUPLICATE_LABEL;
+        return;
+    }
+    
+    /*checks if there are duplicate of labels in label types of CODE and DATA*/
+    
+    else {
+        switch (duplicated_label_type)
+        {
+        case LABEL_TYPE_CODE:
+        case LABEL_TYPE_DATA:
+            if (label_type == LABEL_TYPE_CODE || label_type == LABEL_TYPE_DATA)
+            {
+                *error = ERROR_DUPLICATE_LABEL;
+                return;
+            }        
+        default:
+            break;
+        }
+
+
+    }
+    
     *error = NO_ERROR;
     if (temp_label) {
         while(temp_label && temp_label->next) {
