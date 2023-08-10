@@ -57,7 +57,8 @@ typedef enum error {
     ERROR_MAXED_OUT_MEMORY, /*IN USE*/
     ERROR_CODE_AFTER_STOP, /*IN USE*/
     ERROR_NOT_ENOUGH_ARGUMENTS, /*IN USE*/
-    ERROR_NO_STOP_COMMAND /*IN USE*/
+    ERROR_NO_STOP_COMMAND, /*IN USE*/
+    ERROR_DUPLICATE_LABEL /*IN USE*/
 } Error;
 
 typedef enum DotType{

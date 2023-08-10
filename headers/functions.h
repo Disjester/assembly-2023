@@ -143,6 +143,8 @@ void freeMemoryMacroNode(MacroNode* macro_node);
 
 void freeMemoryLabelNode(LabelNode* label_node);
 
+void nextLine(CodeNode** temp_code, int* num_line);
+
 /*void printTokens(char** tokens, int* num_tokens);*/
 
 #endif

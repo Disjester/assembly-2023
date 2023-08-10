@@ -49,6 +49,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     cleanMemory(data_memory);
     temp_code = code;
     while(temp_code) {
+        token_idx = DEFAULT_VALUE;
+        label_flag = false;
+
         if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' || temp_code->code_row[FIRST_CHARACTER] == '\r' || temp_code->code_row[FIRST_CHARACTER] == ';') {
             temp_code = temp_code->next;
             num_line++;
@@ -73,6 +76,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                         handleError(error, num_line, is_print);
                         return;
                     }
+                    if (*error == ERROR_DUPLICATE_LABEL)
+                    {
+                        handleError(error, num_line, is_print);
+                        *error = NO_ERROR;
+                        nextLine(&temp_code, &num_line);
+                        continue;
+                    }
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
@@ -86,10 +96,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    if (temp_code->next) {
-                        temp_code = temp_code->next;
-                    }
-                    num_line++;
+                    nextLine(&temp_code, &num_line);
                     continue;
                 }
                 break;
@@ -100,6 +107,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                             handleError(error, num_line, is_print);
                             return;
                     }
+                    if (*error == ERROR_DUPLICATE_LABEL)
+                    {
+                        handleError(error, num_line, is_print);
+                        *error = NO_ERROR;
+                        nextLine(&temp_code, &num_line);                        
+                        continue;
+                    }                    
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
@@ -116,10 +130,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    if (temp_code->next) {
-                        temp_code =  temp_code->next;
-                    }
-                    num_line++;
+                    nextLine(&temp_code, &num_line);                    
                     continue;
                 }
                 break;
@@ -128,6 +139,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     if (isLabel(tokens[i], false)) {
                         insertNewLabel(labels, tokens[i], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error);
                         if (*error == ERROR_MEMORY_ALLOCATION) return;
+                        if (*error == ERROR_DUPLICATE_LABEL)
+                        {
+                            /*handleError(error, num_line, is_print);*/
+                            *error = NO_ERROR;
+                            nextLine(&temp_code, &num_line);                            
+                            continue;
+                        }                        
                     }
                     else {
                         break;
@@ -147,6 +165,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                         handleError(error, num_line, is_print);
                         return;
                     }
+                    if (*error == ERROR_DUPLICATE_LABEL)
+                    {
+                        handleError(error, num_line, is_print);
+                        *error = NO_ERROR;
+                        nextLine(&temp_code, &num_line);                        
+                        continue;
+                    }                    
                 }
                 if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag) != COMMAND_LINE_ERROR) {
                     
@@ -161,18 +186,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    if (temp_code->next != NULL) {
-                        temp_code =  temp_code->next;
-                    }
-                    num_line++;
+                    nextLine(&temp_code, &num_line);
                     continue;
                 }
                 *IC += L;
                 L = DEFAULT_VALUE;
                 break;
         }
-        token_idx = DEFAULT_VALUE;
-        label_flag = false;
         num_line++;
         temp_code = temp_code->next;
     }
@@ -217,7 +237,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     *IC = DEFAULT_VALUE;
     while (temp_code) {
         num_line++;
-
+        token_idx = DEFAULT_VALUE;
+        label_flag = false;
         if (temp_code->code_row[FIRST_CHARACTER] == ';') {
             temp_code = temp_code->next;
             continue;
@@ -312,8 +333,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    temp_code =  temp_code->next;
-                    num_line++;
+                    nextLine(&temp_code, &num_line);
                     continue;
                 }
                 *IC += L;
@@ -324,8 +344,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 break;
         }
         temp_code = temp_code->next;
-        token_idx = DEFAULT_VALUE;
-        label_flag = false;
         L = DEFAULT_VALUE;
     }
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error);
@@ -698,6 +716,11 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
     LabelNode* new_label;
     temp_label = *labels;
 
+    if (getLabelType(label_name, *labels, error)){
+        *error = ERROR_DUPLICATE_LABEL;
+        return;
+    }
+    *error = NO_ERROR;
     if (temp_label) {
         while(temp_label && temp_label->next) {
             temp_label = temp_label->next;
@@ -879,4 +902,9 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
         *error = ERROR_MAXED_OUT_MEMORY;
         return;
     }
+}
+
+void nextLine(CodeNode** temp_code, int* num_line){
+    *temp_code =  (*temp_code)->next;
+    (*num_line)++;
 }
