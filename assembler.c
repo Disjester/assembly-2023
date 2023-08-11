@@ -222,6 +222,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 
     moveDataToMemory(data_memory, &data_memory_idx, memory, memory_idx, error);
     if (*error == ERROR_MAXED_OUT_MEMORY) return;
+    freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
 
     temp_label_node = *labels;
     while (temp_label_node) {
@@ -372,6 +373,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     }
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error);
     freeMemory(tokens, code, NULL, NULL, NULL, labels);
+    freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
     if (*error == ERROR_FILE_HANDLE){
         handleError(error, num_line, is_print);
         return;

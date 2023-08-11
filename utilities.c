@@ -15,6 +15,9 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
     token = strtok(temp, " \r");
     *num_tokens = 0;
     while (token != NULL && *num_tokens < MAX_TOKENS) {
+        if (tokens[*num_tokens]) {
+            free(tokens[*num_tokens]);
+        }
         tokens[*num_tokens] = my_strdup(token, is_print, error);  /* Duplicate and store token */
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
@@ -23,7 +26,6 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
     }
 
     /*printTokens(tokens, num_tokens);*/
-    printf("FREE MEMORY     : %d (address), %lu (size)\n", temp, sizeof(temp));
     free(temp);
 }
 
@@ -150,8 +152,16 @@ bool handleError(Error* error, int num_line, bool* is_print) {
 }
 
 void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeNode* code_node3, MacroNode* macro_node, LabelNode* label_node) {
-    if (tokens) free(tokens);
+    int i;
 
+    if (tokens) {
+        /*for (i == 0; i < MAX_TOKENS; i++) {
+            if(tokens[i]) {
+                free(tokens[i]);
+            }
+            
+        }*/
+    }
     freeMemoryCodeNode(code_node1);
     freeMemoryCodeNode(code_node2);
     freeMemoryCodeNode(code_node3);
@@ -168,9 +178,7 @@ void freeMemoryCodeNode(CodeNode* code_node) {
     if (!code_node) {
         return;
     }
-    printf("FREE MEMORY     : %d (address), %lu (size)\n", code_node->code_row, sizeof(code_node->code_row));
     free(code_node->code_row);
-    printf("FREE MEMORY     : %d (address), %lu (size)\n", code_node, sizeof(code_node));
     free(code_node);
 }
 
@@ -182,9 +190,7 @@ void freeMemoryMacroNode(MacroNode* macro_node) {
         return;
     }
     freeMemoryCodeNode(macro_node->code_node);
-    printf("FREE MEMORY     : %d (address), %lu (size)\n", macro_node->macro_name, sizeof(macro_node->macro_name));
     free(macro_node->macro_name);
-    printf("FREE MEMORY     : %d (address), %lu (size)\n", macro_node, sizeof(macro_node));
     free(macro_node);
 }
 
@@ -195,6 +201,5 @@ void freeMemoryLabelNode(LabelNode* label_node) {
     if (!label_node) {
         return;
     }
-    printf("FREE MEMORY     : %d (address), %lu (size)\n", label_node, sizeof(label_node));
     free(label_node);
 }
