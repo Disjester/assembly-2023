@@ -37,9 +37,9 @@ bool isLabel(char* word, bool colon);
 
 void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error);
 
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error);
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error, int num_line);
 
-void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error);
+void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error, int num_line, bool* is_print);
 
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
 
@@ -55,7 +55,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print);
 
-void pushToMemory(int* memory_counter, short* memory, short memoryField, Error* error);
+void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error, int num_line, bool *is_print);
 
 int getOperandsNumberByOpcode(short opcode);
 
@@ -85,7 +85,7 @@ int getAdressingMethodByOperandType(OperandType operand_type);
 
 void convertToBase64(short num, char* result);
 
-void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error);
+void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print);
 
 void freeLinkedList(CodeNode* head);
 
@@ -97,7 +97,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
 
 void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
 
-void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC);
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error,  int num_line, bool* is_print);
 
 void* allocateMemory(size_t size, bool* is_print, Error* error);
 

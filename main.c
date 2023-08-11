@@ -14,7 +14,14 @@ int main (int argc, char** argv) {
     int DC, IC;
     int i;
     bool is_print;
-
+    /*
+    if (argc <= 1)
+    {
+        *error = ERROR_FILE_HANDLE;
+        handleError(error, 0, &is_print);
+        return 0;
+    }
+    */
     for (i = 1; i < argc; i++) {
         error = NO_ERROR;
         labels = NULL;
@@ -27,7 +34,7 @@ int main (int argc, char** argv) {
         if (error != NO_ERROR) continue;
         
         firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &is_print, &error);
-        if (error != NO_ERROR) continue;
+        if (error != NO_ERROR || is_print == false) continue;
 
         secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[i], externals, &is_print);
         if (error != NO_ERROR) continue;
