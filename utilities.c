@@ -41,7 +41,7 @@ char *my_strdup(const char *str, bool* is_print, Error* error) {
 
 void* allocateMemory(size_t size, bool* is_print, Error* error) {
     void* ptr = calloc(1, size);
-    printf("ALLOCATED MEMORY: %d (address), %lu (size)\n", ptr, size);
+    /*printf("ALLOCATED MEMORY: %d (address), %lu (size)\n", ptr, size);*/
     if (!ptr) {
         *error = ERROR_MEMORY_ALLOCATION;
         handleError(error, DEFAULT_LINE_NUMER, is_print);
