@@ -232,6 +232,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         *error = NO_ERROR;
     }
     if (*error == ERROR_MAXED_OUT_MEMORY || is_print == false) return;
+    freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
 
     temp_label_node = *labels;
     while (temp_label_node) {
@@ -395,6 +396,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
 
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error, num_line);
     freeMemory(tokens, code, NULL, NULL, NULL, labels);
+    freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
 }
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print) {
