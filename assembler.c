@@ -89,7 +89,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
-                        pushToMemory(&data_memory_idx, data_memory, atoi(tokens[i]), error);
+                        pushToMemory(&data_memory_idx, data_memory, atoi(tokens[i]), error, num_line, is_print);
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
                         (*DC)++;
                     }
@@ -120,11 +120,11 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
-                        pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][i], error);
+                        pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][i], error, num_line, is_print);
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
                         (*DC)++;
                     }
-                    pushToMemory(&data_memory_idx, data_memory, '\0', error);
+                    pushToMemory(&data_memory_idx, data_memory, '\0', error, num_line, is_print);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
                     (*DC)++;
                 }
@@ -178,7 +178,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag) != COMMAND_LINE_ERROR) {
                     
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
-                    pushToMemory(memory_idx, memory, binary_word, error);
+                    pushToMemory(memory_idx, memory, binary_word, error, num_line, is_print);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
                     L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag);
                     if (num_tokens >= 4)
@@ -195,13 +195,17 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     switch (operand_num)
                     {
                     case 0:
-                        createOperandBinaryWord(L, *labels, true, OPERAND_TYPE_OTHER, OPERAND_TYPE_OTHER, (char*) NULL, (char*) NULL, memory_idx, memory, error);
+                        createOperandBinaryWord(L, *labels, true, OPERAND_TYPE_OTHER, OPERAND_TYPE_OTHER, (char*) NULL, (char*) NULL,
+                        memory_idx, memory, error, num_line, is_print);
                         break;
                     case 1:
-                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), OPERAND_TYPE_OTHER, tokens[token_idx + 1], (char*) NULL, memory_idx, memory, error);
+                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag),
+                        OPERAND_TYPE_OTHER, tokens[token_idx + 1], (char*) NULL, memory_idx, memory, error, num_line, is_print);
                         break;
                     case 2:
-                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag), checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1], tokens[token_idx + 3], memory_idx, memory, error);
+                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag),
+                        checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1],
+                        tokens[token_idx + 3], memory_idx, memory, error, num_line, is_print);
                         break;
                     }
                 }
@@ -221,7 +225,13 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     }
 
     moveDataToMemory(data_memory, &data_memory_idx, memory, memory_idx, error);
-    if (*error == ERROR_MAXED_OUT_MEMORY) return;
+    if (!stop_flag)
+    {
+        *error = ERROR_NO_STOP_COMMAND;
+        handleError(error, num_line, is_print);
+        *error = NO_ERROR;
+    }
+    if (*error == ERROR_MAXED_OUT_MEMORY || is_print == false) return;
     freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
 
     temp_label_node = *labels;
@@ -371,9 +381,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         temp_code = temp_code->next;
         L = DEFAULT_VALUE;
     }
-    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error);
-    freeMemory(tokens, code, NULL, NULL, NULL, labels);
-    freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
+    
     if (*error == ERROR_FILE_HANDLE){
         handleError(error, num_line, is_print);
         return;
@@ -385,9 +393,13 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         handleError(error, num_line, is_print);
         *error = NO_ERROR;
     }
+
+    createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error, num_line);
+    freeMemory(tokens, code, NULL, NULL, NULL, labels);
+    freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
 }
 
-void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error) {
+void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print) {
     short resulting_binary_word = 0x0;
 
     switch (L) {
@@ -399,20 +411,20 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
                 resulting_binary_word <<= 5;
                 resulting_binary_word += (short) atoi(operand2 + 2);
                 resulting_binary_word <<= 2;
-                pushToMemory(memory_idx, memory, resulting_binary_word, error);
+                pushToMemory(memory_idx, memory, resulting_binary_word, error, num_line, is_print);
                 if (*error == ERROR_MAXED_OUT_MEMORY) return;
             } else {
-                createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error);
+                createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error, num_line, is_print);
             }
             break;
         case 3: 
-            createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error);
-            createBinaryWordByType(labels, op_type_2, operand2, memory, memory_idx, is_first_iteration, error);
+            createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error, num_line, is_print);
+            createBinaryWordByType(labels, op_type_2, operand2, memory, memory_idx, is_first_iteration, error, num_line, is_print);
             break;
     }
 }
 
-void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error) {
+void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error, int num_line, bool* is_print) {
     short resulting_binary_word = 0x0;
     LabelNode* temp_label_node;
 
@@ -420,7 +432,7 @@ void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operan
         case OPERAND_TYPE_REGISTER:
             resulting_binary_word += (short) atoi(operand + 2);
             resulting_binary_word <<= 7;
-            pushToMemory(memory_idx, memory, resulting_binary_word, error);
+            pushToMemory(memory_idx, memory, resulting_binary_word, error, num_line, is_print);
             if (*error == ERROR_MAXED_OUT_MEMORY) return;
             break;
         case OPERAND_TYPE_LABEL:
@@ -430,20 +442,20 @@ void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operan
                     if (!strcmp(temp_label_node->label_name, operand)) {
                         resulting_binary_word += temp_label_node->memory_adress;
                         resulting_binary_word <<= 2;
-                        pushToMemory(memory_idx, memory, resulting_binary_word, error);
+                        pushToMemory(memory_idx, memory, resulting_binary_word, error, num_line, is_print);
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
                     }
                     temp_label_node = temp_label_node->next;
                 }
             } else {
-                pushToMemory(memory_idx, memory, 0xFFF, error);
+                pushToMemory(memory_idx, memory, 0xFFF, error, num_line, is_print);
                 if (*error == ERROR_MAXED_OUT_MEMORY) return;
             }
             break;
         case OPERAND_TYPE_NUMBER:
             resulting_binary_word += (short) atoi(operand);
             resulting_binary_word <<= 2;
-            pushToMemory(memory_idx, memory, resulting_binary_word, error);
+            pushToMemory(memory_idx, memory, resulting_binary_word, error, num_line, is_print);
             if (*error == ERROR_MAXED_OUT_MEMORY) return;
             break;
         case OPERAND_TYPE_OTHER:
@@ -541,15 +553,15 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
     }
 }
 
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error) {
+void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error, int num_line) {
     if (*is_print) {
         createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
         createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL ,error);
-        createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC);
+        createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC, error, num_line, is_print);
     }
 }
 
-void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC) {
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error,  int num_line, bool* is_print) {
     FILE *fptr;
     int i;
     char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
@@ -563,7 +575,8 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, i
     fptr = fopen(output_file_name, "w");
 
     if (!fptr) {
-        /*ERROR*/
+        *error = ERROR_FILE_HANDLE;
+        handleError(error, num_line, is_print);
         return;
     }
     fprintf(fptr, "%d %d\n", IC, DC);
@@ -721,9 +734,10 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     return false;
 }
 
-void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error) {
+void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error, int num_line, bool *is_print) {
     if (*memory_idx >= MAX_MEMORY_SIZE) {
         *error = ERROR_MAXED_OUT_MEMORY;
+        handleError(error, num_line, is_print);
         return;
     }
     memory[(*memory_idx)++] = memoryField;
@@ -759,7 +773,7 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
         return;
     }
     
-    /*checks if there are duplicate of labels in label types of CODE and DATA*/
+    /*checks if there are duplicate of labels in label types of CODE and DATA among themselfs*/
     
     else {
         switch (duplicated_label_type)
