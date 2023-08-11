@@ -87,8 +87,6 @@ void convertToBase64(short num, char* result);
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error);
 
-void freeLinkedList(CodeNode* head);
-
 int getLine(char* line, Error* error, FILE* file, int num_line, bool* is_print);
 
 void cleanLine(char* line, int length);
@@ -99,7 +97,7 @@ void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pn
 
 void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC);
 
-void* allocateMemory(size_t size, bool* is_print, Error* error);
+void* allocateMemory(size_t size, bool* is_print ,Error* error);
 
 bool handleError(Error* error, int num_line, bool* is_print);
 

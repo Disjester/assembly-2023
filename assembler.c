@@ -26,6 +26,7 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
 static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
 
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error) {
+    printf("                     FIRST ITERATION\n");
     bool is_first_itteration_flag = true;
     bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
     CodeNode* temp_code;
@@ -44,7 +45,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
 
     if (*error == ERROR_MEMORY_ALLOCATION) return;
- 
+
     *DC = *IC = DEFAULT_VALUE;
     cleanMemory(memory);
     cleanMemory(data_memory);
@@ -241,6 +242,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 }
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print) {
+    printf("                     SECOND ITERATION\n");
     CodeNode* temp_code;
     LabelNode* temp_label;
     bool stop_flag = false;
@@ -254,7 +256,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int update_memory_idx = MEMORY_INDEX;
     int check_counter;
     short curr_memory;
-    
+
     temp_code = code;
     *IC = DEFAULT_VALUE;
     while (temp_code) {
@@ -369,7 +371,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         L = DEFAULT_VALUE;
     }
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error);
-    
+    freeMemory(tokens, code, NULL, NULL, NULL, labels);
     if (*error == ERROR_FILE_HANDLE){
         handleError(error, num_line, is_print);
         return;
