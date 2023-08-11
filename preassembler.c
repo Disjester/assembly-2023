@@ -10,6 +10,8 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     char** tokens;
     int num_tokens = DEFAULT_VALUE;
 
+    printf("                     PREPROCESSOR\n");
+
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     if (*error != NO_ERROR) {
         freeMemory(tokens, code, NULL, NULL, macros, NULL);
@@ -40,7 +42,7 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
         freeMemory(tokens, code, NULL, NULL, macros, NULL);
         return NULL;
     }
-
+    freeMemory(tokens, NULL, NULL, NULL, macros, NULL);
     return code;
 }
 
@@ -86,16 +88,6 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         num_line++;
     }
     return head;
-}
-
-void freeLinkedList(CodeNode* head) {
-    CodeNode* tmp;
-
-    while (!head) {
-        tmp = head;
-        head = head->next;
-        free(tmp);
-    }
 }
 
 int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) {
