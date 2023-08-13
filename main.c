@@ -35,9 +35,10 @@ int main (int argc, char** argv) {
         
         firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &is_print, &error);
         if (error != NO_ERROR || is_print == false) continue;
-
+        
         secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[i], externals, &is_print);
         if (error != NO_ERROR) continue;
+        
     }
     return 1;
 }

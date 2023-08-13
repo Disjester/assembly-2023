@@ -147,6 +147,8 @@ bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNo
 
 bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration);
 
+void printTokensLine(char** tokens, int num_tokens);
+
 /*void printTokens(char** tokens, int* num_tokens);*/
 
 #endif

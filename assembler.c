@@ -35,6 +35,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     int data_memory_idx = MEMORY_INDEX;
     int operand_num = 0;
     int i;
+    int counter = 0;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
     int num_tokens = DEFAULT_VALUE;
     int token_idx = DEFAULT_VALUE;
@@ -57,13 +58,20 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     while(temp_code) {
         token_idx = DEFAULT_VALUE;
         label_flag = false;
-
+        
+        
         if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' || temp_code->code_row[FIRST_CHARACTER] == '\r' || temp_code->code_row[FIRST_CHARACTER] == ';') {
             temp_code = temp_code->next;
             num_line++;
             continue;
         }
+        for (; counter < num_tokens; counter++)
+        {
+            free(tokens[counter]);
+        }
+        
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
+        printTokensLine(tokens, num_tokens);
         if (*error == ERROR_MEMORY_ALLOCATION) {
             freeMemory(tokens, code, NULL, NULL, NULL, *labels);
             return;
@@ -253,9 +261,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         } 
         temp_label_node = temp_label_node->next;
     }
+    /*
     freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
     freeMemory(NULL, NULL, NULL, NULL, NULL, *labels);
-
+    */
 }
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print) {
@@ -413,8 +422,10 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     }
 
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error, num_line);
+    /*
     freeMemory(tokens, code, NULL, NULL, NULL, labels);
     freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
+    */
 }
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print) {
@@ -1035,4 +1046,14 @@ bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_typ
             break;
         }
     }
+}
+
+void printTokensLine(char** tokens, int num_tokens){
+    int i = 0;
+    char tokens_line[MAX_TOKENS];
+    for (; i < num_tokens; i++)
+    {
+        strncat(tokens_line , tokens[i], MAX_TOKENS);
+    }
+    printf ("          The tokens line is:      %s\n", tokens_line);
 }
