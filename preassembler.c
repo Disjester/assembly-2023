@@ -284,6 +284,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 }
                 current_macro = current_macro->next;
             }
+            
             /* Remove the current code node if a macro was replaced */
             if (macro_replaced) {
                 if (prev_code)

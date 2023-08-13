@@ -20,7 +20,6 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
         }
         tokens[*num_tokens] = my_strdup(token, is_print, error);  /* Duplicate and store token */
         if (*error == ERROR_MEMORY_ALLOCATION) return;
-        /*printf("Tokens %d is :%s\n", *num_tokens, tokens[*num_tokens]);*/
         (*num_tokens)++;
         token = strtok(NULL, " \r");
     }
