@@ -261,8 +261,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         } 
         temp_label_node = temp_label_node->next;
     }
-    
-    freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
+    free (tokens);
+    /*freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);*/
     /*freeMemory(NULL, NULL, NULL, NULL, NULL, *labels);*/
 
 }
@@ -1053,7 +1053,8 @@ void printTokensLine(char** tokens, int num_tokens){
     char tokens_line[MAX_TOKENS];
     for (; i < num_tokens; i++)
     {
-        strncat(tokens_line , tokens[i], MAX_TOKENS);
+        strncat(tokens_line , tokens[i], MAX_TOKENS-1);
+        strncat(tokens_line , " ",3);
     }
     printf ("          The tokens line is:      %s\n", tokens_line);
 }
