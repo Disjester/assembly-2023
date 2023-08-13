@@ -38,6 +38,7 @@ int main (int argc, char** argv) {
  
         secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[i], externals, &is_print);
         if (error != NO_ERROR) continue;
+        
     }
     return 1;
 }
