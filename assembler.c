@@ -46,7 +46,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     printf("                     FIRST ITERATION\n");
 
     if (*error == ERROR_MEMORY_ALLOCATION) {
-        freeMemory(tokens, code, NULL, NULL, NULL, labels);
+        freeMemory(tokens, code, NULL, NULL, NULL, *labels);
         return;
     }
 
@@ -65,7 +65,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION) {
-            freeMemory(tokens, code, NULL, NULL, NULL, labels);
+            freeMemory(tokens, code, NULL, NULL, NULL, *labels);
             return;
         }
 
@@ -254,7 +254,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         temp_label_node = temp_label_node->next;
     }
     freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
-    freeMemory(NULL, NULL, NULL, NULL, NULL, labels);
+    freeMemory(NULL, NULL, NULL, NULL, NULL, *labels);
 
 }
 
