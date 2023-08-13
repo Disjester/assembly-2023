@@ -26,7 +26,7 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
 static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
 
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error) {
-    printf("                     FIRST ITERATION\n");
+    
     bool is_first_itteration_flag = true;
     bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
     CodeNode* temp_code;
@@ -43,6 +43,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     int num_line = STARTING_LINE;
     short data_memory[MAX_MEMORY_SIZE];
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
+    printf("                     FIRST ITERATION\n");
 
     if (*error == ERROR_MEMORY_ALLOCATION) return;
 
@@ -73,7 +74,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         switch (isDotType(tokens[token_idx], error)) {
             case DOT_DATA:
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error, is_first_itteration_flag);
                     if (*error == ERROR_MEMORY_ALLOCATION) {
                         handleError(error, num_line, is_print);
                         return;
@@ -104,7 +105,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 break;
             case DOT_STRING:
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error, is_first_itteration_flag);
                     if (*error == ERROR_MEMORY_ALLOCATION) {
                             handleError(error, num_line, is_print);
                             return;
@@ -139,7 +140,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_EXTERN:
                 for (i = 1; i < num_tokens; i++) {
                     if (isLabel(tokens[i], false)) {
-                        insertNewLabel(labels, tokens[i], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error);
+                        insertNewLabel(labels, tokens[i], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error, is_first_itteration_flag);
                         if (*error == ERROR_MEMORY_ALLOCATION) return;
                         if (*error == ERROR_DUPLICATE_LABEL)
                         {
@@ -162,7 +163,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     handleError(error, num_line, is_print);
                 }
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, is_print, error);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, is_print, error, is_first_itteration_flag);
                     if (*error == ERROR_MEMORY_ALLOCATION){
                         handleError(error, num_line, is_print);
                         return;
@@ -253,7 +254,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
 }
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print) {
-    printf("                     SECOND ITERATION\n");
     CodeNode* temp_code;
     LabelNode* temp_label;
     bool stop_flag = false;
@@ -263,23 +263,26 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     int num_tokens = DEFAULT_VALUE;
     int L = DEFAULT_VALUE;
-    int num_line = DEFAULT_VALUE;
+    int num_line = STARTING_LINE;
     int update_memory_idx = MEMORY_INDEX;
     int check_counter;
     short curr_memory;
+    
 
     temp_code = code;
     *IC = DEFAULT_VALUE;
+    printf("                     SECOND ITERATION\n");
     while (temp_code) {
-        num_line++;
         token_idx = DEFAULT_VALUE;
         label_flag = false;
         if (temp_code->code_row[FIRST_CHARACTER] == ';') {
             temp_code = temp_code->next;
+            num_line++;
             continue;
         }
         if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' || temp_code->code_row[FIRST_CHARACTER] == '\r') {
             temp_code = temp_code->next;
+            num_line++;
             continue;
         }
 
@@ -294,6 +297,15 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         }
         switch (isDotType(tokens[token_idx], error)) {
             case DOT_ENTRY:
+                checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_EXTERNAL, is_first_itteration_flag);
+                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_ILLEGAL_OPERAND_TYPE)
+                {
+                    handleError(error, num_line, is_print);
+                    *error = NO_ERROR;
+                    nextLine(&temp_code, &num_line);
+                    continue;
+                }
+                
                 updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
             case DOT_OTHER:
@@ -311,7 +323,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                                 if (!strcmp(tokens[token_idx+1], temp_label->label_name)) {
                                     if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
                                         memory[update_memory_idx] = 0x001;
-                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, is_print, error);
+                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, is_print, error, is_first_itteration_flag);
                                         update_memory_idx++;
                                         check_counter--;
                                     } else {
@@ -347,7 +359,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                                 if (!strcmp(tokens[token_idx], temp_label->label_name)) {
                                     if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
                                         memory[update_memory_idx] = 0x001;
-                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, is_print, error);
+                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, is_print, error, is_first_itteration_flag);
                                         update_memory_idx++;
                                         check_counter--;
                                     } else {
@@ -378,6 +390,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
             case DOT_STRING:
                 break;
         }
+        num_line++;
         temp_code = temp_code->next;
         L = DEFAULT_VALUE;
     }
@@ -751,45 +764,14 @@ void cleanMemory(short* memory) {
     }
 }
 
-void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error) {
-    LabelType duplicated_label_type = LABEL_TYPE_NOT_FOUND;
+void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error, bool is_first_itteration_flag) {
     LabelNode* temp_label;
     LabelNode* new_label;
     temp_label = *labels;
-    
 
-    /*checks if entry label exists in other label types*/
-    duplicated_label_type =  getLabelType(label_name, *labels, error);
-    if ((label_type == LABEL_TYPE_ENTRY) && (duplicated_label_type == LABEL_TYPE_EXTERNAL) &&  duplicated_label_type != LABEL_TYPE_NOT_FOUND)
+    if (isDuplicatedLabel(labels, label_name, label_type, error, is_first_itteration_flag))
     {
-        *error = ERROR_DUPLICATE_LABEL;
         return;
-    }
-
-    /*checks if external label exists in other label types*/
-    if ((label_type == LABEL_TYPE_EXTERNAL) && (duplicated_label_type != LABEL_TYPE_EXTERNAL) &&  duplicated_label_type != LABEL_TYPE_NOT_FOUND)
-    {
-        *error = ERROR_DUPLICATE_LABEL;
-        return;
-    }
-    
-    /*checks if there are duplicate of labels in label types of CODE and DATA among themselfs*/
-    
-    else {
-        switch (duplicated_label_type)
-        {
-        case LABEL_TYPE_CODE:
-        case LABEL_TYPE_DATA:
-            if (label_type == LABEL_TYPE_CODE || label_type == LABEL_TYPE_DATA)
-            {
-                *error = ERROR_DUPLICATE_LABEL;
-                return;
-            }        
-        default:
-            break;
-        }
-
-
     }
     
     *error = NO_ERROR;
@@ -842,6 +824,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
     }
     /*ERROR unrecognized command name*/
     if (opcode == DEFAULT_ERROR_VALUE) {
+        *error = ERROR_UNDEFINED_COMMAND; /*changed , might remove later*/
         return COMMAND_LINE_ERROR;
     }
 
@@ -979,4 +962,72 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
 void nextLine(CodeNode** temp_code, int* num_line){
     *temp_code =  (*temp_code)->next;
     (*num_line)++;
+}
+
+bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration){
+    int operand_index = 1;
+    if (num_tokens < 2)
+    {
+        *error = ERROR_NOT_ENOUGH_ARGUMENTS;
+        return false;
+    }
+    /*Remove if needed and change for checking every token that is not ','*/
+
+    if (num_tokens % 2 != EVEN) {
+        *error = ERROR_WRONG_NUM_OF_COMMAS;
+        return false;
+    }
+
+    /*Check this later*/
+    for (; operand_index + 1 < num_tokens; operand_index += 2) {
+        if (strcmp(tokens[operand_index], ",")) {
+            *error = ERROR_MISSING_COMMA;
+            return false;
+        }
+    }
+
+    if (getLabelType(tokens[operand_index], *labels, error) == LABEL_TYPE_NOT_FOUND)
+    {
+        *error = ERROR_INCORRECT_OPERAND_TYPE;
+        return false;
+    }
+    
+    return !(isDuplicatedLabel(labels, tokens[operand_index], label_type, error, is_first_itteration));
+}
+
+bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration){
+    LabelType argument_label_type = LABEL_TYPE_NOT_FOUND;
+    argument_label_type =  getLabelType(label_name, *labels, error);
+
+    /*checks if entry label exists in other label types*/
+    if ((label_type == LABEL_TYPE_ENTRY) && (argument_label_type == LABEL_TYPE_EXTERNAL) &&  argument_label_type != LABEL_TYPE_NOT_FOUND && is_first_itteration)
+    {
+        *error = ERROR_DUPLICATE_LABEL;
+        return true;
+    }
+
+    /*checks if external label exists in other label types*/
+    if ((label_type == LABEL_TYPE_EXTERNAL) && (argument_label_type != LABEL_TYPE_EXTERNAL) &&  argument_label_type != LABEL_TYPE_NOT_FOUND && is_first_itteration)
+    {
+        *error = ERROR_DUPLICATE_LABEL;
+        return true;
+    }
+    
+    /*checks if there are duplicate of labels in label types of CODE and DATA among themselfs*/
+    
+    else {
+        switch (argument_label_type)
+        {
+        case LABEL_TYPE_CODE:
+        case LABEL_TYPE_DATA:
+            if (label_type == LABEL_TYPE_CODE || label_type == LABEL_TYPE_DATA)
+            {
+                *error = ERROR_DUPLICATE_LABEL;
+                return true;
+            }        
+        default:
+            return false;
+            break;
+        }
+    }
 }

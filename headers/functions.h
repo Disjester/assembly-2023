@@ -49,7 +49,7 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
 
 char* removeColon(char* str);
 
-void insertNewLabel(LabelNode** label, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error);
+void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error, bool is_first_itteration_flag);
 
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error);
 
@@ -142,6 +142,10 @@ void freeMemoryMacroNode(MacroNode* macro_node);
 void freeMemoryLabelNode(LabelNode* label_node);
 
 void nextLine(CodeNode** temp_code, int* num_line);
+
+bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration);
+
+bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration);
 
 /*void printTokens(char** tokens, int* num_tokens);*/
 
