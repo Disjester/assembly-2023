@@ -43,7 +43,7 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
         return NULL;
     }
     fclose(fptr);
-    freeMemory(tokens, code, NULL, NULL, macros, NULL);
+    freeMemory(tokens, NULL, NULL, NULL, macros, NULL);
     return code;
 }
 

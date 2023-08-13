@@ -169,6 +169,7 @@ void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeN
         }*/
         free(tokens);
     }
+    printf("FREE\n");
     freeMemoryCodeNode(code_node1);
     freeMemoryCodeNode(code_node2);
     freeMemoryCodeNode(code_node3);
@@ -208,5 +209,6 @@ void freeMemoryLabelNode(LabelNode* label_node) {
     if (!label_node) {
         return;
     }
+    free(label_node->label_name);
     free(label_node);
 }
