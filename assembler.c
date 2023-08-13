@@ -254,7 +254,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         temp_label_node = temp_label_node->next;
     }
     freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
-    freeMemory(NULL, NULL, NULL, NULL, NULL, *labels);
+    /*freeMemory(NULL, NULL, NULL, NULL, NULL, *labels);*/
 
 }
 
