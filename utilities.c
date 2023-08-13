@@ -15,6 +15,9 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
     token = strtok(temp, " \r");
     *num_tokens = 0;
     while (token != NULL && *num_tokens < MAX_TOKENS) {
+        if (tokens[*num_tokens]) {
+            free(tokens[*num_tokens]);
+        }
         tokens[*num_tokens] = my_strdup(token, is_print, error);  /* Duplicate and store token */
         if (*error == ERROR_MEMORY_ALLOCATION) return;
         (*num_tokens)++;
@@ -150,13 +153,20 @@ bool handleError(Error* error, int num_line, bool* is_print) {
 void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeNode* code_node3, MacroNode* macro_node, LabelNode* label_node) {
     int i;
 
+    for (i = 0; i < MAX_TOKENS; i++) {
+        if (tokens[i]) {
+            free(tokens[i]);
+        }
+    }
+
     if (tokens) {
-        /*for (i == 0; i < MAX_TOKENS; i++) {
+        /*for (i = 0; i < MAX_TOKENS; i++) {
             if(tokens[i]) {
-                free(tokens[i]);
+                tokens[i] = NULL;
             }
             
         }*/
+        free(tokens);
     }
     freeMemoryCodeNode(code_node1);
     freeMemoryCodeNode(code_node2);

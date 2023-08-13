@@ -31,7 +31,7 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
         return NULL;
     }
     
-    scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, is_print, error);/*error undefined command - fix it later: now permament no error*/
+    scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, is_print, error);
     if (*error != NO_ERROR) {
         freeMemory(tokens, code, NULL, NULL, macros, NULL);
         return NULL;
@@ -42,7 +42,8 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
         freeMemory(tokens, code, NULL, NULL, macros, NULL);
         return NULL;
     }
-    freeMemory(tokens, NULL, NULL, NULL, macros, NULL);
+    fclose(fptr);
+    freeMemory(tokens, code, NULL, NULL, macros, NULL);
     return code;
 }
 
@@ -187,8 +188,8 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), is_print, error);
             if (*error == ERROR_MEMORY_ALLOCATION) return;
 
-            new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
-            if (*error == ERROR_MEMORY_ALLOCATION) return;
+            /*new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
+            if (*error == ERROR_MEMORY_ALLOCATION) return;*/
 
             new_macro_node->macro_name = my_strdup(tokens[SECOND_WORD], is_print, error);
             if (*error == ERROR_MEMORY_ALLOCATION) return;
@@ -268,13 +269,13 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                         if (*error == ERROR_MEMORY_ALLOCATION) return;
                         new_code_node->code_row = my_strdup(current_macro_code->code_row, is_print, error);
                         if (*error == ERROR_MEMORY_ALLOCATION) return;
-
                         /* Append the new code node to the linked list */
-                        if (prev_code)
+                        if (prev_code) {
                             prev_code->next = new_code_node;
-                        else
+                        }
+                        else {
                             *code = new_code_node;
-
+                        }
                         prev_code = new_code_node;
 
                         current_macro_code = current_macro_code->next;
@@ -290,7 +291,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                     prev_code->next = current_code->next;
                 else
                     *code = current_code->next;
-
+                free(current_code->code_row);
                 free(current_code);
                 current_code = prev_code;
             }
@@ -299,6 +300,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
             while (true) {
                 temp = current_code;
                 current_code = current_code->next;
+                free(temp->code_row);
                 free(temp);
                 tokenizeInput(current_code->code_row, tokens, pnum_tokens, is_print, error);
                 if (*error != NO_ERROR) return;

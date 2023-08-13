@@ -45,7 +45,10 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     printf("                     FIRST ITERATION\n");
 
-    if (*error == ERROR_MEMORY_ALLOCATION) return;
+    if (*error == ERROR_MEMORY_ALLOCATION) {
+        freeMemory(tokens, code, NULL, NULL, NULL, labels);
+        return;
+    }
 
     *DC = *IC = DEFAULT_VALUE;
     cleanMemory(memory);
@@ -61,8 +64,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             continue;
         }
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
-        if (*error != NO_ERROR) {
-            freeMemory(tokens, code, NULL, NULL, NULL, NULL);
+        if (*error == ERROR_MEMORY_ALLOCATION) {
+            freeMemory(tokens, code, NULL, NULL, NULL, labels);
             return;
         }
 
@@ -76,7 +79,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error, is_first_itteration_flag);
                     if (*error == ERROR_MEMORY_ALLOCATION) {
-                        handleError(error, num_line, is_print);
+                        freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
                         return;
                     }
                     if (*error == ERROR_DUPLICATE_LABEL)
@@ -248,7 +251,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case LABEL_TYPE_NOT_FOUND:
                 /* *error = ERROR_UNRECOGNIZED_LABEL; */
                 break;
-        }
+        } 
         temp_label_node = temp_label_node->next;
     }
 }
