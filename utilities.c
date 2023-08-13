@@ -156,11 +156,13 @@ bool handleError(Error* error, int num_line, bool* is_print) {
 void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeNode* code_node3, MacroNode* macro_node, LabelNode* label_node) {
     int i;
 
-    /*for (i = 0; i < MAX_TOKENS; i++) {
-        if (tokens[i]) {
-            free(tokens[i]);
+    if(tokens) {
+        for (i = 0; i < MAX_TOKENS; i++) {
+            if (tokens[i]) {
+                free(tokens[i]);
+            }
         }
-    }*/
+    }
 
     /*if (tokens) {
         for (i = 0; i < MAX_TOKENS; i++) {
@@ -211,6 +213,8 @@ void freeMemoryLabelNode(LabelNode* label_node) {
     if (!label_node) {
         return;
     }
-    free(label_node->label_name);
+    /*if(label_node->label_name) {
+        free(label_node->label_name);
+    }*/
     free(label_node);
 }
