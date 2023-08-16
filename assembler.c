@@ -34,7 +34,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     int data_memory_idx = MEMORY_INDEX;
     int operand_num = 0;
     int i;
-    int counter = 0;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
     int num_tokens = DEFAULT_VALUE;
     int token_idx = DEFAULT_VALUE;
@@ -45,10 +44,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     allocateMemoryTokens(tokens, is_print, error);
 
-    if (*error == ERROR_MEMORY_ALLOCATION) {
-        freeMemory(tokens, code, NULL, NULL, NULL, *labels);
-        return;
-    }
+    if (*error == ERROR_MEMORY_ALLOCATION) return;
 
     *DC = *IC = DEFAULT_VALUE;
     cleanMemory(memory);
@@ -57,17 +53,15 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     while(temp_code) {
         token_idx = DEFAULT_VALUE;
         label_flag = false;
-        
-        
+
         if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' || temp_code->code_row[FIRST_CHARACTER] == '\r' || temp_code->code_row[FIRST_CHARACTER] == ';') {
             temp_code = temp_code->next;
             num_line++;
             continue;
         }
-        
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
-        if (*error == ERROR_MEMORY_ALLOCATION) {
-            freeMemory(tokens, code, NULL, NULL, NULL, *labels);
+        if (*error != NO_ERROR) {
+            freeMemory(tokens, code, NULL, NULL, NULL, NULL);
             return;
         }
 
@@ -81,7 +75,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error, is_first_itteration_flag);
                     if (*error == ERROR_MEMORY_ALLOCATION) {
-                        freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
+                        handleError(error, num_line, is_print);
                         return;
                     }
                     if (*error == ERROR_DUPLICATE_LABEL)
@@ -237,6 +231,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         *error = NO_ERROR;
     }
     if (*error == ERROR_MAXED_OUT_MEMORY || is_print == false) return;
+    freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
 
     temp_label_node = *labels;
     while (temp_label_node) {
@@ -251,7 +246,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case LABEL_TYPE_NOT_FOUND:
                 /* *error = ERROR_UNRECOGNIZED_LABEL; */
                 break;
-        } 
+        }
         temp_label_node = temp_label_node->next;
     }
     freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
@@ -412,7 +407,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     }
 
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error, num_line);
-    
     freeMemory(tokens, code, NULL, NULL, NULL, labels);
     freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
 }
