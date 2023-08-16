@@ -59,6 +59,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             num_line++;
             continue;
         }
+        
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
         if (*error != NO_ERROR) {
             freeMemory(tokens, code, NULL, NULL, NULL, NULL);
@@ -231,7 +232,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         *error = NO_ERROR;
     }
     if (*error == ERROR_MAXED_OUT_MEMORY || is_print == false) return;
-    freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
 
     temp_label_node = *labels;
     while (temp_label_node) {
