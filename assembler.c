@@ -661,13 +661,11 @@ DotType isDotType(char* word, Error* error){
 }
 
 LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
-    if (LabelPtr != NULL) {
-        do {
-            if (!strcmp(label, LabelPtr->label_name)) {
-                return LabelPtr->label_type;
-            }
-            LabelPtr = LabelPtr->next;
-        } while (LabelPtr != NULL);
+    while (LabelPtr) {
+        if (!strcmp(label, LabelPtr->label_name)) {
+            return LabelPtr->label_type;
+        }
+        LabelPtr = LabelPtr->next;
     }
     *error = ERROR_UNRECOGNIZED_LABEL;
     return LABEL_TYPE_NOT_FOUND;
@@ -779,14 +777,14 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
             temp_label = temp_label->next;
         }
         new_label = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
-        new_label->label_name = allocateMemory(sizeof(MAX_TOKEN_LENGTH) * sizeof(char), is_print, error);
+        new_label->label_name = allocateMemory(sizeof(label_name) * sizeof(char), is_print, error);
         strcpy(new_label->label_name, label_name);
         new_label->label_type = label_type;
         new_label->memory_adress = *memory_idx;
         temp_label->next = new_label;
     } else {
         (*labels) = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
-        (*labels)->label_name = allocateMemory(sizeof(MAX_TOKEN_LENGTH) * sizeof(char), is_print, error);
+        (*labels)->label_name = allocateMemory(sizeof(label_name) * sizeof(char), is_print, error);
         strcpy((*labels)->label_name, label_name);
         (*labels)->label_type = label_type;
         (*labels)->memory_adress = *memory_idx;
