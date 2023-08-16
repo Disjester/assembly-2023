@@ -59,22 +59,55 @@ void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* erro
 
 int getOperandsNumberByOpcode(short opcode);
 
+/** 
+ * Validates a variable name according to specific rules.
+ *
+ * @param name The variable name to validate.
+ * @return true if the variable name is valid, false otherwise.
+ */
 bool validateVariableName (char *name);
 
+/** 
+ * Preprocesses the source file, handling macros and replacing them with their definitions.
+ *
+ * @param file_name The name of the source file.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A linked list of CodeNode representing the preprocessed code.
+ */
 CodeNode* preproccessor(char *file_name, bool* is_print, Error* error);
 
-/**
- * @brief takes a string , and splits it into words base on whiteSpaces.
- *        Note: **tokens need to have allocated memmory - the function doesn't allocate it 
- * 
- * @param input the string you want to tokenize
- * @param tokens the array of strings in which you would save your tokens - need to have memory already allocated
- * @param num_tokens a pointer to where you save the number of tokens 
+/** 
+ * Tokenizes an input string and stores the tokens in an array.
+ *
+ * @param input The input string to tokenize.
+ * @param tokens An array to store the tokens. ( needs to be allocated beforehand)
+ * @param num_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
  */
 void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, Error* error);
 
+/** 
+ * Duplicates a string using dynamic memory allocation.
+ *
+ * @param str The string to duplicate.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A pointer to the duplicated string.
+ */
 char *my_strdup(const char *str, bool* is_print, Error* error);
 
+/**
+ * Creates a linked list of CodeNode from the source file.
+ *
+ * @param fptr Pointer to the source file.
+ * @param tokens An array of strings to hold tokens.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A linked list of CodeNode representing the code from the file.
+ */
 CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
 
 short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr);
@@ -87,18 +120,70 @@ void convertToBase64(short num, char* result);
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print);
 
+/**
+ * Reads a line from the file and handles various cases.
+ *
+ * @param line Buffer to store the read line.
+ * @param error Pointer to an Error variable for error handling.
+ * @param fptr Pointer to the source file.
+ * @param num_line The current line number.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @return The number of characters read.
+ */
 int getLine(char* line, Error* error, FILE* file, int num_line, bool* is_print);
 
+/**
+ * Cleans a line buffer by filling it with null characters.
+ *
+ * @param line The line buffer to be cleaned.
+ * @param length The length of the line buffer.
+ */
 void cleanLine(char* line, int length);
 
+/**
+ * Scans the code for macro definitions and stores them in the macro list.
+ *
+ * @param code_node Pointer to the head of the code linked list.
+ * @param macro_node Pointer to the head of the macro linked list.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param tokens An array of strings containing tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ */
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, bool* is_print, Error* error);
 
+/**
+ * Replaces macro invocations with their definitions in the code.
+ *
+ * @param code Pointer to the head of the code linked list.
+ * @param macros Pointer to the head of the macro linked list.
+ * @param tokens An array of strings containing tokens.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ */
 void macrosToValues(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
 
 void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error,  int num_line, bool* is_print);
 
+/** 
+ * Allocates memory with error handling.
+ *
+ * @param size The size of memory to allocate.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A pointer to the allocated memory.
+ */
 void* allocateMemory(size_t size, bool* is_print ,Error* error);
 
+/** 
+ * Handles and prints errors based on error codes.
+ *
+ * @param error Pointer to an Error variable containing the error code.
+ * @param num_line The line number where the error occurred.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @return true if an error occurred, false otherwise.
+ */
 bool handleError(Error* error, int num_line, bool* is_print);
 
 /**
@@ -133,12 +218,37 @@ DotType isDotType(char* word, Error* error);
 
 LabelType getLabelType(char* label, LabelNode* LabelNode, Error* error);
 
+/** 
+ * Frees memory allocated for tokens, code nodes, macro nodes, and label nodes.
+ *
+ * @param tokens An array of tokens.
+ * @param code_node1 A pointer to a CodeNode.
+ * @param code_node2 A pointer to another CodeNode.
+ * @param code_node3 A pointer to a third CodeNode.
+ * @param macro_node A pointer to a MacroNode.
+ * @param label_node A pointer to a LabelNode.
+ */
 void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeNode* code_node3, MacroNode* macro_node, LabelNode* label_node);
 
+/** 
+ * Recursively frees memory allocated for a linked list of CodeNodes.
+ *
+ * @param code_node A pointer to a CodeNode.
+ */
 void freeMemoryCodeNode(CodeNode* code_node);
 
+/** 
+ * Recursively frees memory allocated for a linked list of MacroNodes.
+ *
+ * @param macro_node A pointer to a MacroNode.
+ */
 void freeMemoryMacroNode(MacroNode* macro_node);
 
+/** 
+ * Recursively frees memory allocated for a linked list of LabelNodes.
+ *
+ * @param label_node A pointer to a LabelNode.
+ */
 void freeMemoryLabelNode(LabelNode* label_node);
 
 void nextLine(CodeNode** temp_code, int* num_line);

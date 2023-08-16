@@ -22,6 +22,8 @@ int main (int argc, char** argv) {
         return 0;
     }
     */
+
+   /* Iterate through the command line arguments */
     for (i = 1; i < argc; i++) {
         error = NO_ERROR;
         labels = NULL;
@@ -30,15 +32,20 @@ int main (int argc, char** argv) {
         is_print = true;
         externals = NULL;
 
+        /* Preprocess the source file */
         code = preproccessor(argv[i], &is_print, &error);
         if (error != NO_ERROR) continue;
         
+        /* Perform the first iteration of assembly */
         firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &is_print, &error);
         if (error != NO_ERROR || is_print == false) continue;
  
+        /* Perform the second iteration of assembly */
         secondIteration(memory, &memory_idx, code, labels, &DC, &IC, &error, argv[i], externals, &is_print);
         if (error != NO_ERROR) continue;
         
     }
+
+    /* Return success status */
     return 1;
 }
