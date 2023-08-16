@@ -19,6 +19,7 @@
 
 #define FIRST_WORD 0
 #define SECOND_WORD 1
+#define FIRST_ARGUMENT 1
 
 #define EVEN 0
 

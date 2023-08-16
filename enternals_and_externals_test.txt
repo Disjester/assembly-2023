@@ -9,7 +9,9 @@
 .extern 52, 37
 .extern KILL, SEAL
 .extern W
+.entry L , X
 .extern DAN
+.extern L , X,
 .entry DAN
 MAIN: mov @r3 ,LENGTH
 LOOP: jmp END

@@ -14,14 +14,16 @@ int main (int argc, char** argv) {
     int DC, IC;
     int i;
     bool is_print;
-    /*
+    
+    /* prints an error message, if no argument have been provided to the programm */
+    
     if (argc <= 1)
     {
-        *error = ERROR_FILE_HANDLE;
-        handleError(error, 0, &is_print);
+        error = ERROR_FILE_HANDLE;
+        handleError(&error, 0, &is_print);
         return 0;
     }
-    */
+    
 
    /* Iterate through the command line arguments */
     for (i = 1; i < argc; i++) {
