@@ -26,7 +26,6 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
 static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
 
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error) {
-    
     bool is_first_itteration_flag = true;
     bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
     CodeNode* temp_code;
@@ -44,7 +43,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     int num_line = STARTING_LINE;
     short data_memory[MAX_MEMORY_SIZE];
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
-    printf("                     FIRST ITERATION\n");
+    allocateMemoryTokens(tokens, is_print, error);
 
     if (*error == ERROR_MEMORY_ALLOCATION) {
         freeMemory(tokens, code, NULL, NULL, NULL, *labels);
@@ -65,13 +64,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             num_line++;
             continue;
         }
-        for (; counter < num_tokens; counter++)
-        {
-            free(tokens[counter]);
-        }
         
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
-        printTokensLine(tokens, num_tokens);
         if (*error == ERROR_MEMORY_ALLOCATION) {
             freeMemory(tokens, code, NULL, NULL, NULL, *labels);
             return;
@@ -202,7 +196,6 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                         operand_num = L-1;
                     }
                     
-                    
                     /* L-1 = operand_num*/
                     switch (operand_num)
                     {
@@ -261,10 +254,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         } 
         temp_label_node = temp_label_node->next;
     }
-    free (tokens);
-    /*freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);*/
-    /*freeMemory(NULL, NULL, NULL, NULL, NULL, *labels);*/
-
+    freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
 }
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print) {
@@ -283,9 +273,9 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     short curr_memory;
     
 
+    allocateMemoryTokens(tokens, is_print, error);
     temp_code = code;
     *IC = DEFAULT_VALUE;
-    printf("                     SECOND ITERATION\n");
     while (temp_code) {
         token_idx = DEFAULT_VALUE;
         label_flag = false;
@@ -422,10 +412,9 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     }
 
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error, num_line);
-    /*
+    
     freeMemory(tokens, code, NULL, NULL, NULL, labels);
     freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
-    */
 }
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print) {
@@ -785,10 +774,10 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
     LabelNode* new_label;
     temp_label = *labels;
 
-    if (isDuplicatedLabel(labels, label_name, label_type, error, is_first_itteration_flag))
+    /*if (isDuplicatedLabel(labels, label_name, label_type, error, is_first_itteration_flag))
     {
         return;
-    }
+    }*/
     
     *error = NO_ERROR;
     if (temp_label) {
@@ -796,13 +785,15 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
             temp_label = temp_label->next;
         }
         new_label = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
-        new_label->label_name = label_name;
+        new_label->label_name = allocateMemory(sizeof(MAX_TOKEN_LENGTH) * sizeof(char), is_print, error);
+        strcpy(new_label->label_name, label_name);
         new_label->label_type = label_type;
         new_label->memory_adress = *memory_idx;
         temp_label->next = new_label;
     } else {
-        *labels = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
-        (*labels)->label_name = label_name;
+        (*labels) = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
+        (*labels)->label_name = allocateMemory(sizeof(MAX_TOKEN_LENGTH) * sizeof(char), is_print, error);
+        strcpy((*labels)->label_name, label_name);
         (*labels)->label_type = label_type;
         (*labels)->memory_adress = *memory_idx;
     }
@@ -924,6 +915,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                 break;
             default:
                 *error = ERROR_ILLEGAL_OPERAND_TYPE;
+                *error = NO_ERROR;
                 return COMMAND_LINE_ERROR;
             }
         if (source_flag) source_flag = false;
@@ -1046,15 +1038,4 @@ bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_typ
             break;
         }
     }
-}
-
-void printTokensLine(char** tokens, int num_tokens){
-    int i = 0;
-    char tokens_line[MAX_TOKENS];
-    for (; i < num_tokens; i++)
-    {
-        strncat(tokens_line , tokens[i], MAX_TOKENS-1);
-        strncat(tokens_line , " ",3);
-    }
-    printf ("          The tokens line is:      %s\n", tokens_line);
 }

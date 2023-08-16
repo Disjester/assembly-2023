@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #define MAX_LINE_LENGTH 80
+#define MAX_TOKEN_LENGTH 80
 #define MAX_TOKENS 80
 #define NUMBER_OF_COMMANDS 16
 #define NUM_OF_REGISTERS 8
