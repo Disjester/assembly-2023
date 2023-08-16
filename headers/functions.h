@@ -257,6 +257,8 @@ bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNo
 
 bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration);
 
+void allocateMemoryTokens(char** tokens, bool* is_print, Error* error);
+
 /*void printTokens(char** tokens, int* num_tokens);*/
 
 #endif

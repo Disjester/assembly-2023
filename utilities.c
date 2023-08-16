@@ -15,7 +15,7 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
     token = strtok(temp, " \r");
     *num_tokens = 0;
     while (token != NULL && *num_tokens < MAX_TOKENS) {
-        tokens[*num_tokens] = my_strdup(token, is_print, error);  /* Duplicate and store token */
+        strcpy(tokens[*num_tokens], token);  /* Duplicate and store token */
         if (*error == ERROR_MEMORY_ALLOCATION) return;
         (*num_tokens)++;
         token = strtok(NULL, " \r");
@@ -44,6 +44,14 @@ void* allocateMemory(size_t size, bool* is_print, Error* error) {
         return NULL;
     }
     return ptr;
+}
+
+void allocateMemoryTokens(char** tokens, bool* is_print, Error* error) {
+    int i;
+
+    for (i = 0; i < MAX_TOKENS; i++) {
+        tokens[i] = allocateMemory(MAX_TOKEN_LENGTH * sizeof(char), is_print, error);
+    }
 }
 
 bool validateVariableName (char *name) {
@@ -151,12 +159,12 @@ void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeN
     int i;
 
     if (tokens) {
-        /*for (i == 0; i < MAX_TOKENS; i++) {
+        for (i = 0; i < MAX_TOKENS; i++) {
             if(tokens[i]) {
                 free(tokens[i]);
             }
-            
-        }*/
+        }
+        free(tokens);
     }
     freeMemoryCodeNode(code_node1);
     freeMemoryCodeNode(code_node2);
@@ -196,6 +204,9 @@ void freeMemoryLabelNode(LabelNode* label_node) {
     }
     if (!label_node) {
         return;
+    }
+    if(label_node->label_name) {
+        free(label_node->label_name);
     }
     free(label_node);
 }

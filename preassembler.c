@@ -10,9 +10,8 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     char** tokens;
     int num_tokens = DEFAULT_VALUE;
 
-    printf("                     PREPROCESSOR\n");
-
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
+    allocateMemoryTokens(tokens, is_print, error);
     if (*error != NO_ERROR) {
         freeMemory(tokens, code, NULL, NULL, macros, NULL);
         return NULL;
@@ -55,6 +54,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
     while(getLine(buffer, error, fptr, num_line, is_print)) {
         if (*error == ERROR_MAXED_OUT_LINE_LENGTH) {
             num_line++;
+            handleError(error, num_line, is_print);
             *error = NO_ERROR;
             continue;
         }
@@ -65,14 +65,12 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
             freeMemory(tokens, code_node, NULL, NULL, NULL, NULL);
             return NULL;
         }
-
         /*printing the contents of the buffer, to see what's inside*/
         code_node->code_row = (char*) allocateMemory(strlen(buffer) + 1, is_print, error);
         if (*error != NO_ERROR) {
             freeMemory(tokens, code_node, NULL, NULL, NULL, NULL);
             return NULL;
         }
-
         /* Copy the string from buffer to the new node*/
         strcpy(code_node->code_row, buffer);
         
