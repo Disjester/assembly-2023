@@ -296,8 +296,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         }
         switch (isDotType(tokens[token_idx], error)) {
             case DOT_ENTRY:
-                checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_EXTERNAL, is_first_itteration_flag);
-                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_ILLEGAL_OPERAND_TYPE)
+                checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_ENTRY, is_first_itteration_flag);
+                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE || *error == ERROR_WRONG_NUM_OF_COMMAS)
                 {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
@@ -384,8 +384,18 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 }
                 *IC += L;
                 break;
-            case DOT_DATA:
+            
             case DOT_EXTERN:
+                checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_EXTERNAL, is_first_itteration_flag);
+                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE)
+                {
+                    handleError(error, num_line, is_print);
+                    *error = NO_ERROR;
+                    nextLine(&temp_code, &num_line);
+                    continue;
+                }
+                break;
+            case DOT_DATA:
             case DOT_STRING:
                 break;
         }
@@ -980,18 +990,24 @@ bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNo
 
     /*Check this later*/
     for (; operand_index + 1 < num_tokens; operand_index += 2) {
-        if (strcmp(tokens[operand_index], ",")) {
+        if (strcmp(tokens[operand_index+1], ",")) {
             *error = ERROR_MISSING_COMMA;
             return false;
         }
     }
+    operand_index = 1;
 
-    if (getLabelType(tokens[operand_index], *labels, error) == LABEL_TYPE_NOT_FOUND)
+    /*getLabelType(tokens[operand_index], *labels, error) == LABEL_TYPE_NOT_FOUND)*/
+    for (; operand_index < num_tokens; operand_index += 2)
     {
-        *error = ERROR_INCORRECT_OPERAND_TYPE;
-        return false;
+        if (!isLabel(tokens[operand_index], false))
+        {
+            *error = ERROR_INCORRECT_OPERAND_TYPE;
+            return false;
+        }
     }
-    
+    operand_index = 1;
+
     return !(isDuplicatedLabel(labels, tokens[operand_index], label_type, error, is_first_itteration));
 }
 
@@ -1000,7 +1016,7 @@ bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_typ
     argument_label_type =  getLabelType(label_name, *labels, error);
 
     /*checks if entry label exists in other label types*/
-    if ((label_type == LABEL_TYPE_ENTRY) && (argument_label_type == LABEL_TYPE_EXTERNAL) &&  argument_label_type != LABEL_TYPE_NOT_FOUND && is_first_itteration)
+    if ((label_type == LABEL_TYPE_ENTRY) && (argument_label_type == LABEL_TYPE_EXTERNAL) &&  argument_label_type != LABEL_TYPE_NOT_FOUND )
     {
         *error = ERROR_DUPLICATE_LABEL;
         return true;
