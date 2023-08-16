@@ -671,13 +671,11 @@ DotType isDotType(char* word, Error* error){
 }
 
 LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
-    if (LabelPtr != NULL) {
-        do {
-            if (!strcmp(label, LabelPtr->label_name)) {
-                return LabelPtr->label_type;
-            }
-            LabelPtr = LabelPtr->next;
-        } while (LabelPtr != NULL);
+    while (LabelPtr) {
+        if (!strcmp(label, LabelPtr->label_name)) {
+            return LabelPtr->label_type;
+        }
+        LabelPtr = LabelPtr->next;
     }
     *error = ERROR_UNRECOGNIZED_LABEL;
     return LABEL_TYPE_NOT_FOUND;

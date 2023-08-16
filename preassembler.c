@@ -60,7 +60,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         }
         /*Create a new node*/
         code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
-
+        printf("ALLOCATED %d\n", code_node);
         if (*error != NO_ERROR) {
             freeMemory(tokens, code_node, NULL, NULL, NULL, NULL);
             return NULL;
