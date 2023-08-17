@@ -239,7 +239,8 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     CodeNode *current_macro_code;
     CodeNode *prev_code;
     CodeNode *temp;
-    CodeNode* endmacro_node;
+    CodeNode *endmacro_node;
+    bool      is_endmcro = false;
 
     bool macro_replaced = false; /* Flag to track if a macro is replaced */
 
@@ -308,13 +309,17 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                     temp = current_code->next;
                     prev_code->next = current_code->next;
                     endmacro_node = current_code;
+                    is_endmcro = true;
                     break;
                 }
             }
         }
         prev_code = current_code;
         current_code = current_code->next;
+        if (is_endmcro && endmacro_node) {
+            free(endmacro_node->code_row);
+            free(endmacro_node);
+            is_endmcro = false;
+        }
     }
-    free(endmacro_node->code_row);
-    free(endmacro_node);
 }
