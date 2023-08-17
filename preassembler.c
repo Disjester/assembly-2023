@@ -303,7 +303,12 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
 
                 if (*pnum_tokens == 1 && !strcmp(tokens[FIRST_WORD], "endmcro")) {
                     temp = current_code->next;
-                    prev_code->next = current_code->next;
+                    if (prev_code) {
+                        prev_code->next = current_code->next;
+                    } else {
+                        prev_code = current_code->next;
+                        *code = prev_code;
+                    }
                     endmacro_node = current_code;
                     is_endmcro = true;
                     break;
