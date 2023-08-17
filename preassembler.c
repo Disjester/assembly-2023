@@ -91,7 +91,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
 
 int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) {
     char x; /*current symbol in the input stream*/
-    int i = DEFAULT_VALUE;
+    int i = 0;
     cleanLine(line, MAX_LINE_LENGTH);
     while ((x = fgetc(fptr)) != '\n' && x != EOF) {
         if (i == MAX_LINE_LENGTH) {
@@ -106,11 +106,11 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) 
         /*substitution of whitespaces instead of tabs*/
         x = (x == '\t') ? ' ' : x;
         /*removing whitespaces at the beggining of the line*/
-        if (i == DEFAULT_VALUE && x == ' ') {
+        if (i == 0 && x == ' ') {
             continue;
         }
 
-        if (i != DEFAULT_VALUE && x == ',') {
+        if (i != 0 && x == ',') {
             if (line[i-1] != ' ') {
                 line[i++] = ' ';
             }
@@ -119,18 +119,18 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) 
             continue;
         }
         
-        if (i != DEFAULT_VALUE && line[i-1] == ':' && x != ' ') {
+        if (i != 0 && line[i-1] == ':' && x != ' ') {
             line[i++] = ' ';
         }
         /*removing of duplications of whitespaces*/
-        if ((i != DEFAULT_VALUE) && line[i-1] == ' ' && (x == ' ')) {
+        if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
             continue;
         }
         /*putting a char to the string*/
         line[i++] = x;
     }
     /*The case where the line is empty*/
-    if (i == DEFAULT_VALUE && x == '\n') {
+    if (i == 0 && x == '\n') {
         line[FIRST_CHARACTER] = '\0';
         return 1;
     }
@@ -139,7 +139,7 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) 
 
 void cleanLine(char* line, int length) {
     int i;
-    for (i = DEFAULT_VALUE; i < length; i++) {
+    for (i = 0; i < length; i++) {
         line[i] = '\0';
     }
 }

@@ -518,7 +518,7 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
 int getOperandsNumberByOpcode(short opcode) {
     int i;
 
-    for (i = DEFAULT_VALUE; i < NUMBER_OF_COMMANDS; i++) {
+    for (i = 0; i < NUMBER_OF_COMMANDS; i++) {
         if (commands[i].opcode == opcode) {
             return commands[i].number_of_operands;
         }
@@ -544,7 +544,7 @@ int getAdressingMethodByOperandType(OperandType operand_type) {
 
 int getOperandAmount(char* command) {
     int i;
-    for(i = DEFAULT_VALUE; i < NUMBER_OF_COMMANDS; i++) {
+    for(i = 0; i < NUMBER_OF_COMMANDS; i++) {
         if (!strcmp(command, commands[i].command)) {
             return commands[i].number_of_operands;
         }
@@ -646,7 +646,7 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
 }
 
 bool isLabel(char* word, bool colon){
-    int i = DEFAULT_VALUE;
+    int i = 0;
 
     if (!isalpha(word[i++])) {
         return false;
@@ -682,7 +682,7 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
 }
 
 bool isString(char* string){
-    int i = DEFAULT_VALUE;
+    int i = 0;
     bool quote = false;
 
     if (string[i++] != '"') {
@@ -698,7 +698,7 @@ bool isString(char* string){
 }
 
 bool isNumber(char* word){
-    int i = DEFAULT_VALUE;
+    int i = 0;
     int len = strlen(word);
 
     /* Check for a minus sign at the beginning*/
@@ -766,7 +766,7 @@ void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* erro
 void cleanMemory(short* memory) {
     int i;
 
-    for (i = DEFAULT_VALUE; i < MAX_MEMORY_SIZE; i++) {
+    for (i = 0; i < MAX_MEMORY_SIZE; i++) {
         memory[i] = DEFAULT_ERROR_VALUE;
     }
 }
@@ -807,9 +807,9 @@ char* removeColon(char* str) {
 }
 
 short checkCommand(char* word){
-    int i = DEFAULT_VALUE;
+    int i;
 
-    for (; i < NUM_OF_COMMANDS; i++) {
+    for (i = 0; i < NUM_OF_COMMANDS; i++) {
         if (!strcmp((char*)commands[i].command, word)) {
             return commands[i].opcode;
         }
@@ -930,10 +930,10 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
 
 OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool is_first_iteration){    
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
-    int i = DEFAULT_VALUE;
+    int i;
 
     /* Check if the operand is one of the registers */
-    for (; i < NUM_OF_REGISTERS; i++) {
+    for (i = 0; i < NUM_OF_REGISTERS; i++) {
         if (!strcmp(registers[i], operand)) {
             return OPERAND_TYPE_REGISTER;
         }
