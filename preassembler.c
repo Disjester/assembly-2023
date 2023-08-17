@@ -60,7 +60,6 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         }
         /*Create a new node*/
         code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
-        printf("ALLOCATED %d\n", code_node);
         if (*error != NO_ERROR) {
             freeMemory(tokens, code_node, NULL, NULL, NULL, NULL);
             return NULL;
@@ -83,6 +82,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         }
         
         /* Move the temporary pointer to the new node*/
+        cleanLine(buffer, MAX_LINE_LENGTH);
         temp = code_node;
         num_line++;
     }
@@ -239,6 +239,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
     CodeNode *current_macro_code;
     CodeNode *prev_code;
     CodeNode *temp;
+    CodeNode* endmacro_node;
 
     bool macro_replaced = false; /* Flag to track if a macro is replaced */
 
@@ -302,13 +303,18 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
                 free(temp);
                 tokenizeInput(current_code->code_row, tokens, pnum_tokens, is_print, error);
                 if (*error != NO_ERROR) return;
+
                 if (*pnum_tokens == 1 && !strcmp(tokens[FIRST_WORD], "endmcro")) {
+                    temp = current_code->next;
                     prev_code->next = current_code->next;
+                    endmacro_node = current_code;
                     break;
                 }
-            }    
+            }
         }
         prev_code = current_code;
         current_code = current_code->next;
     }
+    free(endmacro_node->code_row);
+    free(endmacro_node);
 }

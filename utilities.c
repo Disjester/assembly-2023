@@ -183,7 +183,6 @@ void freeMemoryCodeNode(CodeNode* code_node) {
         return;
     }
     free(code_node->code_row);
-    printf("FREE %d\n", &code_node);
     free(code_node);
 }
 
