@@ -31,7 +31,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     CodeNode* temp_code;
     LabelNode* temp_label_node;
     bool label_flag = false;
-    int data_memory_idx = MEMORY_INDEX;
+    int data_memory_idx = DEFAULT_MEMORY_INDEX;
     int operand_num = 0;
     int i;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
@@ -62,7 +62,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
         if (*error != NO_ERROR) {
-            freeMemory(tokens, code, NULL, NULL, NULL, NULL);
+            freeMemory(tokens, code, NULL, NULL);
             return;
         }
 
@@ -240,7 +240,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 temp_label_node->memory_adress += *IC;
             case LABEL_TYPE_CODE:
             case LABEL_TYPE_ENTRY:
-                temp_label_node->memory_adress += MEMORY_INDEX;
+                temp_label_node->memory_adress += DEFAULT_MEMORY_INDEX;
                 break;
             case LABEL_TYPE_EXTERNAL:
             case LABEL_TYPE_NOT_FOUND:
@@ -249,7 +249,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         }
         temp_label_node = temp_label_node->next;
     }
-    freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
+    freeMemory(tokens, NULL, NULL, NULL);
 }
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print) {
@@ -263,7 +263,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int num_tokens = DEFAULT_VALUE;
     int L = DEFAULT_VALUE;
     int num_line = STARTING_LINE;
-    int update_memory_idx = MEMORY_INDEX;
+    int update_memory_idx = DEFAULT_MEMORY_INDEX;
     int check_counter;
     short curr_memory;
     
@@ -417,8 +417,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     }
 
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error, num_line);
-    freeMemory(tokens, code, NULL, NULL, NULL, labels);
-    freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
+    freeMemory(tokens, code, NULL, labels);
+    freeMemoryLabelNode(externals);
 }
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print) {
@@ -602,7 +602,7 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, i
         return;
     }
     fprintf(fptr, "%d %d\n", IC, DC);
-    for (i = MEMORY_INDEX; i < *memory_idx; i++) { /*MAGIC NUMBER*/
+    for (i = DEFAULT_MEMORY_INDEX; i < *memory_idx; i++) { /*MAGIC NUMBER*/
         convertToBase64(memory[i], base64);
         fprintf(fptr, "%s\n", base64);
     }
@@ -959,7 +959,7 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
 
 void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error){
     /* Set the initial index for data_memory */
-    *data_memory_idx = MEMORY_INDEX;
+    *data_memory_idx = DEFAULT_MEMORY_INDEX;
 
     /* Loop until either data_memory or memory is maxed out */
     while (*data_memory_idx < MAX_MEMORY_SIZE && *memory_idx < MAX_MEMORY_SIZE) {

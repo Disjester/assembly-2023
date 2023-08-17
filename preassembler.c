@@ -13,7 +13,7 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     allocateMemoryTokens(tokens, is_print, error);
     if (*error != NO_ERROR) {
-        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        freeMemory(tokens, code, macros, NULL);
         return NULL;
     }
 
@@ -21,28 +21,28 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
         handleError(error, DEFAULT_LINE_NUMER, is_print);
-        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        freeMemory(tokens, code, macros, NULL);
         return NULL;
     }
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, is_print, error);
     if (*error != NO_ERROR) {
-        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        freeMemory(tokens, code, macros, NULL);
         return NULL;
     }
     
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, is_print, error);
     if (*error != NO_ERROR) {
-        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        freeMemory(tokens, code, macros, NULL);
         return NULL;
     }
     
     macrosToValues(&code, &macros, tokens, &num_tokens, is_print, error);
     if (*error != NO_ERROR) {
-        freeMemory(tokens, code, NULL, NULL, macros, NULL);
+        freeMemory(tokens, code, macros, NULL);
         return NULL;
     }
     fclose(fptr);
-    freeMemory(tokens, NULL, NULL, NULL, macros, NULL);
+    freeMemory(tokens, NULL, macros, NULL);
     return code;
 }
 
@@ -61,13 +61,13 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
         /*Create a new node*/
         code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
         if (*error != NO_ERROR) {
-            freeMemory(tokens, code_node, NULL, NULL, NULL, NULL);
+            freeMemory(tokens, code_node, NULL, NULL);
             return NULL;
         }
         /*printing the contents of the buffer, to see what's inside*/
         code_node->code_row = (char*) allocateMemory(strlen(buffer) + 1, is_print, error);
         if (*error != NO_ERROR) {
-            freeMemory(tokens, code_node, NULL, NULL, NULL, NULL);
+            freeMemory(tokens, code_node, NULL, NULL);
             return NULL;
         }
         /* Copy the string from buffer to the new node*/

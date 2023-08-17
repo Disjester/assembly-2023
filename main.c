@@ -17,19 +17,17 @@ int main (int argc, char** argv) {
     
     /* prints an error message, if no argument have been provided to the programm */
     
-    if (argc <= 1)
-    {
+    if (argc <= 1) {
         error = ERROR_FILE_HANDLE;
         handleError(&error, 0, &is_print);
         return 0;
     }
     
-
    /* Iterate through the command line arguments */
     for (i = 1; i < argc; i++) {
         error = NO_ERROR;
         labels = NULL;
-        memory_idx = MEMORY_INDEX;
+        memory_idx = DEFAULT_MEMORY_INDEX;
         DC = IC = 0;
         is_print = true;
         externals = NULL;
