@@ -1,15 +1,2 @@
-sub @r3, @r4
-mcro m1
-    sub @r1, @r4
-endmcro
-
-m1
-
-
-
-
-
-
-
-
-stop
+K: .data 23.3
+A: stop

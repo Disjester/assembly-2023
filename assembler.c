@@ -266,7 +266,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int update_memory_idx = DEFAULT_MEMORY_INDEX;
     int check_counter;
     short curr_memory;
-    
 
     allocateMemoryTokens(tokens, is_print, error);
     temp_code = code;
@@ -604,7 +603,10 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, i
         return;
     }
     fprintf(fptr, "%d %d\n", IC, DC);
-    for (i = DEFAULT_MEMORY_INDEX; i < *memory_idx; i++) { /*MAGIC NUMBER*/
+    if (DC == 0) {
+        (*memory_idx)--;
+    }
+    for (i = DEFAULT_MEMORY_INDEX; i < *memory_idx; i++) {
         convertToBase64(memory[i], base64);
         fprintf(fptr, "%s\n", base64);
     }
