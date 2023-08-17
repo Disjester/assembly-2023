@@ -71,7 +71,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             token_idx++;
         }
 
-        switch (isDotType(tokens[token_idx], error)) {
+        switch (getDotType(tokens[token_idx], error)) {
             case DOT_DATA:
                 if (label_flag) {
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error, is_first_itteration_flag);
@@ -294,7 +294,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
             label_flag = true;
             token_idx++;
         }
-        switch (isDotType(tokens[token_idx], error)) {
+        switch (getDotType(tokens[token_idx], error)) {
             case DOT_ENTRY:
                 checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_ENTRY, is_first_itteration_flag);
                 if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE 
@@ -664,7 +664,7 @@ bool isLabel(char* word, bool colon){
     return !colon;
 }
 
-DotType isDotType(char* word, Error* error){
+DotType getDotType(char* word, Error* error){
     if (!strcmp(word, ".data")) return DOT_DATA;
     if (!strcmp(word, ".string")) return DOT_STRING;
     if (!strcmp(word, ".entry")) return DOT_ENTRY;
@@ -722,7 +722,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
         return false;
     }
     
-    if (isDotType(tokens[FIRST_WORD + label], error) == DOT_STRING) {
+    if (getDotType(tokens[FIRST_WORD + label], error) == DOT_STRING) {
         if (num_tokens > (2 + label)) {
             *error = ERROR_EXTRANEOS_TEXT;
             return false;
@@ -739,7 +739,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
         
     }
     
-    if (isDotType(tokens[FIRST_WORD + label], error) == DOT_DATA) {
+    if (getDotType(tokens[FIRST_WORD + label], error) == DOT_DATA) {
         if (num_tokens % 2 == (!label)) {
             *error = ERROR_WRONG_NUM_OF_COMMAS;
             return false;

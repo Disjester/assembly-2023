@@ -129,7 +129,7 @@ bool isString(char* string);
  * @param word 
  * @return 4 - if its .extern 3 - if its a .entry 2 - if its a .string 1 if it is a .data 0 if it neither of them 
  */
-DotType isDotType(char* word, Error* error);
+DotType getDotType(char* word, Error* error);
 
 LabelType getLabelType(char* label, LabelNode* LabelNode, Error* error);
 
