@@ -297,7 +297,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         switch (isDotType(tokens[token_idx], error)) {
             case DOT_ENTRY:
                 checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_ENTRY, is_first_itteration_flag);
-                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE || *error == ERROR_WRONG_NUM_OF_COMMAS)
+                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE || *error == ERROR_WRONG_NUM_OF_COMMAS || *error == ERROR_UNRECOGNIZED_LABEL)
                 {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
@@ -387,7 +387,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
             
             case DOT_EXTERN:
                 checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_EXTERNAL, is_first_itteration_flag);
-                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE)
+                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE || *error == ERROR_WRONG_NUM_OF_COMMAS)
                 {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
@@ -776,10 +776,10 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
     LabelNode* new_label;
     temp_label = *labels;
 
-    /*if (isDuplicatedLabel(labels, label_name, label_type, error, is_first_itteration_flag))
+    if (isDuplicatedLabel(labels, label_name, label_type, error, is_first_itteration_flag))
     {
         return;
-    }*/
+    }
     
     *error = NO_ERROR;
     if (temp_label) {
@@ -831,6 +831,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
     {
         *stop_flag = true;
     }
+
     /*ERROR unrecognized command name*/
     if (opcode == DEFAULT_ERROR_VALUE) {
         *error = ERROR_UNDEFINED_COMMAND; /*changed , might remove later*/
@@ -931,16 +932,19 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
     int i = DEFAULT_VALUE;
 
+    /* Check if the operand is one of the registers */
     for (; i < NUM_OF_REGISTERS; i++) {
         if (!strcmp(registers[i], operand)) {
             return OPERAND_TYPE_REGISTER;
         }
     }
 
+    /* Check if the operand is a number */
     if (isNumber(operand)) {
         return OPERAND_TYPE_NUMBER;
     }
 
+    /* Check if the operand is a legal label, depending on the iteration */
     if (is_first_iteration) {
         if (isLabel(operand, false)) {
             return OPERAND_TYPE_LABEL;
@@ -948,21 +952,30 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
     } else if (getLabelType(operand, LabelPtr, error) != LABEL_TYPE_NOT_FOUND) {
         return OPERAND_TYPE_LABEL;
     }
-    /*handle error*/
+
+    /* Handle error case */
     return OPERAND_TYPE_OTHER;
 }
 
 void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error){
+    /* Set the initial index for data_memory */
     *data_memory_idx = MEMORY_INDEX;
-       while (*data_memory_idx < MAX_MEMORY_SIZE && *memory_idx < MAX_MEMORY_SIZE) {
+
+    /* Loop until either data_memory or memory is maxed out */
+    while (*data_memory_idx < MAX_MEMORY_SIZE && *memory_idx < MAX_MEMORY_SIZE) {
+
+        /* Copy data from data_memory to memory */
         memory[*memory_idx] = data_memory[*data_memory_idx];
         (*memory_idx)++;
         (*data_memory_idx)++;
-        
-        if ( *data_memory_idx == MAX_MEMORY_SIZE ||  data_memory[*data_memory_idx] == DEFAULT_ERROR_VALUE) {
+
+        /* Check for termination conditions */
+        if (*data_memory_idx == MAX_MEMORY_SIZE || data_memory[*data_memory_idx] == DEFAULT_ERROR_VALUE) {
             break;
-        }   
+        }
     }
+
+    /* Check if memory limits were reached */
     if (*data_memory_idx >= MAX_MEMORY_SIZE || *memory_idx >= MAX_MEMORY_SIZE) {
         *error = ERROR_MAXED_OUT_MEMORY;
         return;
@@ -970,34 +983,43 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
 }
 
 void nextLine(CodeNode** temp_code, int* num_line){
+    /* Move to the next CodeNode and increment the line number */
     *temp_code =  (*temp_code)->next;
     (*num_line)++;
 }
 
 bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration){
-    int operand_index = 1;
+    int operand_index = FIRST_ARGUMENT;
+    bool entryLine = false;
+    if (label_type == LABEL_TYPE_ENTRY)
+    {
+        entryLine = true;
+    }
+    
+
+    /* Check if there are enough tokens */
     if (num_tokens < 2)
     {
         *error = ERROR_NOT_ENOUGH_ARGUMENTS;
         return false;
     }
-    /*Remove if needed and change for checking every token that is not ','*/
 
+    /* Check if the number of tokens is even */
     if (num_tokens % 2 != EVEN) {
         *error = ERROR_WRONG_NUM_OF_COMMAS;
         return false;
     }
 
-    /*Check this later*/
-    for (; operand_index + 1 < num_tokens; operand_index += 2) {
+    /* Check for missing commas */
+    for (; operand_index + FIRST_ARGUMENT < num_tokens; operand_index += 2) {
         if (strcmp(tokens[operand_index+1], ",")) {
             *error = ERROR_MISSING_COMMA;
             return false;
         }
     }
-    operand_index = 1;
+    operand_index = FIRST_ARGUMENT;
 
-    /*getLabelType(tokens[operand_index], *labels, error) == LABEL_TYPE_NOT_FOUND)*/
+    /* Check each operand for correctness */
     for (; operand_index < num_tokens; operand_index += 2)
     {
         if (!isLabel(tokens[operand_index], false))
@@ -1005,15 +1027,24 @@ bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNo
             *error = ERROR_INCORRECT_OPERAND_TYPE;
             return false;
         }
-    }
-    operand_index = 1;
 
+        if (entryLine && getLabelType(tokens[operand_index], *labels, error) == LABEL_TYPE_NOT_FOUND)
+        {
+            *error = ERROR_UNRECOGNIZED_LABEL;
+            return false;
+        }
+        
+
+    }
+    operand_index = FIRST_ARGUMENT;
+
+    /* Check for duplicated labels */
     return !(isDuplicatedLabel(labels, tokens[operand_index], label_type, error, is_first_itteration));
 }
 
 bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration){
     LabelType argument_label_type = LABEL_TYPE_NOT_FOUND;
-    argument_label_type =  getLabelType(label_name, *labels, error);
+    argument_label_type =  getLabelType(label_name, *labels, error); /* gets the label type from the labels linked list */
 
     /*checks if entry label exists in other label types*/
     if ((label_type == LABEL_TYPE_ENTRY) && (argument_label_type == LABEL_TYPE_EXTERNAL) &&  argument_label_type != LABEL_TYPE_NOT_FOUND )
@@ -1029,8 +1060,8 @@ bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_typ
         return true;
     }
     
+
     /*checks if there are duplicate of labels in label types of CODE and DATA among themselfs*/
-    
     else {
         switch (argument_label_type)
         {
