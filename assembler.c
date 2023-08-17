@@ -31,7 +31,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     CodeNode* temp_code;
     LabelNode* temp_label_node;
     bool label_flag = false;
-    int data_memory_idx = MEMORY_INDEX;
+    int data_memory_idx = DEFAULT_MEMORY_INDEX;
     int operand_num = 0;
     int i;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
@@ -62,7 +62,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         
         tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
         if (*error != NO_ERROR) {
-            freeMemory(tokens, code, NULL, NULL, NULL, NULL);
+            freeMemory(tokens, code, NULL, NULL);
             return;
         }
 
@@ -240,7 +240,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 temp_label_node->memory_adress += *IC;
             case LABEL_TYPE_CODE:
             case LABEL_TYPE_ENTRY:
-                temp_label_node->memory_adress += MEMORY_INDEX;
+                temp_label_node->memory_adress += DEFAULT_MEMORY_INDEX;
                 break;
             case LABEL_TYPE_EXTERNAL:
             case LABEL_TYPE_NOT_FOUND:
@@ -249,7 +249,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         }
         temp_label_node = temp_label_node->next;
     }
-    freeMemory(tokens, NULL, NULL, NULL, NULL, NULL);
+    freeMemory(tokens, NULL, NULL, NULL);
 }
 
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print) {
@@ -263,7 +263,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int num_tokens = DEFAULT_VALUE;
     int L = DEFAULT_VALUE;
     int num_line = STARTING_LINE;
-    int update_memory_idx = MEMORY_INDEX;
+    int update_memory_idx = DEFAULT_MEMORY_INDEX;
     int check_counter;
     short curr_memory;
     
@@ -419,8 +419,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     }
 
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error, num_line);
-    freeMemory(tokens, code, NULL, NULL, NULL, labels);
-    freeMemory(NULL, NULL, NULL, NULL, NULL, externals);
+    freeMemory(tokens, code, NULL, labels);
+    freeMemoryLabelNode(externals);
 }
 
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print) {
@@ -520,7 +520,7 @@ short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Erro
 int getOperandsNumberByOpcode(short opcode) {
     int i;
 
-    for (i = DEFAULT_VALUE; i < NUMBER_OF_COMMANDS; i++) {
+    for (i = 0; i < NUMBER_OF_COMMANDS; i++) {
         if (commands[i].opcode == opcode) {
             return commands[i].number_of_operands;
         }
@@ -546,7 +546,7 @@ int getAdressingMethodByOperandType(OperandType operand_type) {
 
 int getOperandAmount(char* command) {
     int i;
-    for(i = DEFAULT_VALUE; i < NUMBER_OF_COMMANDS; i++) {
+    for(i = 0; i < NUMBER_OF_COMMANDS; i++) {
         if (!strcmp(command, commands[i].command)) {
             return commands[i].number_of_operands;
         }
@@ -604,7 +604,7 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, i
         return;
     }
     fprintf(fptr, "%d %d\n", IC, DC);
-    for (i = MEMORY_INDEX; i < *memory_idx; i++) { /*MAGIC NUMBER*/
+    for (i = DEFAULT_MEMORY_INDEX; i < *memory_idx; i++) { /*MAGIC NUMBER*/
         convertToBase64(memory[i], base64);
         fprintf(fptr, "%s\n", base64);
     }
@@ -648,7 +648,7 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
 }
 
 bool isLabel(char* word, bool colon){
-    int i = DEFAULT_VALUE;
+    int i = 0;
 
     if (!isalpha(word[i++])) {
         return false;
@@ -684,7 +684,7 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
 }
 
 bool isString(char* string){
-    int i = DEFAULT_VALUE;
+    int i = 0;
     bool quote = false;
 
     if (string[i++] != '"') {
@@ -700,7 +700,7 @@ bool isString(char* string){
 }
 
 bool isNumber(char* word){
-    int i = DEFAULT_VALUE;
+    int i = 0;
     int len = strlen(word);
 
     /* Check for a minus sign at the beginning*/
@@ -775,7 +775,7 @@ void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* erro
 void cleanMemory(short* memory) {
     int i;
 
-    for (i = DEFAULT_VALUE; i < MAX_MEMORY_SIZE; i++) {
+    for (i = 0; i < MAX_MEMORY_SIZE; i++) {
         memory[i] = DEFAULT_ERROR_VALUE;
     }
 }
@@ -823,9 +823,9 @@ char* removeColon(char* str) {
 }
 
 short checkCommand(char* word){
-    int i = DEFAULT_VALUE;
+    int i;
 
-    for (; i < NUM_OF_COMMANDS; i++) {
+    for (i = 0; i < NUM_OF_COMMANDS; i++) {
         if (!strcmp((char*)commands[i].command, word)) {
             return commands[i].opcode;
         }
@@ -964,10 +964,10 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
 
 OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool is_first_iteration){    
     const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
-    int i = DEFAULT_VALUE;
+    int i;
 
     /* Check if the operand is one of the registers */
-    for (; i < NUM_OF_REGISTERS; i++) {
+    for (i = 0; i < NUM_OF_REGISTERS; i++) {
         if (!strcmp(registers[i], operand)) {
             return OPERAND_TYPE_REGISTER;
         }
@@ -993,7 +993,7 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
 
 void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error){
     /* Set the initial index for data_memory */
-    *data_memory_idx = MEMORY_INDEX;
+    *data_memory_idx = DEFAULT_MEMORY_INDEX;
 
     /* Loop until either data_memory or memory is maxed out */
     while (*data_memory_idx < MAX_MEMORY_SIZE && *memory_idx < MAX_MEMORY_SIZE) {

@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/assembler",
-            "args": ["test_no_mcro.txt"],
+            "args": ["w_not_working/2something_strange.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

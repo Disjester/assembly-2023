@@ -155,7 +155,7 @@ bool handleError(Error* error, int num_line, bool* is_print) {
     }
 }
 
-void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeNode* code_node3, MacroNode* macro_node, LabelNode* label_node) {
+void freeMemory(char** tokens, CodeNode* code_node, MacroNode* macro_node, LabelNode* label_node) {
     int i;
 
     if (tokens) {
@@ -166,10 +166,7 @@ void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeN
         }
         free(tokens);
     }
-    freeMemoryCodeNode(code_node1);
-    freeMemoryCodeNode(code_node2);
-    freeMemoryCodeNode(code_node3);
-
+    freeMemoryCodeNode(code_node);
     freeMemoryMacroNode(macro_node);
 
     freeMemoryLabelNode(label_node);
@@ -183,7 +180,6 @@ void freeMemoryCodeNode(CodeNode* code_node) {
         return;
     }
     free(code_node->code_row);
-    printf("FREE %d\n", &code_node);
     free(code_node);
 }
 

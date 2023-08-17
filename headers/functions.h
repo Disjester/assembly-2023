@@ -228,7 +228,7 @@ LabelType getLabelType(char* label, LabelNode* LabelNode, Error* error);
  * @param macro_node A pointer to a MacroNode.
  * @param label_node A pointer to a LabelNode.
  */
-void freeMemory(char** tokens, CodeNode* code_node1, CodeNode* code_node2, CodeNode* code_node3, MacroNode* macro_node, LabelNode* label_node);
+void freeMemory(char** tokens, CodeNode* code_node, MacroNode* macro_node, LabelNode* label_node);
 
 /** 
  * Recursively frees memory allocated for a linked list of CodeNodes.
