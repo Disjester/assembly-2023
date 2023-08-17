@@ -161,7 +161,6 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
 
         if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro") ) {
             if (!isLabel(tokens[SECOND_WORD], false) || checkCommand(tokens[SECOND_WORD]) != DEFAULT_ERROR_VALUE) {
-                
                 while (strcmp(tokens[FIRST_WORD], "endmcro")) {
                     curr_code_node = curr_code_node->next;
                     num_line++;
@@ -185,10 +184,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
 
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), is_print, error);
             if (*error == ERROR_MEMORY_ALLOCATION) return;
-
-            /*new_macro_node->code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
-            if (*error == ERROR_MEMORY_ALLOCATION) return;*/
-
+            
             new_macro_node->macro_name = my_strdup(tokens[SECOND_WORD], is_print, error);
             if (*error == ERROR_MEMORY_ALLOCATION) return;
 
