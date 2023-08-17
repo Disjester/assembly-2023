@@ -297,7 +297,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
         switch (isDotType(tokens[token_idx], error)) {
             case DOT_ENTRY:
                 checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_ENTRY, is_first_itteration_flag);
-                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE || *error == ERROR_WRONG_NUM_OF_COMMAS || *error == ERROR_UNRECOGNIZED_LABEL)
+                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE 
+                    || *error == ERROR_WRONG_NUM_OF_COMMAS || *error == ERROR_UNRECOGNIZED_LABEL)
                 {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
@@ -387,7 +388,8 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
             
             case DOT_EXTERN:
                 checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_EXTERNAL, is_first_itteration_flag);
-                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE || *error == ERROR_WRONG_NUM_OF_COMMAS)
+                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE
+                    || *error == ERROR_WRONG_NUM_OF_COMMAS)
                 {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
@@ -728,6 +730,13 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
         if (isString(tokens[1 + label])) {
             return true;
         }
+        
+        else
+        {
+            *error = ERROR_WRONG_ARGUMENT_FORMAT;
+            return false;
+        }
+        
     }
     
     if (isDotType(tokens[FIRST_WORD + label], error) == DOT_DATA) {
@@ -782,17 +791,24 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
     }
     
     *error = NO_ERROR;
+    /* if the head node isn't null */
     if (temp_label) {
+
+        /* loop through linked list, untill getting to the end */
         while(temp_label && temp_label->next) {
             temp_label = temp_label->next;
         }
+        /* allocating memory to the new node, in which the label name will be stored */
         new_label = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
         new_label->label_name = allocateMemory(sizeof(label_name) * sizeof(char), is_print, error);
+
+        /* add the label  into the linked list */        
         strcpy(new_label->label_name, label_name);
         new_label->label_type = label_type;
         new_label->memory_adress = *memory_idx;
         temp_label->next = new_label;
     } else {
+        /* creates the first label node in the linked list */
         (*labels) = (LabelNode*) allocateMemory(sizeof(LabelNode), is_print, error);
         (*labels)->label_name = allocateMemory(sizeof(label_name) * sizeof(char), is_print, error);
         strcpy((*labels)->label_name, label_name);
@@ -834,7 +850,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
 
     /*ERROR unrecognized command name*/
     if (opcode == DEFAULT_ERROR_VALUE) {
-        *error = ERROR_UNDEFINED_COMMAND; /*changed , might remove later*/
+        *error = ERROR_UNDEFINED_COMMAND; 
         return COMMAND_LINE_ERROR;
     }
 
@@ -850,11 +866,13 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
         return COMMAND_LINE_ERROR;
     }
     
+    /* checks the number of operands for command that require 2 operands*/
     if ((num_tokens > 2 + label) && (num_tokens - label - 2) != commands[opcode].number_of_operands) {
         *error = ERROR_WRONG_AMOUNT_OF_OPERANDS;
         return COMMAND_LINE_ERROR;
     }
     
+    /*  loop that goes through arguments if there are any, and checks them. Otherwise skip the loop   */
     for (; count < commands[opcode].number_of_operands; count++) {
         if (!source_flag) {
             operand_result = checkOperand(tokens[operand_index + count + 1], LabelPtr, error, is_first_iteration);
@@ -863,9 +881,12 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
             operand_result = checkOperand(tokens[operand_index + count], LabelPtr, error, is_first_iteration);
         }
         
+
         switch (operand_result) {
             case OPERAND_TYPE_LABEL:
                 L++;
+
+                /* checks commands that require less then 2 operands, for correctness of arguments type */
                 if (commands[opcode].number_of_operands < 2) {
                     if (!commands[opcode].destinationAddresingMethod[ADDRESING_LABEL]) {
                         *error = ERROR_INCORRECT_OPERAND_TYPE;
@@ -873,12 +894,16 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                     }
                     break;
                 }
+
+                /* checks the commands that require 2 operands, for correctness of arguments type*/
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
                 }
                 break;
             case OPERAND_TYPE_REGISTER:
+
+                /* checks commands that require less then 2 operands, for correctness of arguments type*/
                 if (commands[opcode].number_of_operands < 2) {
                     if (!commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER]) {
                         *error = ERROR_INCORRECT_OPERAND_TYPE;
@@ -889,17 +914,24 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                         break;
                     }
                 }
+                /* checks the commands that require 2 operands, for correctness of arguments type*/
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
                 }
 
+                /* No matter the amount of registers, give only 1 memmory word for it 
+                    (gives only +1 to L, even if there are 2 registers as arguments for a command)
+                */
                 if (!register_flag) {
                     L++;
                     register_flag = true;
                 }
                 break;
             case OPERAND_TYPE_NUMBER:
+
+
+                /*checks commands that require less then 2 operands, for correctness of arguments type*/
                 if (commands[opcode].number_of_operands < 2) {
                     if (!commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]) {
                         *error = ERROR_INCORRECT_OPERAND_TYPE;
@@ -910,13 +942,15 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                         break;
                     }
                 }
+                
+                /* checks the commands that require 2 operands, for correctness of arguments type*/
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
                 }
                 L++;
                 break;
-            default:
+            case OPERAND_TYPE_OTHER:
                 *error = ERROR_ILLEGAL_OPERAND_TYPE;
                 *error = NO_ERROR;
                 return COMMAND_LINE_ERROR;
@@ -1030,10 +1064,10 @@ bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNo
 
         if (entryLine && getLabelType(tokens[operand_index], *labels, error) == LABEL_TYPE_NOT_FOUND)
         {
-            *error = ERROR_UNRECOGNIZED_LABEL;
-            return false;
+             *error = ERROR_UNRECOGNIZED_LABEL;
+             return false;
         }
-        
+
 
     }
     operand_index = FIRST_ARGUMENT;
