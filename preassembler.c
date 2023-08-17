@@ -293,6 +293,7 @@ void macrosToValues(CodeNode **code, MacroNode **macros, char *tokens[], int *pn
             }
         }
         else if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro")) {
+            prev_code = current_code;
             while (true) {
                 temp = current_code;
                 current_code = current_code->next;
