@@ -35,7 +35,10 @@ int main (int argc, char** argv) {
         /* Preprocess the source file */
         code = preproccessor(argv[i], &is_print, &error);
         if (error != NO_ERROR) continue;
-        
+
+        createCodeFileWithoutMacros(argv[i], code, &is_print, &error);
+        if (error != NO_ERROR) continue;
+
         /* Perform the first iteration of assembly */
         firstIteration(memory, &memory_idx, code, &labels, &DC, &IC, &is_print, &error);
 

@@ -86,7 +86,7 @@ void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operan
  * @param label_type The type of label (entry or extern).
  * @param error Pointer to an Error variable for error handling.
  */
-void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
+void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, bool* is_print, Error* error);
 
 /**
  * @brief Clears the memory by setting it to zero.
@@ -457,6 +457,6 @@ bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_typ
 
 void allocateMemoryTokens(char** tokens, bool* is_print, Error* error);
 
-/*void printTokens(char** tokens, int* num_tokens);*/
+void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print, Error* error);
 
 #endif

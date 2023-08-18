@@ -9,8 +9,7 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     FILE* fptr;
     char** tokens;
     int num_tokens = DEFAULT_VALUE;
-    unsigned int path_length;
-    char* full_path;
+    char full_path[MAX_FILE_NAME_WITH_EXTENSION];
 
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     allocateMemoryTokens(tokens, is_print, error);
@@ -19,14 +18,12 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
         return NULL;
     }
 
-    path_length = strlen(file_name) + strlen(".as");
-    full_path = allocateMemory(path_length * sizeof(char), is_print, error);
-    cleanLine(full_path, path_length);
+    cleanLine(full_path, MAX_FILE_NAME_WITH_EXTENSION);
     strcpy(full_path, file_name);
     strcat(full_path, ".as");
 
     fptr = fopen(full_path, "r");
-    free(full_path);
+
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
         handleError(error, DEFAULT_LINE_NUMER, is_print);

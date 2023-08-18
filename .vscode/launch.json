@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/assembler",
-            "args": ["1only_macro.txt"],
+            "args": ["1only_macro...."],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -20,8 +20,6 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
         (*num_tokens)++;
         token = strtok(NULL, " \r");
     }
-
-    /*printTokens(tokens, num_tokens);*/
     free(temp);
 }
 

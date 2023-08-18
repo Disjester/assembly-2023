@@ -579,8 +579,8 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
 
 void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error, int num_line) {
     if (*is_print) {
-        createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY ,error);
-        createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL ,error);
+        createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY, is_print, error);
+        createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL, is_print, error);
         createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC, error, num_line, is_print);
     }
 }
@@ -614,8 +614,10 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, i
     fclose(fptr);
 }
 
-void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error) {
+void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, bool* is_print, Error* error) {
     FILE *fptr;
+    bool is_entry = false;
+    LabelNode* temp = labels;
     char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
     
     cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
@@ -625,19 +627,32 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
     switch (label_type) {
         case LABEL_TYPE_ENTRY:
             strcat(output_file_name, ".ent");
+            while (temp) {
+                if (temp->label_type == LABEL_TYPE_ENTRY) {
+                    is_entry = true;
+                    break;
+                }
+                temp = temp->next;
+            }
+            if (!is_entry) {
+                return;
+            }
             break;
         case LABEL_TYPE_EXTERNAL:
             strcat(output_file_name, ".ext");
+            if (!labels) {
+                return;
+            }
             break;
         default:
-            /* *error = ERROR_UNRECOGNIZED_LABEL;*/
-            /*Error*/
-            break;
+            *error = ERROR_UNRECOGNIZED_LABEL;
+            return;
     }
     fptr = fopen(output_file_name, "w");
 
     if (!fptr) {
-        /*error*/
+        *error = ERROR_FILE_HANDLE;
+        handleError(error, DEFAULT_LINE_NUMER, is_print);
         return;
     }
 
@@ -647,6 +662,31 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
             fprintf(fptr, "%s %d\n", labels->label_name, labels->memory_adress);
         }
         labels = labels->next;
+    }
+    fclose(fptr);
+}
+
+void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print, Error* error) {
+    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
+    FILE *fptr;
+    
+    cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
+
+    strcat(output_file_name, "output/");
+    strcat(output_file_name, file_name);
+    strcat(output_file_name, ".am");
+
+    fptr = fopen(output_file_name, "w");
+
+    if (!fptr) {
+        *error = ERROR_FILE_HANDLE;
+        handleError(error, DEFAULT_LINE_NUMER, is_print);
+        return;
+    }
+
+    while (code) {
+        fprintf(fptr, "%s\n", code->code_row);
+        code = code->next;
     }
     fclose(fptr);
 }
