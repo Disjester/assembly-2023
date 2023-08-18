@@ -1,0 +1,4 @@
+sub A , B
+A: sub A , A
+B: sub B , B
+stop
