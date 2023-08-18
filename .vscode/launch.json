@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/assembler",
-            "args": ["testsda"],
+            "args": ["test"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

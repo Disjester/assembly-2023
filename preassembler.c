@@ -238,64 +238,24 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
     CodeNode *current_macro_code;
     CodeNode *prev_code;
     CodeNode *temp;
-    CodeNode *endmacro_node;
-    bool      is_endmcro = false;
-
-    bool macro_replaced = false; /* Flag to track if a macro is replaced */
+    CodeNode *first_macro_code_node;
+    CodeNode *latest_macro_code_node = NULL;
+    
+    bool      is_first_mcro_line = true;
+    bool macro_found = false; /* Flag to track if a macro is found */
+    bool first_connection = true;
 
     /* Initialize variables */
     current_code = *code;
-    prev_code = NULL;
+    prev_code = (CodeNode *)allocateMemory(sizeof(CodeNode), is_print, error);
+    prev_code->code_row = my_strdup(" ", is_print, error);
     temp = NULL;
 
     while (current_code) {
         tokenizeInput(current_code->code_row, tokens, pnum_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION) return;
-
-        if (*pnum_tokens == 1) {
-            current_macro = *macros;
-            macro_replaced = false;
-
-            while (current_macro) {
-                if (!strcmp(current_macro->macro_name, tokens[FIRST_WORD])) {
-                    /* Replace the macro name with the code lines */
-                    current_macro_code = current_macro->code_node;
-
-                    while (current_macro_code)
-                    {
-                        /* Create a new code node and copy the code row */
-                        CodeNode *new_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), is_print, error);
-                        if (*error == ERROR_MEMORY_ALLOCATION) return;
-                        new_code_node->code_row = my_strdup(current_macro_code->code_row, is_print, error);
-                        if (*error == ERROR_MEMORY_ALLOCATION) return;
-                        /* Append the new code node to the linked list */
-                        if (prev_code) {
-                            prev_code->next = new_code_node;
-                        }
-                        else {
-                            *code = new_code_node;
-                        }
-                        prev_code = new_code_node;
-
-                        current_macro_code = current_macro_code->next;
-                    }
-                    macro_replaced = true;
-                }
-                current_macro = current_macro->next;
-            }
-            
-            /* Remove the current code node if a macro was replaced */
-            if (macro_replaced) {
-                if (prev_code)
-                    prev_code->next = current_code->next;
-                else
-                    *code = current_code->next;
-                free(current_code->code_row);
-                free(current_code);
-                current_code = prev_code;
-            }
-        }
-        else if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro")) {
+        
+        if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro")) {
             while (true) {
                 temp = current_code;
                 current_code = current_code->next;
@@ -303,27 +263,102 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
                 free(temp);
                 tokenizeInput(current_code->code_row, tokens, pnum_tokens, is_print, error);
                 if (*error != NO_ERROR) return;
-
+                /* if got to endmcro , link the code before mcro "mcro_name" . and after endmcro. 
+                and free the current code line ( of endmcro )
+                */
                 if (*pnum_tokens == 1 && !strcmp(tokens[FIRST_WORD], "endmcro")) {
-                    temp = current_code->next;
-                    if (prev_code) {
-                        prev_code->next = current_code->next;
-                    } else {
-                        prev_code = current_code->next;
-                        *code = prev_code;
-                    }
-                    endmacro_node = current_code;
-                    is_endmcro = true;
+                    temp = current_code;
+                    current_code = current_code->next;
+                    prev_code->next = current_code;
+                    free(temp->code_row);
+                    free(temp);
+
                     break;
                 }
+                
+            }
+        }
+            
+        
+        if (*pnum_tokens == 1) {
+            tokenizeInput(current_code->code_row, tokens, pnum_tokens, is_print, error);
+            current_macro = *macros;
+            macro_found = false;
+
+            /* going through all the macros */
+            while (current_macro) {
+                /* if found a mcro name like m1 */
+                if (!strcmp(current_macro->macro_name, tokens[FIRST_WORD])) {
+                    first_connection = true;
+                    macro_found = true;
+
+                    /* go throught all of the mcro code node, code lines 
+                       and copy it to another code node
+                    */
+                    current_macro_code = current_macro->code_node;
+                    while (current_macro_code)
+                    {
+                        if (is_first_mcro_line)
+                        {
+                            first_macro_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), is_print, error);
+                            if (*error == ERROR_MEMORY_ALLOCATION) return;
+                            first_macro_code_node->code_row = my_strdup(current_macro_code->code_row, is_print, error);
+                            if (*error == ERROR_MEMORY_ALLOCATION) return;
+
+                            is_first_mcro_line = false;
+                            current_macro_code = current_macro_code->next;
+                        }
+                        else
+                        {
+                            latest_macro_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), is_print, error);
+                            if (*error == ERROR_MEMORY_ALLOCATION) return;
+                            latest_macro_code_node->next = NULL;
+                            latest_macro_code_node->code_row = my_strdup(current_macro_code->code_row, is_print, error);
+                            if (*error == ERROR_MEMORY_ALLOCATION) return;
+                            if (first_connection)
+                            {
+                                first_macro_code_node->next = latest_macro_code_node;
+                                first_connection = false;
+                            }
+                            if (current_macro_code->next)
+                            {
+                                latest_macro_code_node = latest_macro_code_node->next;
+                            }
+                            current_macro_code = current_macro_code->next;
+                        }
+                        
+                    }
+                }
+                if (macro_found)
+                {
+                    break;
+                }
+                current_macro = current_macro->next;
+            }
+
+            /* Remove the current code node  ( line of text ) if a macro name was found */
+            if (macro_found) {
+
+                    /* add the macro code nodes to the main code */
+                    if (latest_macro_code_node)
+                    {
+                        latest_macro_code_node->next = current_code->next;
+                    }
+                    else
+                    {
+                        first_macro_code_node->next = current_code->next;
+                    }
+                    
+                    prev_code->next = first_macro_code_node;
+                    
+                    /* free the current code node ( code line of text ) */
+                    temp = current_code;
+                    current_code = current_code->next;
+                    free(temp->code_row);
+                    free(temp);
             }
         }
         prev_code = current_code;
         current_code = current_code->next;
-        if (is_endmcro && endmacro_node) {
-            free(endmacro_node->code_row);
-            free(endmacro_node);
-            is_endmcro = false;
-        }
     }
 }
