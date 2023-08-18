@@ -266,7 +266,6 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
     int update_memory_idx = DEFAULT_MEMORY_INDEX;
     int check_counter;
     short curr_memory;
-    
 
     allocateMemoryTokens(tokens, is_print, error);
     temp_code = code;
@@ -564,6 +563,7 @@ void incrementTokenCounter(int* token_idx, int num_tokens, int num_line, int ste
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx) {
     LabelNode* temp_label;
     
+    
     for (;token_idx < num_tokens; token_idx++) {
         if (isLabel(tokens[token_idx], false)) {
             temp_label = labels;
@@ -604,7 +604,10 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, i
         return;
     }
     fprintf(fptr, "%d %d\n", IC, DC);
-    for (i = DEFAULT_MEMORY_INDEX; i < *memory_idx; i++) { /*MAGIC NUMBER*/
+    if (DC == 0) {
+        (*memory_idx)--;
+    }
+    for (i = DEFAULT_MEMORY_INDEX; i < *memory_idx; i++) {
         convertToBase64(memory[i], base64);
         fprintf(fptr, "%s\n", base64);
     }
@@ -638,6 +641,7 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
         return;
     }
 
+    /* write all of the labels into the corresponding output file type */
     while (labels) {
         if (labels->label_type == label_type) {
             fprintf(fptr, "%s %d\n", labels->label_name, labels->memory_adress);
@@ -683,19 +687,30 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
     return LABEL_TYPE_NOT_FOUND;
 }
 
-bool isString(char* string){
-    int i = 0;
-    bool quote = false;
+bool isString( char** tokens, int num_tokens, bool label){
+    /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add 
+    an outside loop. */
+    int char_index = 0;
+    int string_index = label + 1;
+    bool quote = false; /* a quote flag, that checks if found the 2nd (") character */
+    int len = 0;
 
-    if (string[i++] != '"') {
+    /* checks the 1st character to be a quote */
+    if (tokens[string_index][char_index++] != '"') {
         return false;
     }
+    for ( ; string_index < num_tokens; string_index++)
+    {
+        len = strlen(tokens[string_index]);
+        for ( ; char_index < len; char_index++) {
+            if (quote) return false;
 
-    for ( ; i < strlen(string); i++) {
-        if (quote) return false;
-        
-        if (string[i] == '"') quote = true;
+            if (tokens[string_index][char_index] == '"' ) quote = true;
+        }
+        char_index = 0;  
     }
+    
+    /* returns false if 2nd quote isn't the last character */
     return quote;
 }
 
@@ -703,8 +718,9 @@ bool isNumber(char* word){
     int i = 0;
     int len = strlen(word);
 
-    /* Check for a minus sign at the beginning*/
-    if (word[i] == '-') i++;  /* Skip the minus sign */
+    /* Check for a minus sign at the beginning
+     Skip it if exists */
+    if (word[i] == '-') i++;  
     
     for ( ; i < len; i++) {
         if (!isdigit(word[i])) {
@@ -717,20 +733,26 @@ bool isNumber(char* word){
 bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     int token_index = 1;
     
+
     if (num_tokens < (2 + label)) {
         *error = ERROR_MISSING_DATA_ARGUMENT;
         return false;
     }
     
+
+    /* checks .string line */
     if (getDotType(tokens[FIRST_WORD + label], error) == DOT_STRING) {
+        /*
         if (num_tokens > (2 + label)) {
             *error = ERROR_EXTRANEOS_TEXT;
             return false;
         }
-        if (isString(tokens[1 + label])) {
+        */
+        if (isString( tokens, num_tokens, label)) {
             return true;
         }
         
+        /* the argument to .string is wrong */
         else
         {
             *error = ERROR_WRONG_ARGUMENT_FORMAT;
@@ -739,6 +761,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
         
     }
     
+    /* check .data line */
     if (getDotType(tokens[FIRST_WORD + label], error) == DOT_DATA) {
         if (num_tokens % 2 == (!label)) {
             *error = ERROR_WRONG_NUM_OF_COMMAS;
@@ -746,12 +769,16 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
         }
         token_index += label;
 
+        /* loops throught all the arguments to .data */
         for (; token_index< num_tokens; token_index+=2) {
             if (!isNumber(tokens[token_index])) {
                 *error = ERROR_WRONG_ARGUMENT_FORMAT;
                 return false;
             }
         }
+
+        /* loops throught all the places in the line , and checks if there is a comma
+         where its needed to be */
         for (; token_index + 1 < num_tokens; token_index += 2) {
             if (strcmp(tokens[token_index], ",")) {
                 *error = ERROR_MISSING_COMMA;
@@ -762,6 +789,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     }
     return false;
 }
+
 
 void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error, int num_line, bool *is_print) {
     if (*memory_idx >= MAX_MEMORY_SIZE) {

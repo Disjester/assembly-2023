@@ -15,7 +15,7 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
     token = strtok(temp, " \r");
     *num_tokens = 0;
     while (token != NULL && *num_tokens < MAX_TOKENS) {
-        strcpy(tokens[*num_tokens], token);  /* Duplicate and store token */
+        strcpy(tokens[*num_tokens], token);  /* copies the token to the tokens array */
         if (*error == ERROR_MEMORY_ALLOCATION) return;
         (*num_tokens)++;
         token = strtok(NULL, " \r");
