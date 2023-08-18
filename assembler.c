@@ -685,19 +685,30 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
     return LABEL_TYPE_NOT_FOUND;
 }
 
-bool isString(char* string){
-    int i = 0;
-    bool quote = false;
+bool isString(char** tokens, int num_tokens, bool label) {
+    /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add
+    an outside loop. */
+    int char_index = 0;
+    int string_index = label + 1;
+    bool quote = false; /* a quote flag, that checks if found the 2nd (") character */
+    int len = 0;
 
-    if (string[i++] != '"') {
+    /* checks the 1st character to be a quote */
+    if (tokens[string_index][char_index++] != '"') {
         return false;
     }
+    for (; string_index < num_tokens; string_index++)
+    {
+        len = strlen(tokens[string_index]);
+        for (; char_index < len; char_index++) {
+            if (quote) return false;
 
-    for ( ; i < strlen(string); i++) {
-        if (quote) return false;
-        
-        if (string[i] == '"') quote = true;
+            if (tokens[string_index][char_index] == '"') quote = true;
+        }
+        char_index = 0;
     }
+
+    /* returns false if 2nd quote isn't the last character */
     return quote;
 }
 
@@ -725,11 +736,13 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     }
     
     if (getDotType(tokens[FIRST_WORD + label], error) == DOT_STRING) {
+        /*
         if (num_tokens > (2 + label)) {
             *error = ERROR_EXTRANEOS_TEXT;
             return false;
         }
-        if (isString(tokens[1 + label])) {
+        */
+        if (isString(tokens, num_tokens, label)) {
             return true;
         }
         

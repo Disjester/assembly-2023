@@ -206,7 +206,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error);
  */
 bool isNumber(char* word);
 
-bool isString(char* string);
+bool isString(char** tokens, int num_tokens, bool label);
 
 /**
  * @brief checks if the word is .data or .string , returns false if neither
