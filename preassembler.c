@@ -4,7 +4,7 @@
 #include "libs.h"
 
 CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
-    CodeNode* code;
+    CodeNode* code = NULL;
     MacroNode* macros = NULL;
     FILE* fptr;
     char** tokens;
