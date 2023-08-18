@@ -41,6 +41,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     int L = DEFAULT_VALUE;
     int num_line = STARTING_LINE;
     short data_memory[MAX_MEMORY_SIZE];
+    int char_index = 1;
+    int token_len = 0;
+    bool end_of_string_flag = false;
     char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     allocateMemoryTokens(tokens, is_print, error);
 
@@ -52,6 +55,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
     temp_code = code;
     while(temp_code) {
         token_idx = DEFAULT_VALUE;
+        end_of_string_flag = false;
+        char_index = 1;
         label_flag = false;
 
         if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' || temp_code->code_row[FIRST_CHARACTER] == '\r' || temp_code->code_row[FIRST_CHARACTER] == ';') {
@@ -120,6 +125,29 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 }
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
+                    for (; token_idx < num_tokens; token_idx++)
+                    {
+                        token_len = strlen(tokens[token_idx])+1;
+                        for (; char_index < token_len; char_index++) {
+                            if (tokens[token_idx][char_index] == '"'){
+                                end_of_string_flag = true;
+                                break;
+                            }
+                            else if (tokens[token_idx][char_index] == '\0')
+                            {
+                                tokens[token_idx][char_index] = ' ';
+                            }
+                            pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][char_index], error, num_line, is_print);
+                            if (*error == ERROR_MAXED_OUT_MEMORY) return;
+                            (*DC)++;
+                        }
+                        if (end_of_string_flag) break;
+                        char_index = 0;
+                    }
+                    pushToMemory(&data_memory_idx, data_memory, '\0', error, num_line, is_print);
+                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
+                    (*DC)++;
+                    /*
                     for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
                         pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][i], error, num_line, is_print);
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
@@ -128,6 +156,9 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     pushToMemory(&data_memory_idx, data_memory, '\0', error, num_line, is_print);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
                     (*DC)++;
+                    */
+
+
                 }
                 /*handlaing Error*/
                 if (*error != NO_ERROR) {
