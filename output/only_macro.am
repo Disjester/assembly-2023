@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 A: sub A , B
 B: sub A , B
+=======
+sub A , B
+>>>>>>> 2d86edd918db1695b523fdf8e2ec29dbae9c0a1d
 stop
