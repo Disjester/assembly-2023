@@ -186,6 +186,7 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
     CodeNode *current_macro_code;
     CodeNode *prev_code;
     CodeNode *temp;
+    CodeNode* temp_to_delete;
     CodeNode *first_macro_code_node;
     CodeNode *latest_macro_code_node = NULL;
     
@@ -197,6 +198,7 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
     current_code = *code;
     prev_code = (CodeNode *)allocateMemory(sizeof(CodeNode), is_print, error);
     prev_code->code_row = my_strdup(" ", is_print, error);
+    temp_to_delete = prev_code;
     temp = NULL;
 
     while (current_code) {
@@ -227,7 +229,6 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
             }
         }
             
-        
         if (*pnum_tokens == 1) {
             tokenizeInput(current_code->code_row, tokens, pnum_tokens, is_print, error);
             current_macro = *macros;
@@ -274,7 +275,6 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
                             }
                             current_macro_code = current_macro_code->next;
                         }
-                        
                     }
                 }
                 if (macro_found)
@@ -309,4 +309,6 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
         prev_code = current_code;
         current_code = current_code->next;
     }
+    free(temp_to_delete->code_row);
+    free(temp_to_delete);
 }
