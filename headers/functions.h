@@ -35,28 +35,145 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
  */
 bool isLabel(char* word, bool colon);
 
+/**
+ * @brief moves data from data_memory array , to global memmory.
+ * 
+ * @param data_memory  the place where data information is stored , points to the latest free memory slot
+ * @param data_memory_idx index in the data array memory
+ * @param memory  global memory array
+ * @param memory_idx index in the global  memory array , points to the latest free memory slot
+ * @param error pointer to error, for handlaing errors
+ */
 void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, int* memory_idx, Error* error);
 
+/**
+ * @brief Create a Output Files object
+ * 
+ * @param file_name takes the assembly code file name
+ * @param labels pointer to the labels linked list
+ * @param memory pointer to the global memory array
+ * @param memory_idx  index in the global  memory array , points to the latest free memory slot
+ * @param IC Instruction counter
+ * @param DC Data Counter
+ * @param externals pointer to externals linked list
+ * @param is_print is there a need to create and print information to the files
+ * @param error pointer to error, for handlaing errors
+ * @param num_line the line number on which the function is performed ( part of the error handling mechanism )
+ */
 void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error, int num_line);
 
+
+/**
+ * @brief Creates a binary word based on the operand type and stores it in memory.
+ * 
+ * @param labels Pointer to the labels linked list.
+ * @param op_type The type of operand.
+ * @param operand The operand value.
+ * @param memory Global memory array.
+ * @param memory_idx Index in the global memory array.
+ * @param is_first_iteration Flag indicating the first iteration.
+ * @param error Pointer to an Error variable for error handling.
+ * @param num_line The current line number.
+ * @param is_print Indicates whether to print error messages.
+ */
 void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error, int num_line, bool* is_print);
 
+/**
+ * @brief Creates an output file with the specified label type (entry or extern).
+ * 
+ * @param file_name The name of the output file.
+ * @param labels Pointer to the labels linked list.
+ * @param label_type The type of label (entry or extern).
+ * @param error Pointer to an Error variable for error handling.
+ */
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, Error* error);
 
+/**
+ * @brief Clears the memory by setting it to zero.
+ * 
+ * @param memory Global memory array.
+ */
 void cleanMemory(short* memory);
 
+/**
+ * @brief Updates entry labels with their corresponding memory addresses.
+ * 
+ * @param labels Pointer to the labels linked list.
+ * @param tokens An array of tokens.
+ * @param num_tokens The number of tokens.
+ * @param token_idx The index of the token.
+ */
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx);
 
+/**
+ * @brief Removes a colon from a string if present.
+ * 
+ * @param str The string to process.
+ * @return char* The processed string.
+ */
 char* removeColon(char* str);
 
+/**
+ * @brief Inserts a new label into the label list.
+ * 
+ * @param labels Pointer to the labels linked list.
+ * @param label_name The name of the label.
+ * @param label_type The type of the label.
+ * @param memory_idx Index in the global memory array.
+ * @param is_print Indicates whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @param is_first_itteration_flag Flag indicating the first iteration.
+ */
 void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error, bool is_first_itteration_flag);
 
+/**
+ * @brief Performs the first iteration of the assembler.
+ * 
+ * @param memory Global memory array.
+ * @param memory_idx Index in the global memory array.
+ * @param code Pointer to the code linked list.
+ * @param labels Pointer to the labels linked list.
+ * @param DC Data Counter.
+ * @param IC Instruction counter.
+ * @param is_print Indicates whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ */
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error);
 
+/**
+ * @brief Performs the second iteration of the assembler.
+ * 
+ * @param memory Global memory array.
+ * @param memory_idx Index in the global memory array.
+ * @param code Pointer to the code linked list.
+ * @param labels Pointer to the labels linked list.
+ * @param DC Data Counter.
+ * @param IC Instruction counter.
+ * @param error Pointer to an Error variable for error handling.
+ * @param file_name The name of the output file.
+ * @param externals Pointer to externals linked list.
+ * @param is_print Indicates whether to print error messages.
+ */
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print);
 
-void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error, int num_line, bool *is_print);
+/**
+ * @brief Pushes a memory field value into memory.
+ * 
+ * @param memory_idx Index in the global memory array.
+ * @param memory Global memory array.
+ * @param memoryField The memory field value to push.
+ * @param error Pointer to an Error variable for error handling.
+ * @param num_line The current line number.
+ * @param is_print Indicates whether to print error messages.
+ */
+void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error, int num_line, bool* is_print);
 
+/**
+ * @brief Gets the number of operands for a command based on its opcode.
+ * 
+ * @param opcode The opcode of the command.
+ * @return int The number of operands.
+ */
 int getOperandsNumberByOpcode(short opcode);
 
 /** 
@@ -110,15 +227,61 @@ char *my_strdup(const char *str, bool* is_print, Error* error);
  */
 CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
 
+/**
+ * @brief Creates the binary word for a command and its operands.
+ * 
+ * @param tokens An array of tokens.
+ * @param num_tokens The number of tokens.
+ * @param token_idx The index of the current token.
+ * @param error Pointer to an Error variable for error handling.
+ * @param is_first_itteration Flag indicating the first iteration.
+ * @param labelPtr Pointer to the labels linked list.
+ * @return short The generated binary word.
+ */
 short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr);
 
+/**
+ * @brief Gets the number of operands for a command based on its mnemonic.
+ * 
+ * @param command The mnemonic of the command.
+ * @return int The number of operands.
+ */
 int getOperandAmount(char* command);
 
+/**
+ * @brief Gets the addressing method value based on the operand type.
+ * 
+ * @param operand_type The type of operand.
+ * @return int The addressing method value.
+ */
 int getAdressingMethodByOperandType(OperandType operand_type);
 
+/**
+ * @brief Converts a short integer to a base64 representation.
+ * 
+ * @param num The integer to convert.
+ * @param result The output buffer to store the base64 representation.
+ */
 void convertToBase64(short num, char* result);
 
+/**
+ * @brief Creates the binary word for an operand based on its type.
+ * 
+ * @param L The L value (number of memory words) for the operand.
+ * @param labels Pointer to the labels linked list.
+ * @param is_first_iteration Flag indicating the first iteration.
+ * @param op_type_source The source operand type.
+ * @param op_type_destination The destination operand type.
+ * @param operand1 The source operand value.
+ * @param operand2 The destination operand value.
+ * @param memory_idx Index in the global memory array.
+ * @param memory Global memory array.
+ * @param error Pointer to an Error variable for error handling.
+ * @param num_line The current line number.
+ * @param is_print Indicates whether to print error messages.
+ */
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print);
+
 
 /**
  * Reads a line from the file and handles various cases.
@@ -164,7 +327,19 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
  */
 void insertMacrosToCode(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
 
-void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error,  int num_line, bool* is_print);
+/**
+ * @brief Creates a memory dump file with the contents of the memory array.
+ * 
+ * @param file_name The name of the output file.
+ * @param memory Pointer to the global memory array.
+ * @param memory_idx Index in the global memory array.
+ * @param IC Instruction counter.
+ * @param DC Data counter.
+ * @param error Pointer to an Error variable for error handling.
+ * @param num_line The current line number.
+ * @param is_print Indicates whether to print error messages.
+ */
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error, int num_line, bool* is_print);
 
 /** 
  * Allocates memory with error handling.
@@ -198,25 +373,48 @@ bool handleError(Error* error, int num_line, bool* is_print);
 bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error);
 
 /**
- * @brief takes in a string and checks if its a legal number
+ * @brief Checks if a string represents a valid integer number.
  * 
- * @param word 
- * @return true if it is a number
- * @return false otherwise
+ * @param word The string to be checked.
+ * @return true if the string is a valid number, false otherwise.
  */
 bool isNumber(char* word);
 
-bool isString(char** tokens, int num_tokens, bool label);
+/**
+ * @brief Checks if a string represents a valid string (enclosed in double quotes).
+ * 
+ * @param string The string to be checked.
+ * @return true if the string is a valid string, false otherwise.
+ */
+bool isString( char** tokens, int num_tokens, bool label);
 
 /**
- * @brief checks if the word is .data or .string , returns false if neither
+ * @brief Determines the type of a dot command (e.g., .data, .string, .entry, .extern).
  * 
- * @param word 
- * @return 4 - if its .extern 3 - if its a .entry 2 - if its a .string 1 if it is a .data 0 if it neither of them 
+ * @param word The dot command string.
+ * @param error Pointer to an Error variable for error handling.
+ * @return The corresponding DotType value:
+ *         - DOT_EXTERN if it's ".extern"
+ *         - DOT_ENTRY if it's ".entry"
+ *         - DOT_STRING if it's ".string"
+ *         - DOT_DATA if it's ".data"
+ *         - DOT_OTHER if it's none of the above.
  */
 DotType getDotType(char* word, Error* error);
 
-LabelType getLabelType(char* label, LabelNode* LabelNode, Error* error);
+/**
+ * @brief Determines the type of a label (external, entry, code) based on its name.
+ * 
+ * @param label The label name to be checked.
+ * @param labels Pointer to the head of the LabelNode linked list.
+ * @param error Pointer to an Error variable for error handling.
+ * @return The corresponding LabelType value:
+ *         - LABEL_EXTERNAL if it's an external label
+ *         - LABEL_ENTRY if it's an entry label
+ *         - LABEL_CODE if it's a regular label
+ *         - LABEL_OTHER if it's none of the above.
+ */
+LabelType getLabelType(char* label, LabelNode* labels, Error* error);
 
 /** 
  * Frees memory allocated for tokens, code nodes, macro nodes, and label nodes.
