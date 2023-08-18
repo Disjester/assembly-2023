@@ -36,12 +36,12 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
  * @param error Pointer to an Error variable for error handling.
  */
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error) {
-    bool is_first_itteration_flag = true;
+    bool is_first_itteration_flag = true; /*Flag if it is the first iteration*/
     bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
-    CodeNode* temp_code;
-    LabelNode* temp_label_node;
-    bool label_flag = false;
-    int data_memory_idx = DEFAULT_MEMORY_INDEX;
+    CodeNode* temp_code; /*Temporal CodeNode*/
+    LabelNode* temp_label_node; /*tmeporal LabelNode*/
+    bool label_flag = false; /*Flag if there is a label in current line*/
+    int data_memory_idx = DEFAULT_MEMORY_INDEX; 
     int operand_num = 0;
     int i;
     int def_extern_mem = DEFAULT_EXTERN_MEMORY;
@@ -270,10 +270,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case LABEL_TYPE_CODE:
             case LABEL_TYPE_ENTRY:
                 temp_label_node->memory_adress += DEFAULT_MEMORY_INDEX;
-                break;
             case LABEL_TYPE_EXTERNAL:
             case LABEL_TYPE_NOT_FOUND:
-                /* *error = ERROR_UNRECOGNIZED_LABEL; */
                 break;
         }
         temp_label_node = temp_label_node->next;
