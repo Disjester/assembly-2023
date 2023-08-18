@@ -6,6 +6,15 @@
 
 static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
 
+/** 
+ * Tokenizes an input string and stores the tokens in an array.
+ *
+ * @param input The input string to tokenize.
+ * @param tokens An array to store the tokens. ( needs to be allocated beforehand)
+ * @param num_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ */
 void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, Error* error) {
     size_t length = strlen(input);
     char *token = NULL;
@@ -25,6 +34,14 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
     free(temp);
 }
 
+/** 
+ * Duplicates a string using dynamic memory allocation.
+ *
+ * @param str The string to duplicate.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A pointer to the duplicated string.
+ */
 char *my_strdup(const char *str, bool* is_print, Error* error) {
     size_t length = strlen(str);
     char *duplicate = allocateMemory(length + 1, is_print, error);  /* Allocate memory for the duplicate string*/
@@ -35,6 +52,14 @@ char *my_strdup(const char *str, bool* is_print, Error* error) {
     return duplicate;
 }
 
+/** 
+ * Allocates memory with error handling.
+ *
+ * @param size The size of memory to allocate.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A pointer to the allocated memory.
+ */
 void* allocateMemory(size_t size, bool* is_print, Error* error) {
     void* ptr = calloc(1, size);
     /*printf("ALLOCATED MEMORY: %d (address), %lu (size)\n", ptr, size);*/
@@ -61,6 +86,12 @@ void allocateMemoryTokens(char** tokens, bool* is_print, Error* error) {
     }
 }
 
+/**
+ * Validates a variable name according to specific rules.
+ *
+ * @param name The variable name to validate.
+ * @return true if the variable name is valid, false otherwise.
+ */
 bool validateVariableName (char *name) {
     int i;
 
@@ -77,6 +108,14 @@ bool validateVariableName (char *name) {
     return true;
 }
 
+/** 
+ * Handles and prints errors based on error codes.
+ *
+ * @param error Pointer to an Error variable containing the error code.
+ * @param num_line The line number where the error occurred.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @return true if an error occurred, false otherwise.
+ */
 bool handleError(Error* error, int num_line, bool* is_print) {
     switch (*error) {
         case ERROR_MEMORY_ALLOCATION:
@@ -162,6 +201,14 @@ bool handleError(Error* error, int num_line, bool* is_print) {
     }
 }
 
+/** 
+ * Frees memory allocated for tokens, code nodes, macro nodes, and label nodes.
+ *
+ * @param tokens An array of tokens.
+ * @param code_node A pointer to a CodeNode.
+ * @param macro_node A pointer to a MacroNode.
+ * @param label_node A pointer to a LabelNode.
+ */
 void freeMemory(char** tokens, CodeNode* code_node, MacroNode* macro_node, LabelNode* label_node) {
     int i;
 
@@ -179,6 +226,11 @@ void freeMemory(char** tokens, CodeNode* code_node, MacroNode* macro_node, Label
     freeMemoryLabelNode(label_node);
 }
 
+/** 
+ * Recursively frees memory allocated for a linked list of CodeNodes.
+ *
+ * @param code_node A pointer to a CodeNode.
+ */
 void freeMemoryCodeNode(CodeNode* code_node) {
     if (code_node) {
         freeMemoryCodeNode(code_node->next);
@@ -190,6 +242,11 @@ void freeMemoryCodeNode(CodeNode* code_node) {
     free(code_node);
 }
 
+/** 
+ * Recursively frees memory allocated for a linked list of MacroNodes.
+ *
+ * @param macro_node A pointer to a MacroNode.
+ */
 void freeMemoryMacroNode(MacroNode* macro_node) {
     if (macro_node) {
         freeMemoryMacroNode(macro_node->next);
@@ -220,6 +277,12 @@ void freeMemoryLabelNode(LabelNode* label_node) {
     free(label_node);
 }
 
+/**
+ * Cleans a line buffer by filling it with null characters.
+ *
+ * @param line The line buffer to be cleaned.
+ * @param length The length of the line buffer.
+ */
 void cleanMemory(short* memory) {
     int i;
 
@@ -228,17 +291,39 @@ void cleanMemory(short* memory) {
     }
 }
 
+/**
+ * @brief Removes a colon from a string at the last index.
+ * 
+ * @param str The string to process.
+ * @return char* The processed string.
+ */
 char* removeColon(char* str) {
     str[strlen(str)-1] = '\0';
     return str;
 }
 
+/**
+ * @brief Converts a short integer to a base64 representation.
+ * 
+ * @param num The integer to convert.
+ * @param result The output buffer to store the base64 representation.
+ */
 void convertToBase64(short num, char* result) {
     result[0] = base64_chars[(num >> 6) & MASK64];
     result[1] = base64_chars[num & MASK64];
     result[2] = '\0';
 }
 
+/**
+ * Reads a line from the file and handles various cases.
+ *
+ * @param line Buffer to store the read line.
+ * @param error Pointer to an Error variable for error handling.
+ * @param fptr Pointer to the source file.
+ * @param num_line The current line number.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @return The number of characters read.
+ */
 int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) {
     char x; /*current symbol in the input stream*/
     int i = 0;
@@ -284,6 +369,12 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) 
     return i;
 }
 
+/**
+ * Cleans a line buffer by filling it with null characters.
+ *
+ * @param line The line buffer to be cleaned.
+ * @param length The length of the line buffer.
+ */
 void cleanLine(char* line, int length) {
     int i;
     for (i = 0; i < length; i++) {
@@ -291,6 +382,12 @@ void cleanLine(char* line, int length) {
     }
 }
 
+/**
+ * @brief Checks if a string represents a valid integer number.
+ * 
+ * @param word The string to be checked.
+ * @return true if the string is a valid number, false otherwise.
+ */
 bool isNumber(char* word){
     int i = 0;
     int len = strlen(word);
@@ -307,6 +404,12 @@ bool isNumber(char* word){
     return true;
 }
 
+/**
+ * @brief Checks if a string represents a valid string (enclosed in double quotes).
+ * 
+ * @param string The string to be checked.
+ * @return true if the string is a valid string, false otherwise.
+ */
 bool isString(char** tokens, int num_tokens, bool label) {
     /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add
     an outside loop. */
