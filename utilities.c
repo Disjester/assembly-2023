@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "libs.h"
 
+/*All the characters for 64 base*/
 static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
 
 /** 
@@ -16,9 +17,10 @@ static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno
  * @param error Pointer to an Error variable for error handling.
  */
 void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, Error* error) {
-    size_t length = strlen(input);
-    char *token = NULL;
-    char *temp = NULL;
+    size_t length = strlen(input); /*Length of a memory*/
+    char *token = NULL; /*Current temporal token*/
+    char *temp = NULL; /*Temporal string*/
+
     temp = allocateMemory((length + 1) * sizeof(char), is_print, error);
     if (*error == ERROR_MEMORY_ALLOCATION) return;
     strcpy(temp, input);  /* Copy input string into temp */
@@ -43,7 +45,7 @@ void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, 
  * @return A pointer to the duplicated string.
  */
 char *my_strdup(const char *str, bool* is_print, Error* error) {
-    size_t length = strlen(str);
+    size_t length = strlen(str); /*Length of a string for duplication*/
     char *duplicate = allocateMemory(length + 1, is_print, error);  /* Allocate memory for the duplicate string*/
     if (*error == ERROR_MEMORY_ALLOCATION) return NULL;
     if (duplicate != NULL) {
@@ -79,7 +81,7 @@ void* allocateMemory(size_t size, bool* is_print, Error* error) {
  * @param error Pointer to an Error variable containing the error code.
  */
 void allocateMemoryTokens(char** tokens, bool* is_print, Error* error) {
-    int i;
+    int i; /*Index*/
 
     for (i = 0; i < MAX_TOKENS; i++) {
         tokens[i] = allocateMemory(MAX_TOKEN_LENGTH * sizeof(char), is_print, error);
@@ -93,7 +95,7 @@ void allocateMemoryTokens(char** tokens, bool* is_print, Error* error) {
  * @return true if the variable name is valid, false otherwise.
  */
 bool validateVariableName (char *name) {
-    int i;
+    int i; /*Index*/
 
     for (i = 0; i < strlen(name); i++) {
         if (i == 0 && !isalpha(name[i])) {
@@ -193,9 +195,9 @@ bool handleError(Error* error, int num_line, bool* is_print) {
             break;
     }
     if (*error != NO_ERROR) {
+        /*If there is an error no need to create files*/
         *is_print = false;
         return true;
-        
     } else {
         return false;
     }
@@ -210,7 +212,7 @@ bool handleError(Error* error, int num_line, bool* is_print) {
  * @param label_node A pointer to a LabelNode.
  */
 void freeMemory(char** tokens, CodeNode* code_node, MacroNode* macro_node, LabelNode* label_node) {
-    int i;
+    int i; /*Index*/
 
     if (tokens) {
         for (i = 0; i < MAX_TOKENS; i++) {
@@ -222,7 +224,6 @@ void freeMemory(char** tokens, CodeNode* code_node, MacroNode* macro_node, Label
     }
     freeMemoryCodeNode(code_node);
     freeMemoryMacroNode(macro_node);
-
     freeMemoryLabelNode(label_node);
 }
 
@@ -284,7 +285,7 @@ void freeMemoryLabelNode(LabelNode* label_node) {
  * @param length The length of the line buffer.
  */
 void cleanMemory(short* memory) {
-    int i;
+    int i; /*Index*/
 
     for (i = 0; i < MAX_MEMORY_SIZE; i++) {
         memory[i] = DEFAULT_ERROR_VALUE;
@@ -413,8 +414,8 @@ bool isNumber(char* word){
 bool isString(char** tokens, int num_tokens, bool label) {
     /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add
     an outside loop. */
-    int char_index = 0;
-    int string_index = label + 1;
+    int char_index = 0; /*Index that we point to*/
+    int string_index = label + 1; /**/
     bool quote = false; /* a quote flag, that checks if found the 2nd (") character */
     int len = 0;
 
