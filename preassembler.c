@@ -4,6 +4,7 @@
 #include "libs.h"
 
 CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
+    /* variable declarations */
     CodeNode* code = NULL;
     MacroNode* macros = NULL;
     FILE* fptr;
@@ -24,24 +25,30 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
 
     fptr = fopen(full_path, "r");
 
+    /* if the file can't be opened , exit the preprocessor function */
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
         handleError(error, DEFAULT_LINE_NUMER, is_print);
         freeMemory(tokens, code, macros, NULL);
         return NULL;
     }
+
+    /* create linked list of code nodes from the assembly file (split the file into lines of code and save them )*/
     code = createLinkedListFromFile(fptr, tokens, &num_tokens, is_print, error);
     if (*error != NO_ERROR) {
         freeMemory(tokens, code, macros, NULL);
         return NULL;
     }
     
+    /* look for macro defenitions and add them into a macro nodes - linked list */
     scanCodeForMacroDefinitions(&code, &macros, &num_tokens, tokens, is_print, error);
     if (*error != NO_ERROR) {
         freeMemory(tokens, code, macros, NULL);
         return NULL;
     }
     
+    /* clear all the macro declaration lines of code, and switch all of the macro names with their declarations 
+    ( all of the lines of code they contain )*/
     insertMacrosToCode(&code, &macros, tokens, &num_tokens, is_print, error);
     if (*error != NO_ERROR) {
         freeMemory(tokens, code, macros, NULL);
@@ -57,6 +64,8 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
     CodeNode *head = NULL, *temp = NULL, *code_node = NULL;
     int num_line = STARTING_LINE;
 
+    /* go throught all of the lines of code (of assembly file ), and put them inside code nodes
+    (each code node contains a line of text/code from the assembly file)*/
     while(getLine(buffer, error, fptr, num_line, is_print)) {
         if (*error == ERROR_MAXED_OUT_LINE_LENGTH) {
             num_line++;
@@ -64,7 +73,7 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
             *error = NO_ERROR;
             continue;
         }
-        /*Create a new node*/
+        /*Create a new code node*/
         code_node = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
         if (*error != NO_ERROR) {
             freeMemory(tokens, code_node, NULL, NULL);
@@ -106,11 +115,15 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
 
     temp_macro_node = NULL;
     curr_code_node = *code_node;
+    /* goes throught all of the code lines */
     while (curr_code_node) {
         tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, is_print, error);
         if (*error == ERROR_MEMORY_ALLOCATION) return;
 
+        /* if there is a mcro declaration line */
         if (*pnum_tokens == 2 && !strcmp(tokens[FIRST_WORD], "mcro") ) {
+
+            /* check if name for macro is illegal */
             if (!isLabel(tokens[SECOND_WORD], false) || checkCommand(tokens[SECOND_WORD]) != DEFAULT_ERROR_VALUE) {
                 while (strcmp(tokens[FIRST_WORD], "endmcro")) {
                     curr_code_node = curr_code_node->next;
@@ -133,6 +146,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
                 test_macro_node = test_macro_node->next;
             }
 
+            /* allocating memory for macro node and inserting the macro name into it */
             new_macro_node = (MacroNode*) allocateMemory(sizeof(MacroNode), is_print, error);
             if (*error == ERROR_MEMORY_ALLOCATION) return;
             
@@ -148,20 +162,29 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
             if (*error == ERROR_MEMORY_ALLOCATION) return;
             
             new_code_node_head = new_code_node;
+
+            /* while there are still code lines (of assembly), and the line isn't endmcro */
             while(curr_code_node && strcmp(tokens[FIRST_WORD], "endmcro")) {
+
+                /* allocating memory for code node (text line of code) */
                 if (new_code_node->code_row) {
                     new_code_node->next = (CodeNode*) allocateMemory(sizeof(CodeNode), is_print, error);
                     if (*error == ERROR_MEMORY_ALLOCATION) return;
                     new_code_node = new_code_node->next;
                 }
+
+                /* saving the code line text inside the code node */
                 new_code_node->code_row = my_strdup(curr_code_node->code_row, is_print, error);
                 if (*error == ERROR_MEMORY_ALLOCATION) return;
 
+                /* going to the next line of code (of assembler file )*/
                 curr_code_node = curr_code_node->next;
                 num_line++;
                 tokenizeInput(curr_code_node->code_row, tokens, pnum_tokens, is_print, error);
                 if (*error == ERROR_MEMORY_ALLOCATION) return;
             }
+
+            /* creating linked list from macro nodes - adding new nodes to existing linked list or creating the head of linked list */
             new_macro_node->code_node = new_code_node_head;
             if (temp_macro_node) {
                 while (temp_macro_node->next) {
@@ -174,6 +197,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
                 temp_macro_node = *macro_node;
             }
         }
+        /* go to next line of code (of assembly file ) */
         curr_code_node = curr_code_node->next;
         num_line++;
     }
