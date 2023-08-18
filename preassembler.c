@@ -241,14 +241,14 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
     CodeNode *first_macro_code_node;
     CodeNode *latest_macro_code_node = NULL;
     
-    bool      is_first_mcro_line = true;
+    bool is_first_mcro_line = true;
     bool macro_found = false; /* Flag to track if a macro is found */
     bool first_connection = true;
 
     /* Initialize variables */
     current_code = *code;
     prev_code = (CodeNode *)allocateMemory(sizeof(CodeNode), is_print, error);
-    prev_code->code_row = my_strdup(" ", is_print, error);
+    prev_code->code_row = my_strdup(" ", is_print, error); /* giving prev_code an empty code row in case there are no other */
     temp = NULL;
 
     while (current_code) {
@@ -287,7 +287,7 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
 
             /* going through all the macros */
             while (current_macro) {
-                /* if found a mcro name like m1 */
+                /* if found a mcro name */
                 if (!strcmp(current_macro->macro_name, tokens[FIRST_WORD])) {
                     first_connection = true;
                     macro_found = true;
@@ -298,6 +298,7 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
                     current_macro_code = current_macro->code_node;
                     while (current_macro_code)
                     {
+                        /* copy the first code line from macro */
                         if (is_first_mcro_line)
                         {
                             first_macro_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), is_print, error);
@@ -308,7 +309,7 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
                             is_first_mcro_line = false;
                             current_macro_code = current_macro_code->next;
                         }
-                        else
+                        else /* copy the rest */
                         {
                             latest_macro_code_node = (CodeNode *)allocateMemory(sizeof(CodeNode), is_print, error);
                             if (*error == ERROR_MEMORY_ALLOCATION) return;
@@ -358,6 +359,7 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
                     free(temp);
             }
         }
+        /* go to the next line and save the latest line in prev_code */
         prev_code = current_code;
         current_code = current_code->next;
     }
