@@ -46,6 +46,13 @@ void* allocateMemory(size_t size, bool* is_print, Error* error) {
     return ptr;
 }
 
+/** 
+ * Allocates memory to array of tokens
+ * 
+ * @param tokens A pointer to a LabelNode.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable containing the error code.
+ */
 void allocateMemoryTokens(char** tokens, bool* is_print, Error* error) {
     int i;
 
@@ -195,6 +202,11 @@ void freeMemoryMacroNode(MacroNode* macro_node) {
     free(macro_node);
 }
 
+/** 
+ * Recursively frees memory allocated for a linked list of LabelNodes.
+ *
+ * @param label_node A pointer to a LabelNode.
+ */
 void freeMemoryLabelNode(LabelNode* label_node) {
     if (label_node) {
         freeMemoryLabelNode(label_node->next);

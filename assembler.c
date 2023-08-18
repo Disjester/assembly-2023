@@ -1039,6 +1039,7 @@ void moveToNextCodeLine(CodeNode** temp_code, int* num_line){
 bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration){
     int operand_index = FIRST_ARGUMENT;
     bool entryLine = false;
+
     if (label_type == LABEL_TYPE_ENTRY)
     {
         entryLine = true;
@@ -1114,8 +1115,7 @@ bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_typ
         {
         case LABEL_TYPE_CODE:
         case LABEL_TYPE_DATA:
-            if (label_type == LABEL_TYPE_CODE || label_type == LABEL_TYPE_DATA)
-            {
+            if (label_type == LABEL_TYPE_CODE || label_type == LABEL_TYPE_DATA) {
                 *error = ERROR_DUPLICATE_LABEL;
                 return true;
             }        
