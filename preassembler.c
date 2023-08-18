@@ -95,58 +95,6 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
     return head;
 }
 
-int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) {
-    char x; /*current symbol in the input stream*/
-    int i = 0;
-    cleanLine(line, MAX_LINE_LENGTH);
-    while ((x = fgetc(fptr)) != '\n' && x != EOF) {
-        if (i == MAX_LINE_LENGTH) {
-            *error = ERROR_MAXED_OUT_LINE_LENGTH;
-            handleError(error, num_line, is_print);
-            /*skipping to the next line*/
-            while ((x = fgetc(fptr)) != '\n' && x != EOF) {
-                continue;
-            }
-            return i;
-        }
-        /*substitution of whitespaces instead of tabs*/
-        x = (x == '\t') ? ' ' : x;
-        /*removing whitespaces at the beggining of the line*/
-        if (i == 0 && x == ' ') {
-            continue;
-        }
-
-        if (i != 0 && x == ',') {
-            if (line[i-1] != ' ') {
-                line[i++] = ' ';
-            }
-            line[i++] = x;
-            line[i++] = ' ';
-            continue;
-        }
-        
-        /*removing of duplications of whitespaces*/
-        if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
-            continue;
-        }
-        /*putting a char to the string*/
-        line[i++] = x;
-    }
-    /*The case where the line is empty*/
-    if (i == 0 && x == '\n') {
-        line[FIRST_CHARACTER] = '\0';
-        return 1;
-    }
-    return i;
-}
-
-void cleanLine(char* line, int length) {
-    int i;
-    for (i = 0; i < length; i++) {
-        line[i] = '\0';
-    }
-}
-
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, bool* is_print, Error* error) {
     MacroNode* new_macro_node;
     MacroNode* temp_macro_node;

@@ -141,7 +141,7 @@ void freeMemoryMacroNode(MacroNode* macro_node);
 
 void freeMemoryLabelNode(LabelNode* label_node);
 
-void nextLine(CodeNode** temp_code, int* num_line);
+void moveToNextCodeLine(CodeNode** temp_code, int* num_line);
 
 bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration);
 

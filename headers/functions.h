@@ -5,6 +5,59 @@
 #include "structures.h"
 #include <stdio.h>
 
+/*PREASSEMBLER SECTION*/
+
+/**
+ * Creates a linked list of CodeNode from the source file.
+ *
+ * @param fptr Pointer to the source file.
+ * @param tokens An array of strings to hold tokens.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A linked list of CodeNode representing the code from the file.
+ */
+CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
+
+/** 
+ * Preprocesses the source file, handling macros and replacing them with their definitions.
+ *
+ * @param file_name The name of the source file.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A linked list of CodeNode representing the preprocessed code.
+ */
+CodeNode* preproccessor(char *file_name, bool* is_print, Error* error);
+
+/**
+ * Scans the code for macro definitions and stores them in the macro list.
+ *
+ * @param code_node Pointer to the head of the code linked list.
+ * @param macro_node Pointer to the head of the macro linked list.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param tokens An array of strings containing tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ */
+void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, bool* is_print, Error* error);
+
+/**
+ * Replaces macro invocations with their definitions in the code.
+ *
+ * @param code Pointer to the head of the code linked list.
+ * @param macros Pointer to the head of the macro linked list.
+ * @param tokens An array of strings containing tokens.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ */
+void insertMacrosToCode(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
+
+
+
+
+
+/*ASSEMBLER SECTION*/
 
 /**
  * @brief takes a line of code with command, and checks if its legal
@@ -14,7 +67,7 @@
  * @param label - Is the line starts with a label ? 
  * @return int  - > returns L = the number of memory words in the command line , -1 otherwise
  */
-int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag);
+int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag, bool* is_print, int num_line);
 
 /**
  * @brief returns opcode of a command if it is, otherwise returns -1
@@ -89,13 +142,6 @@ void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operan
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, bool* is_print, Error* error);
 
 /**
- * @brief Clears the memory by setting it to zero.
- * 
- * @param memory Global memory array.
- */
-void cleanMemory(short* memory);
-
-/**
  * @brief Updates entry labels with their corresponding memory addresses.
  * 
  * @param labels Pointer to the labels linked list.
@@ -105,13 +151,6 @@ void cleanMemory(short* memory);
  */
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx);
 
-/**
- * @brief Removes a colon from a string if present.
- * 
- * @param str The string to process.
- * @return char* The processed string.
- */
-char* removeColon(char* str);
 
 /**
  * @brief Inserts a new label into the label list.
@@ -184,49 +223,6 @@ int getOperandsNumberByOpcode(short opcode);
  */
 bool validateVariableName (char *name);
 
-/** 
- * Preprocesses the source file, handling macros and replacing them with their definitions.
- *
- * @param file_name The name of the source file.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
- * @param error Pointer to an Error variable for error handling.
- * @return A linked list of CodeNode representing the preprocessed code.
- */
-CodeNode* preproccessor(char *file_name, bool* is_print, Error* error);
-
-/** 
- * Tokenizes an input string and stores the tokens in an array.
- *
- * @param input The input string to tokenize.
- * @param tokens An array to store the tokens. ( needs to be allocated beforehand)
- * @param num_tokens Pointer to the number of tokens.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
- * @param error Pointer to an Error variable for error handling.
- */
-void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, Error* error);
-
-/** 
- * Duplicates a string using dynamic memory allocation.
- *
- * @param str The string to duplicate.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
- * @param error Pointer to an Error variable for error handling.
- * @return A pointer to the duplicated string.
- */
-char *my_strdup(const char *str, bool* is_print, Error* error);
-
-/**
- * Creates a linked list of CodeNode from the source file.
- *
- * @param fptr Pointer to the source file.
- * @param tokens An array of strings to hold tokens.
- * @param pnum_tokens Pointer to the number of tokens.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
- * @param error Pointer to an Error variable for error handling.
- * @return A linked list of CodeNode representing the code from the file.
- */
-CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
-
 /**
  * @brief Creates the binary word for a command and its operands.
  * 
@@ -257,14 +253,6 @@ int getOperandAmount(char* command);
 int getAdressingMethodByOperandType(OperandType operand_type);
 
 /**
- * @brief Converts a short integer to a base64 representation.
- * 
- * @param num The integer to convert.
- * @param result The output buffer to store the base64 representation.
- */
-void convertToBase64(short num, char* result);
-
-/**
  * @brief Creates the binary word for an operand based on its type.
  * 
  * @param L The L value (number of memory words) for the operand.
@@ -282,6 +270,79 @@ void convertToBase64(short num, char* result);
  */
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print);
 
+/**
+ * @brief Creates a memory dump file with the contents of the memory array.
+ * 
+ * @param file_name The name of the output file.
+ * @param memory Pointer to the global memory array.
+ * @param memory_idx Index in the global memory array.
+ * @param IC Instruction counter.
+ * @param DC Data counter.
+ * @param error Pointer to an Error variable for error handling.
+ * @param num_line The current line number.
+ * @param is_print Indicates whether to print error messages.
+ */
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error, int num_line, bool* is_print);
+
+/**
+ * @brief checks if a line is a correct data line or not
+ * 
+ * @param tokens 
+ * @param num_tokens 
+ * @param label - a boolean that says if the 1st token is a label or not
+ * @return true - if it is a data line and its correct
+ * @return false - when its not a data line or an incorrect one 
+ */
+bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error);
+
+
+
+
+/*UTILITIES SECTION*/
+
+/**
+ * @brief Clears the memory by setting it to zero.
+ * 
+ * @param memory Global memory array.
+ */
+void cleanMemory(short* memory);
+
+/**
+ * @brief Removes a colon from a string at the last index.
+ * 
+ * @param str The string to process.
+ * @return char* The processed string.
+ */
+char* removeColon(char* str);
+
+/** 
+ * Tokenizes an input string and stores the tokens in an array.
+ *
+ * @param input The input string to tokenize.
+ * @param tokens An array to store the tokens. ( needs to be allocated beforehand)
+ * @param num_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ */
+void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, Error* error);
+
+/** 
+ * Duplicates a string using dynamic memory allocation.
+ *
+ * @param str The string to duplicate.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable for error handling.
+ * @return A pointer to the duplicated string.
+ */
+char *my_strdup(const char *str, bool* is_print, Error* error);
+
+/**
+ * @brief Converts a short integer to a base64 representation.
+ * 
+ * @param num The integer to convert.
+ * @param result The output buffer to store the base64 representation.
+ */
+void convertToBase64(short num, char* result);
 
 /**
  * Reads a line from the file and handles various cases.
@@ -303,44 +364,6 @@ int getLine(char* line, Error* error, FILE* file, int num_line, bool* is_print);
  */
 void cleanLine(char* line, int length);
 
-/**
- * Scans the code for macro definitions and stores them in the macro list.
- *
- * @param code_node Pointer to the head of the code linked list.
- * @param macro_node Pointer to the head of the macro linked list.
- * @param pnum_tokens Pointer to the number of tokens.
- * @param tokens An array of strings containing tokens.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
- * @param error Pointer to an Error variable for error handling.
- */
-void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, bool* is_print, Error* error);
-
-/**
- * Replaces macro invocations with their definitions in the code.
- *
- * @param code Pointer to the head of the code linked list.
- * @param macros Pointer to the head of the macro linked list.
- * @param tokens An array of strings containing tokens.
- * @param pnum_tokens Pointer to the number of tokens.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
- * @param error Pointer to an Error variable for error handling.
- */
-void insertMacrosToCode(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
-
-/**
- * @brief Creates a memory dump file with the contents of the memory array.
- * 
- * @param file_name The name of the output file.
- * @param memory Pointer to the global memory array.
- * @param memory_idx Index in the global memory array.
- * @param IC Instruction counter.
- * @param DC Data counter.
- * @param error Pointer to an Error variable for error handling.
- * @param num_line The current line number.
- * @param is_print Indicates whether to print error messages.
- */
-void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error, int num_line, bool* is_print);
-
 /** 
  * Allocates memory with error handling.
  *
@@ -361,16 +384,24 @@ void* allocateMemory(size_t size, bool* is_print ,Error* error);
  */
 bool handleError(Error* error, int num_line, bool* is_print);
 
-/**
- * @brief checks if a line is a correct data line or not
- * 
- * @param tokens 
- * @param num_tokens 
- * @param label - a boolean that says if the 1st token is a label or not
- * @return true - if it is a data line and its correct
- * @return false - when its not a data line or an incorrect one 
- */
-bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * @brief Checks if a string represents a valid integer number.
@@ -449,7 +480,7 @@ void freeMemoryMacroNode(MacroNode* macro_node);
  */
 void freeMemoryLabelNode(LabelNode* label_node);
 
-void nextLine(CodeNode** temp_code, int* num_line);
+void moveToNextCodeLine(CodeNode** temp_code, int* num_line);
 
 bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration);
 
