@@ -351,14 +351,18 @@ bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNo
  * @param label_type stores type of the label
  * @param error Pointer to an Error variable for error handling.
  * @param is_first_itteration flag if the function is called from the first iteration
- * @return The corresponding LabelType value:
- *         - LABEL_EXTERNAL if it's an external label
- *         - LABEL_ENTRY if it's an entry label
- *         - LABEL_CODE if it's a regular label
- *         - LABEL_OTHER if it's none of the above.
+ * @return Returns true if the label already exists
  */
 bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration);
 
+/**
+ * @brief Creates the file with the code after pasting macros
+ * 
+ * @param file_name Contains the name of the line
+ * @param code pointer to the head
+ * @param is_print Indicates whether to create output files.
+ * @param error Pointer to an Error variable for error handling.
+ */
 void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print, Error* error);
 
 
@@ -472,9 +476,7 @@ bool isString( char** tokens, int num_tokens, bool label);
  * Frees memory allocated for tokens, code nodes, macro nodes, and label nodes.
  *
  * @param tokens An array of tokens.
- * @param code_node1 A pointer to a CodeNode.
- * @param code_node2 A pointer to another CodeNode.
- * @param code_node3 A pointer to a third CodeNode.
+ * @param code_node A pointer to a CodeNode.
  * @param macro_node A pointer to a MacroNode.
  * @param label_node A pointer to a LabelNode.
  */
@@ -501,6 +503,13 @@ void freeMemoryMacroNode(MacroNode* macro_node);
  */
 void freeMemoryLabelNode(LabelNode* label_node);
 
+/** 
+ * Allocates memory to array of tokens
+ * 
+ * @param tokens A pointer to a LabelNode.
+ * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param error Pointer to an Error variable containing the error code.
+ */
 void allocateMemoryTokens(char** tokens, bool* is_print, Error* error);
 
 
