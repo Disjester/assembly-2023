@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "libs.h"
 
+/*Arrays of all the commands that exist in assembly*/
 static const Command commands[MAX_COMMAND_LENGTH] = {
     {"mov",  0x0, 2, {1, 1, 1}, {0, 1, 1}},
     {"cmp",  0x1, 2, {1, 1, 1}, {1, 1, 1}},
