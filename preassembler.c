@@ -3,6 +3,14 @@
 #include <stdlib.h>
 #include "libs.h"
 
+/** 
+ * Preprocesses the source file, handling macros and replacing them with their definitions.
+ *
+ * @param file_name The name of the source file.
+ * @param is_print Pointer to a boolean indicating whether to create output files
+ * @param error Pointer to an Error variable for error handling.
+ * @return A linked list of CodeNode representing the preprocessed code.
+ */
 CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     /* variable declarations */
     CodeNode* code = NULL;
@@ -59,6 +67,16 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     return code;
 }
 
+/**
+ * Creates a linked list of CodeNode from the source file.
+ *
+ * @param fptr Pointer to the source file.
+ * @param tokens An array of strings to hold tokens.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to create output files
+ * @param error Pointer to an Error variable for error handling.
+ * @return A linked list of CodeNode representing the code from the file.
+ */
 CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens, bool* is_print, Error* error) {
     char buffer[MAX_LINE_LENGTH]; 
     CodeNode *head = NULL, *temp = NULL, *code_node = NULL;
@@ -104,6 +122,16 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
     return head;
 }
 
+/**
+ * Scans the code for macro definitions and stores them in the macro list.
+ *
+ * @param code_node Pointer to the head of the code linked list.
+ * @param macro_node Pointer to the head of the macro linked list.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param tokens An array of strings containing tokens.
+ * @param is_print Pointer to a boolean indicating whether to create output files
+ * @param error Pointer to an Error variable for error handling.
+ */
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, bool* is_print, Error* error) {
     MacroNode* new_macro_node;
     MacroNode* temp_macro_node;
@@ -203,6 +231,16 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
     }
 }
 
+/**
+ * Replaces macro invocations with their definitions in the code.
+ *
+ * @param code Pointer to the head of the code linked list.
+ * @param macros Pointer to the head of the macro linked list.
+ * @param tokens An array of strings containing tokens.
+ * @param pnum_tokens Pointer to the number of tokens.
+ * @param is_print Pointer to a boolean indicating whether to create output files
+ * @param error Pointer to an Error variable for error handling.
+ */
 void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens, bool* is_print, Error* error) {
     /* Declare variables */
     MacroNode *current_macro;
