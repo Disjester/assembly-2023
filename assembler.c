@@ -35,41 +35,44 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
  * @param is_print Pointer to a boolean indicating whether to create output files
  * @param error Pointer to an Error variable for error handling.
  */
-void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error) {
-    bool is_first_itteration_flag = true;
-    bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
-    CodeNode* temp_code;
-    LabelNode* temp_label_node;
-    bool label_flag = false;
-    int data_memory_idx = DEFAULT_MEMORY_INDEX;
-    int operand_num = 0;
-    int i;
-    int def_extern_mem = DEFAULT_EXTERN_MEMORY;
-    int num_tokens = DEFAULT_VALUE;
-    int token_idx = DEFAULT_VALUE;
-    short binary_word;
-    int L = DEFAULT_VALUE;
-    int num_line = STARTING_LINE;
-    short data_memory[MAX_MEMORY_SIZE];
-    int char_index = 1;
-    int token_len = 0;
-    bool end_of_string_flag = false;
-    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
-    allocateMemoryTokens(tokens, is_print, error);
+void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC,
+bool* is_print, Error* error) {
+    bool is_first_itteration_flag = true; /* Flag indicating the first iteration of the assembler */
+    bool stop_flag = false; /* Flag indicating if a "stop" command has been encountered */
+    CodeNode* temp_code; /* Pointer to traverse the code linked list */
+    LabelNode* temp_label_node; /* Temporary pointer to a label in the labels linked list */
+    bool label_flag = false; /* Flag indicating if a label is present */
+    int data_memory_idx = DEFAULT_MEMORY_INDEX; /* Index for data memory */
+    int operand_num = 0; /* Number of operands for a command */
+    int i; /* Loop iterator */
+    int def_extern_mem = DEFAULT_EXTERN_MEMORY; /* Default external memory address */
+    int num_tokens = DEFAULT_VALUE; /* Number of tokens in the current code row */
+    int token_idx = DEFAULT_VALUE; /* Index of the current token */
+    short binary_word; /* Binary word representation of an instruction */
+    int L = DEFAULT_VALUE; /* Length of the current command */
+    int num_line = STARTING_LINE; /* Current line number */
+    short data_memory[MAX_MEMORY_SIZE]; /* Array to hold data memory values */
+    int char_index = 1; /* Index of the current character in a string */
+    int token_len = 0; /* Length of the current token */
+    bool end_of_string_flag = false; /* Flag indicating the end of a string */
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error); /* Array of pointers to tokens */
+    allocateMemoryTokens(tokens, is_print, error); /* Allocate memory for tokens array */
 
-    if (*error == ERROR_MEMORY_ALLOCATION) return;
+    if (*error == ERROR_MEMORY_ALLOCATION) return; /* Return if memory allocation fails */
 
-    *DC = *IC = DEFAULT_VALUE;
-    cleanMemory(memory);
-    cleanMemory(data_memory);
-    temp_code = code;
+    *DC = *IC = DEFAULT_VALUE; /* Initialize Data Counter and Instruction Counter */
+    cleanMemory(memory); /* Clear the global memory array */
+    cleanMemory(data_memory); /* Clear the data memory array */
+    temp_code = code; /* Initialize temp_code to point to the beginning of the code linked list */
+
     while(temp_code) {
         token_idx = DEFAULT_VALUE;
         end_of_string_flag = false;
         char_index = 1;
         label_flag = false;
 
-        if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' || temp_code->code_row[FIRST_CHARACTER] == '\r' || temp_code->code_row[FIRST_CHARACTER] == ';') {
+        if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' 
+        || temp_code->code_row[FIRST_CHARACTER] == '\r' || temp_code->code_row[FIRST_CHARACTER] == ';') {
             temp_code = temp_code->next;
             num_line++;
             continue;
@@ -89,7 +92,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
         switch (getDotType(tokens[token_idx], error)) {
             case DOT_DATA:
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error, is_first_itteration_flag);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print,
+                    error, is_first_itteration_flag);
                     if (*error == ERROR_MEMORY_ALLOCATION) {
                         handleError(error, num_line, is_print);
                         return;
@@ -120,7 +124,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 break;
             case DOT_STRING:
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print, error, is_first_itteration_flag);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print,
+                    error, is_first_itteration_flag);
                     if (*error == ERROR_MEMORY_ALLOCATION) {
                             handleError(error, num_line, is_print);
                             return;
@@ -147,7 +152,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                             {
                                 tokens[token_idx][char_index] = ' ';
                             }
-                            pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][char_index], error, num_line, is_print);
+                            pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][char_index], error,
+                            num_line, is_print);
                             if (*error == ERROR_MAXED_OUT_MEMORY) return;
                             (*DC)++;
                         }
@@ -169,7 +175,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
             case DOT_EXTERN:
                 for (i = 1; i < num_tokens; i++) {
                     if (isLabel(tokens[i], false)) {
-                        insertNewLabel(labels, tokens[i], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error, is_first_itteration_flag);
+                        insertNewLabel(labels, tokens[i], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error,
+                        is_first_itteration_flag);
                         if (*error == ERROR_MEMORY_ALLOCATION) return;
                         if (*error == ERROR_DUPLICATE_LABEL)
                         {
@@ -192,7 +199,8 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     handleError(error, num_line, is_print);
                 }
                 if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, is_print, error, is_first_itteration_flag);
+                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, is_print, error,
+                    is_first_itteration_flag);
                     if (*error == ERROR_MEMORY_ALLOCATION){
                         handleError(error, num_line, is_print);
                         return;
@@ -205,12 +213,15 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                         continue;
                     }                    
                 }
-                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag, is_print, num_line) != COMMAND_LINE_ERROR) {
+                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag,
+                is_print, num_line) != COMMAND_LINE_ERROR) {
                     
-                    binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
+                    binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag,
+                    *labels);
                     pushToMemory(memory_idx, memory, binary_word, error, num_line, is_print);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag, is_print, num_line);
+                    L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag,
+                    is_print, num_line);
                     if (num_tokens >= 4)
                     {
                         operand_num = 2;
@@ -224,15 +235,18 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     switch (operand_num)
                     {
                     case 0:
-                        createOperandBinaryWord(L, *labels, true, OPERAND_TYPE_OTHER, OPERAND_TYPE_OTHER, (char*) NULL, (char*) NULL,
+                        createOperandBinaryWord(L, *labels, true, OPERAND_TYPE_OTHER, OPERAND_TYPE_OTHER, (char*) NULL,
+                        (char*) NULL,
                         memory_idx, memory, error, num_line, is_print);
                         break;
                     case 1:
-                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag),
+                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error,
+                        is_first_itteration_flag),
                         OPERAND_TYPE_OTHER, tokens[token_idx + 1], (char*) NULL, memory_idx, memory, error, num_line, is_print);
                         break;
                     case 2:
-                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error, is_first_itteration_flag),
+                        createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error,
+                        is_first_itteration_flag),
                         checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1],
                         tokens[token_idx + 3], memory_idx, memory, error, num_line, is_print);
                         break;
@@ -295,144 +309,240 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
  * @param externals Pointer to externals linked list.
  * @param is_print Pointer to a boolean indicating whether to create output files
  */
-void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print) {
-    CodeNode* temp_code;
-    LabelNode* temp_label;
-    bool stop_flag = false;
-    bool is_first_itteration_flag = false; 
-    int token_idx = DEFAULT_VALUE;
-    bool label_flag = false;
-    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
-    int num_tokens = DEFAULT_VALUE;
-    int L = DEFAULT_VALUE;
-    int num_line = STARTING_LINE;
-    int update_memory_idx = DEFAULT_MEMORY_INDEX;
-    int check_counter;
-    short curr_memory;
+void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC,
+Error* error, char* file_name, LabelNode* externals, bool* is_print) {
 
-    allocateMemoryTokens(tokens, is_print, error);
-    temp_code = code;
-    *IC = DEFAULT_VALUE;
-    while (temp_code) {
-        token_idx = DEFAULT_VALUE;
-        label_flag = false;
-        if (temp_code->code_row[FIRST_CHARACTER] == ';') {
-            temp_code = temp_code->next;
-            num_line++;
-            continue;
-        }
-        if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' || temp_code->code_row[FIRST_CHARACTER] == '\r') {
-            temp_code = temp_code->next;
-            num_line++;
-            continue;
-        }
+    /* Initialize variables for the second iteration */
+    CodeNode* temp_code;                    /* Pointer to traverse the code linked list */
+    LabelNode* temp_label;                  /* Temporary pointer for labels linked list */
+    bool stop_flag = false;                 /* Flag to indicate if a STOP command is encountered */
+    bool is_first_itteration_flag = false;  /* Flag indicating the first iteration of the assembler */
+    int token_idx = DEFAULT_VALUE;          /* Index to keep track of the current token being processed */
+    bool label_flag = false;                /* Flag to indicate if the current line contains a label */
+    char** tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error); /* Array to store tokens */
+    int num_tokens = DEFAULT_VALUE;         /* Number of tokens in the current code line */
+    int L = DEFAULT_VALUE;                 /* Value of L for the current command */
+    int num_line = STARTING_LINE;           /* Current line number being processed */
+    int update_memory_idx = DEFAULT_MEMORY_INDEX; /* Index in the memory array for updating memory contents */
+    int check_counter;                      /* Counter to track the number of memory words to update */
+    short curr_memory;                      /* Value of memory at the current index */
 
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
-        if (*error == ERROR_MEMORY_ALLOCATION){
-            handleError(error, num_line, is_print);
-            return;
-        } 
-        if(isLabel(tokens[token_idx], true)) {
-            label_flag = true;
-            token_idx++;
-        }
+
+/* Allocate memory for an array of tokens to hold the parsed code */
+allocateMemoryTokens(tokens, is_print, error);
+
+/* Initialize variables for code processing */
+temp_code = code;                        /* Pointer to the code linked list */
+*IC = DEFAULT_VALUE;                     /* Initialize the Instruction Counter (IC) */
+
+/* Iterate through the code linked list */
+while (temp_code) {
+    token_idx = DEFAULT_VALUE;           /* Reset the token index for each line of code */
+    label_flag = false;                 /* Initialize label flag for current line */
+
+    /* Check if the line starts with a comment (';') */
+    if (temp_code->code_row[FIRST_CHARACTER] == ';') {
+        temp_code = temp_code->next;     /* Move to the next line of code */
+        num_line++;                      /* Increment the line number */
+        continue;                        /* Skip the rest of the loop for this line */
+    }
+
+    /* Check for empty lines or line termination characters ('\n', '\0', '\r') */
+    if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' 
+        || temp_code->code_row[FIRST_CHARACTER] == '\r') {
+        temp_code = temp_code->next;     /* Move to the next line of code */
+        num_line++;                      /* Increment the line number */
+        continue;                        /* Skip the rest of the loop for this line */
+    }
+
+    /* Tokenize the current line of code into individual tokens */
+    tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
+
+    /* Handle memory allocation error */
+    if (*error == ERROR_MEMORY_ALLOCATION) {
+        handleError(error, num_line, is_print);
+        return;                           /* Return from the function in case of error */
+    }
+
+    /* Check if the current line contains a label */
+    if (isLabel(tokens[token_idx], true)) {
+        label_flag = true;               /* Set the label flag to true */
+        token_idx++;                     /* Move to the next token after the label */
+    }
+        /* Determine the type of dot command (e.g., .entry, .extern, .data, .string) */
         switch (getDotType(tokens[token_idx], error)) {
             case DOT_ENTRY:
+                /* Check and process the .entry directive */
                 checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_ENTRY, is_first_itteration_flag);
-                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE 
+
+                /* Handle errors related to .entry directive */
+                if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS 
+                || *error == ERROR_INCORRECT_OPERAND_TYPE 
                     || *error == ERROR_WRONG_NUM_OF_COMMAS || *error == ERROR_UNRECOGNIZED_LABEL)
                 {
                     handleError(error, num_line, is_print);
-                    *error = NO_ERROR;
-                    moveToNextCodeLine(&temp_code, &num_line);
-                    continue;
+                    *error = NO_ERROR; /* Reset the error status */
+                    moveToNextCodeLine(&temp_code, &num_line); /* Move to the next code line */
+                    continue; /*  Skip the rest of the loop for this line  and go to the next one */
                 }
                 
+                /* Update entry labels with their corresponding memory addresses */
                 updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
-            case DOT_OTHER:
-                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag, is_print, num_line) != COMMAND_LINE_ERROR) {
-                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag, is_print, num_line);
-                    check_counter = L;
-                    curr_memory = memory[update_memory_idx];
-                    /*Source*/
-                    if ((curr_memory & 0x600) == 0x600) {
-                        update_memory_idx++;
-                        check_counter--;
-                        if (memory[update_memory_idx] == 0xFFF) {
-                            temp_label = labels;
-                            while (temp_label) {
-                                if (!strcmp(tokens[token_idx+1], temp_label->label_name)) {
-                                    if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
-                                        memory[update_memory_idx] = 0x001;
-                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, is_print, error, is_first_itteration_flag);
-                                        update_memory_idx++;
-                                        check_counter--;
-                                    } else {
-                                        memory[update_memory_idx] = temp_label->memory_adress;
-                                        memory[update_memory_idx] <<= 2;
-                                        memory[update_memory_idx] += 2;
-                                        update_memory_idx++;
-                                        check_counter--;
-                                    }
-                                    break;
-                                }
-                                temp_label = temp_label->next;
-                            }
-                        }
-                    } else {
-                        if ((curr_memory & 0xE00) != 0x000) {
+
+                case DOT_OTHER:
+                    /* Check the validity of the command line and process it */
+                    if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag,
+                                         is_print, num_line) != COMMAND_LINE_ERROR) {
+                        /* Get the length of the command line */
+                        L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag,
+                                              is_print, num_line);
+
+                        /* Initialize a counter to track memory updates */
+                        check_counter = L;
+
+                        /* Get the current memory content */
+                        curr_memory = memory[update_memory_idx];
+
+                        /* Update source operand */
+                        if ((curr_memory & 0x600) == 0x600) {
+                            /* Move to the next memory index */
                             update_memory_idx++;
+
+                            /* Decrement the counter */
                             check_counter--;
-                        }
-                    }
-                    if ((curr_memory & 0xE00) != 0x000) {
-                        token_idx += 3;
-                    } else {
-                        token_idx++;
-                    }
-                    /*Destination*/
-                    if ((curr_memory & 0x00C) == 0x00C) {
-                        update_memory_idx++;
-                        check_counter--;
-                        if (memory[update_memory_idx] == 0xFFF) {
-                            temp_label = labels;
-                            while (temp_label) {
-                                if (!strcmp(tokens[token_idx], temp_label->label_name)) {
-                                    if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
-                                        memory[update_memory_idx] = 0x001;
-                                        insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx, is_print, error, is_first_itteration_flag);
-                                        update_memory_idx++;
-                                        check_counter--;
-                                    } else {
-                                        memory[update_memory_idx] = temp_label->memory_adress;
-                                        memory[update_memory_idx] <<= 2;
-                                        memory[update_memory_idx] += 2;
-                                        update_memory_idx++;
-                                        check_counter--;
+
+                            /* Check for unresolved memory reference */
+                            if (memory[update_memory_idx] == 0xFFF) {
+                                temp_label = labels;
+
+                                /* Search for the corresponding label */
+                                while (temp_label) {
+                                    if (!strcmp(tokens[token_idx + 1], temp_label->label_name)) {
+                                        if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
+                                            /* Set the memory value for an external label */
+                                            memory[update_memory_idx] = 0x001;
+
+                                            /* Insert the label into the externals list */
+                                            insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx,
+                                                           is_print, error, is_first_itteration_flag);
+
+                                            /* Move to the next memory index */
+                                            update_memory_idx++;
+
+                                            /* Decrement the counter */
+                                            check_counter--;
+                                        } else {
+                                            /* Set the memory value for a resolved label */
+                                            memory[update_memory_idx] = temp_label->memory_adress;
+                                            memory[update_memory_idx] <<= 2;
+                                            memory[update_memory_idx] += 2;
+
+                                            /* Move to the next memory index */
+                                            update_memory_idx++;
+
+                                            /* Decrement the counter */
+                                            check_counter--;
+                                        }
+                                        break;
                                     }
-                                    break;
+                                    temp_label = temp_label->next;
                                 }
-                                temp_label = temp_label->next;
+                            }
+                        } else {
+                            /* Handle memory updates for specific cases */
+                            if ((curr_memory & 0xE00) != 0x000) {
+                                /* Move to the next memory index */
+                                update_memory_idx++;
+
+                                /* Decrement the counter */
+                                check_counter--;
                             }
                         }
+
+                        /* Update token index based on memory configuration */
+                        if ((curr_memory & 0xE00) != 0x000) {
+                            /* Move token index to skip operands */
+                            token_idx += 3;
+                        } else {
+                            /* Move token index to the next operand */
+                            token_idx++;
+                        }
+
+                        /* Update destination operand */
+                        if ((curr_memory & 0x00C) == 0x00C) {
+                            /* Move to the next memory index */
+                            update_memory_idx++;
+
+                            /* Decrement the counter */
+                            check_counter--;
+
+                            /* Check for unresolved memory reference */
+                            if (memory[update_memory_idx] == 0xFFF) {
+                                temp_label = labels;
+
+                                /* Search for the corresponding label */
+                                while (temp_label) {
+                                    if (!strcmp(tokens[token_idx], temp_label->label_name)) {
+                                        if (temp_label->label_type == LABEL_TYPE_EXTERNAL) {
+                                            /* Set the memory value for an external label */
+                                            memory[update_memory_idx] = 0x001;
+
+                                            /* Insert the label into the externals list */
+                                            insertNewLabel(&externals, temp_label->label_name, LABEL_TYPE_EXTERNAL, &update_memory_idx,
+                                                           is_print, error, is_first_itteration_flag);
+
+                                            /* Move to the next memory index */
+                                            update_memory_idx++;
+
+                                            /* Decrement the counter */
+                                            check_counter--;
+                                        } else {
+                                            /* Set the memory value for a resolved label */
+                                            memory[update_memory_idx] = temp_label->memory_adress;
+                                            memory[update_memory_idx] <<= 2;
+                                            memory[update_memory_idx] += 2;
+
+                                            /* Move to the next memory index */
+                                            update_memory_idx++;
+
+                                            /* Decrement the counter */
+                                            check_counter--;
+                                        }
+                                        break;
+                                    }
+                                    temp_label = temp_label->next;
+                                }
+                            }
+                        }
+
+                        /* Update the memory index to account for the checks and updates */
+                        update_memory_idx += check_counter;
                     }
-                    update_memory_idx += check_counter;
-                }
-                if (*error != NO_ERROR) {
-                    handleError(error, num_line, is_print);
-                    *error = NO_ERROR;
-                    moveToNextCodeLine(&temp_code, &num_line);
-                    continue;
-                }
-                *IC += L;
-                break;
+
+                    /* Handle any errors encountered during processing */
+                    if (*error != NO_ERROR) {
+                        handleError(error, num_line, is_print);
+                        *error = NO_ERROR;
+                        moveToNextCodeLine(&temp_code, &num_line);
+                        continue;
+                    }
+
+                    /* Increment the instruction counter */
+                    *IC += L;
+                    break;
             
+                    
+                    
+                    
             case DOT_EXTERN:
+                /* Check and process external label declaration */
                 checkExternalEntryLine(tokens, num_tokens, error, &labels, LABEL_TYPE_EXTERNAL, is_first_itteration_flag);
+                /* Handle errors related to external label declaration */
                 if (*error == ERROR_DUPLICATE_LABEL || *error == ERROR_NOT_ENOUGH_ARGUMENTS || *error == ERROR_INCORRECT_OPERAND_TYPE
                     || *error == ERROR_WRONG_NUM_OF_COMMAS)
                 {
+                    /* Handle the error and continue processing */
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
                     moveToNextCodeLine(&temp_code, &num_line);
@@ -441,91 +551,118 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 break;
             case DOT_DATA:
             case DOT_STRING:
+                /* Handle .data and .string commands; no processing needed */
                 break;
         }
+
+        /* Move to the next line and code node */
         num_line++;
         temp_code = temp_code->next;
+
+        /* Reset the length counter for the next line */
         L = DEFAULT_VALUE;
     }
     
+    /* Check for a file handle error and handle it if necessary */
     if (*error == ERROR_FILE_HANDLE){
         handleError(error, num_line, is_print);
         return;
     }
 
+    /* Check if the stop flag is not set */
     if (!stop_flag)
     {
+        /* Set the appropriate error, handle it, and reset the error */
         *error = ERROR_NO_STOP_COMMAND;
         handleError(error, num_line, is_print);
         *error = NO_ERROR;
     }
 
+    /* Create output files based on the assembled program */
     createOutputFiles(file_name, labels, memory, memory_idx, *IC, *DC, externals, is_print, error, num_line);
+
+    /* Free memory used for tokens, code nodes, and labels */
     freeMemory(tokens, code, NULL, labels);
+
+    /* Free memory used for the externals label linked list */
     freeMemoryLabelNode(externals);
+
 }
 
 /**
  * @brief Creates the binary word for an operand based on its type.
  * 
- * @param L The L value (number of memory words) for the operand.
- * @param labels Pointer to the labels linked list.
- * @param is_first_iteration Flag indicating the first iteration.
- * @param op_type_source The source operand type.
- * @param op_type_destination The destination operand type.
- * @param operand1 The source operand value.
- * @param operand2 The destination operand value.
- * @param memory_idx Index in the global memory array.
- * @param memory Global memory array.
- * @param error Pointer to an Error variable for error handling.
- * @param num_line The current line number.
- * @param is_print Pointer to a boolean indicating whether to create output files
+ * @param L - The L value (number of memory words) for the operand.
+ * @param labels - Pointer to the labels linked list.
+ * @param is_first_iteration - Flag indicating the first iteration.
+ * @param op_type_1 - The source operand type.
+ * @param op_type_2 - The destination operand type.
+ * @param operand1 - The source operand value.
+ * @param operand2 - The destination operand value.
+ * @param memory_idx - Index in the global memory array.
+ * @param memory - Global memory array.
+ * @param error - Pointer to an Error variable for error handling.
+ * @param num_line - The current line number.
+ * @param is_print - Pointer to a boolean indicating whether to create output files.
  */
-void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1, OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print) {
+void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_1,
+OperandType op_type_2, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error,
+int num_line, bool* is_print) {
     short resulting_binary_word = 0x0;
 
     switch (L) {
         case 1:
+            /* For L=1, the operand doesn't require extra binary words. No action needed. */
             break;
         case 2:
             if (op_type_1 == OPERAND_TYPE_REGISTER && op_type_2 == OPERAND_TYPE_REGISTER) {
-                resulting_binary_word += (short) atoi(operand1 + 2);
+                /* Two registers case: Convert register numbers to binary and assemble the binary word */
+                resulting_binary_word += (short) atoi(operand1 + 2); /* Convert register number and shift it to the left */
                 resulting_binary_word <<= 5;
-                resulting_binary_word += (short) atoi(operand2 + 2);
+                resulting_binary_word += (short) atoi(operand2 + 2); /* Convert register number and shift it to the left */
                 resulting_binary_word <<= 2;
+                /* Push the assembled binary word to the memory array */
                 pushToMemory(memory_idx, memory, resulting_binary_word, error, num_line, is_print);
                 if (*error == ERROR_MAXED_OUT_MEMORY) return;
             } else {
-                createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error, num_line, is_print);
+                /* Single operand case: Call createBinaryWordByType to handle the operand */
+                createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error,
+                num_line, is_print);
             }
             break;
         case 3: 
-            createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error, num_line, is_print);
-            createBinaryWordByType(labels, op_type_2, operand2, memory, memory_idx, is_first_iteration, error, num_line, is_print);
+            /* Two operand case: Create binary words for both operands */
+            createBinaryWordByType(labels, op_type_1, operand1, memory, memory_idx, is_first_iteration, error,
+            num_line, is_print);
+            createBinaryWordByType(labels, op_type_2, operand2, memory, memory_idx, is_first_iteration, error,
+            num_line, is_print);
             break;
     }
 }
 
+
+
 /**
  * @brief Creates a binary word based on the operand type and stores it in memory.
  * 
- * @param labels Pointer to the labels linked list.
- * @param op_type The type of operand.
- * @param operand The operand value.
- * @param memory Global memory array.
- * @param memory_idx Index in the global memory array.
- * @param is_first_iteration Flag indicating the first iteration.
- * @param error Pointer to an Error variable for error handling.
- * @param num_line The current line number.
- * @param is_print Pointer to a boolean indicating whether to create output files
+ * @param labels - Pointer to the labels linked list.
+ * @param op_type - The type of operand.
+ * @param operand - The operand value.
+ * @param memory - Global memory array.
+ * @param memory_idx - Index in the global memory array.
+ * @param is_first_iteration - Flag indicating the first iteration.
+ * @param error - Pointer to an Error variable for error handling.
+ * @param num_line - The current line number.
+ * @param is_print - Pointer to a boolean indicating whether to create output files.
  */
-void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error, int num_line, bool* is_print) {
+void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx,
+bool is_first_iteration, Error* error, int num_line, bool* is_print) {
     short resulting_binary_word = 0x0;
     LabelNode* temp_label_node;
 
     switch (op_type) {
         case OPERAND_TYPE_REGISTER:
-            resulting_binary_word += (short) atoi(operand + 2);
+            resulting_binary_word += (short) atoi(operand + 2); /* Convert register number and shift it to the left */
             resulting_binary_word <<= 7;
             pushToMemory(memory_idx, memory, resulting_binary_word, error, num_line, is_print);
             if (*error == ERROR_MAXED_OUT_MEMORY) return;
@@ -535,7 +672,7 @@ void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operan
                 temp_label_node = labels;
                 while (temp_label_node) {
                     if (!strcmp(temp_label_node->label_name, operand)) {
-                        resulting_binary_word += temp_label_node->memory_adress;
+                        resulting_binary_word += temp_label_node->memory_adress; /* Get label address and shift it to the left */
                         resulting_binary_word <<= 2;
                         pushToMemory(memory_idx, memory, resulting_binary_word, error, num_line, is_print);
                         if (*error == ERROR_MAXED_OUT_MEMORY) return;
@@ -543,12 +680,12 @@ void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operan
                     temp_label_node = temp_label_node->next;
                 }
             } else {
-                pushToMemory(memory_idx, memory, 0xFFF, error, num_line, is_print);
+                pushToMemory(memory_idx, memory, 0xFFF, error, num_line, is_print); /* Fill with ones during first iteration */
                 if (*error == ERROR_MAXED_OUT_MEMORY) return;
             }
             break;
         case OPERAND_TYPE_NUMBER:
-            resulting_binary_word += (short) atoi(operand);
+            resulting_binary_word += (short) atoi(operand); /* Convert number and shift it to the left */
             resulting_binary_word <<= 2;
             pushToMemory(memory_idx, memory, resulting_binary_word, error, num_line, is_print);
             if (*error == ERROR_MAXED_OUT_MEMORY) return;
@@ -558,111 +695,128 @@ void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operan
     }
 }
 
+
 /**
  * @brief Creates the binary word for a command and its operands.
  * 
- * @param tokens An array of tokens.
- * @param num_tokens The number of tokens.
- * @param token_idx The index of the current token.
- * @param error Pointer to an Error variable for error handling.
- * @param is_first_itteration Flag indicating the first iteration.
- * @param labelPtr Pointer to the labels linked list.
- * @return short The generated binary word.
+ * @param tokens - An array of tokens.
+ * @param num_tokens - The number of tokens.
+ * @param token_idx - The index of the current token.
+ * @param error - Pointer to an Error variable for error handling.
+ * @param is_first_itteration - Flag indicating the first iteration.
+ * @param labelPtr - Pointer to the labels linked list.
+ * @return short - The generated binary word.
  */
-short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error, bool is_first_itteration, LabelNode* labelPtr) {
+short createCommandBinaryWord(char** tokens, int num_tokens, int token_idx, Error* error,
+bool is_first_itteration, LabelNode* labelPtr) {
     short resulting_binary_word = DEFAULT_VALUE;
     short source_operand, destination_operand;
     int temp_idx = token_idx;
     int operand_amount;
     int opcode;
 
-    operand_amount = getOperandAmount(tokens[temp_idx]);
-    opcode = checkCommand(tokens[temp_idx++]);
+    operand_amount = getOperandAmount(tokens[temp_idx]); /* Get the number of operands for the command */
+    opcode = checkCommand(tokens[temp_idx++]); /* Get the opcode for the command */
 
     switch (operand_amount) {
         case 0:
             source_operand = destination_operand = 0x0;
             break;
         case 1:
-            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], labelPtr, error, is_first_itteration));;
+            /* Get addressing method for the destination operand */
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], labelPtr, error,
+            is_first_itteration));
             source_operand = 0x0;
             break;
         case 2:
-            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], labelPtr, error, is_first_itteration));
-            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], labelPtr, error, is_first_itteration));
+            /* Get addressing method for source and destination operands */
+            source_operand = getAdressingMethodByOperandType(checkOperand(tokens[temp_idx++], labelPtr, error,
+            is_first_itteration));
+            destination_operand = getAdressingMethodByOperandType(checkOperand(tokens[++temp_idx], labelPtr, error,
+            is_first_itteration));
             break;
     }
+    /* Construct the resulting binary word by placing the values of source_operand, opcode, and destination_operand */
     resulting_binary_word +=  (source_operand << 9);
     resulting_binary_word +=  (opcode << 5);
     resulting_binary_word +=  (destination_operand << 2);
-    resulting_binary_word +=  0;
+    resulting_binary_word +=  0; /* Fill the last two bits with zeros */
     return resulting_binary_word;
 }
+
 
 /**
  * @brief Gets the number of operands for a command based on its opcode.
  * 
- * @param opcode The opcode of the command.
- * @return int The number of operands.
+ * @param opcode - The opcode of the command.
+ * @return int - The number of operands.
  */
 int getOperandsNumberByOpcode(short opcode) {
     int i;
 
     for (i = 0; i < NUMBER_OF_COMMANDS; i++) {
         if (commands[i].opcode == opcode) {
-            return commands[i].number_of_operands;
+            return commands[i].number_of_operands; /* Return the number of operands for the given opcode */
         }
     }
-    return DEFAULT_ERROR_VALUE;
+    return DEFAULT_ERROR_VALUE; /* Return an error value if the opcode is not recognized */
 }
+
 
 /**
  * @brief Gets the addressing method value based on the operand type.
  * 
- * @param operand_type The type of operand.
- * @return int The addressing method value.
+ * @param operand_type - The type of operand.
+ * @return int - The addressing method value.
  */
 int getAdressingMethodByOperandType(OperandType operand_type) {
     switch (operand_type) {
-        case OPERAND_TYPE_NUMBER:   return 0x1; /*TO BE CHANGED TO CONSTANT*/
-        case OPERAND_TYPE_LABEL:    return 0x3;
-        case OPERAND_TYPE_REGISTER: return 0x5;
-        case OPERAND_TYPE_OTHER:    return 0xFFF;
+        case OPERAND_TYPE_NUMBER:   return ADRRESING_METHOD_NUMBER; /* Return the addressing method value for a number operand */
+        case OPERAND_TYPE_LABEL:    return ADRRESING_METHOD_LABEL;  /* Return the addressing method value for a label operand */
+        case OPERAND_TYPE_REGISTER: return ADRRESING_METHOD_REGISTER; /* Return the addressing method value for a register operand */
+        case OPERAND_TYPE_OTHER:    return ADRRESING_METHOD_OTHER; /* Return the addressing method value for other operand types */
     }
-    return DEFAULT_ERROR_VALUE;
+    return DEFAULT_ERROR_VALUE; /* Return an error value if the operand type is not recognized */
 }
+
 
 /**
  * @brief Gets the number of operands for a command based on its mnemonic.
  * 
- * @param command The mnemonic of the command.
- * @return int The number of operands.
+ * @param command - The mnemonic of the command.
+ * @return int - The number of operands.
  */
 int getOperandAmount(char* command) {
     int i;
-    for(i = 0; i < NUMBER_OF_COMMANDS; i++) {
+
+    /* Loop through the commands array to find the matching command mnemonic */
+    for (i = 0; i < NUMBER_OF_COMMANDS; i++) {
         if (!strcmp(command, commands[i].command)) {
-            return commands[i].number_of_operands;
+            return commands[i].number_of_operands; /* Return the number of operands for the command */
         }
     }
-    return DEFAULT_ERROR_VALUE; /*CHANGE LATER*/
+    return DEFAULT_ERROR_VALUE; /* Return an error value if the command is not recognized */
 }
+
 
 /**
  * @brief Updates entry labels with their corresponding memory addresses.
  * 
- * @param labels Pointer to the labels linked list.
- * @param tokens An array of tokens.
- * @param num_tokens The number of tokens.
- * @param token_idx The index of the token.
+ * @param labels - Pointer to the labels linked list.
+ * @param tokens - An array of tokens.
+ * @param num_tokens - The number of tokens.
+ * @param token_idx - The index of the token.
  */
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx) {
     LabelNode* temp_label;
     
-    for (;token_idx < num_tokens; token_idx++) {
-        if (isLabel(tokens[token_idx], false)) {
+    /* Loop through the tokens starting from the specified token index */
+    for (; token_idx < num_tokens; token_idx++) {
+        if (isLabel(tokens[token_idx], false)) { /* Check if the token is a label */
             temp_label = labels;
-            while(temp_label) {
+
+            /* Search for the label in the labels linked list and update its type */
+            while (temp_label) {
                 if (!strcmp(temp_label->label_name, tokens[token_idx])) {
                     temp_label->label_type = LABEL_TYPE_ENTRY;
                 }
@@ -672,90 +826,111 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
     }
 }
 
+
 /**
- * @brief Create a Output Files object
+ * @brief Create an Output Files object.
  * 
- * @param file_name takes the assembly code file name
- * @param labels pointer to the labels linked list
- * @param memory pointer to the global memory array
- * @param memory_idx  index in the global  memory array , points to the latest free memory slot
- * @param IC Instruction counter
- * @param DC Data Counter
- * @param externals pointer to externals linked list
- * @param is_print Pointer to a boolean indicating whether to create output files
- * @param error pointer to error, for handlaing errors
- * @param num_line the line number on which the function is performed ( part of the error handling mechanism )
+ * @param file_name - Takes the assembly code file name.
+ * @param labels - Pointer to the labels linked list.
+ * @param memory - Pointer to the global memory array.
+ * @param memory_idx - Index in the global memory array, points to the latest free memory slot.
+ * @param IC - Instruction counter.
+ * @param DC - Data Counter.
+ * @param externals - Pointer to externals linked list.
+ * @param is_print - Pointer to a boolean indicating whether to create output files.
+ * @param error - Pointer to error, for handling errors.
+ * @param num_line - The line number on which the function is performed (part of the error handling mechanism).
  */
-void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error, int num_line) {
-    if (*is_print) {
+void createOutputFiles(char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC,
+int DC, LabelNode* externals, bool* is_print, Error* error, int num_line) {
+    if (*is_print) { /* Check if output file creation is enabled */
+
+        /* Create output files for entry labels, externals, and memory dump */
         createFileWithLabelType(file_name, labels, LABEL_TYPE_ENTRY, is_print, error);
         createFileWithLabelType(file_name, externals, LABEL_TYPE_EXTERNAL, is_print, error);
         createFileWithMemoryDump(file_name, memory, memory_idx, IC, DC, error, num_line, is_print);
     }
 }
 
+
 /**
  * @brief Creates a memory dump file with the contents of the memory array.
  * 
- * @param file_name The name of the output file.
- * @param memory Pointer to the global memory array.
- * @param memory_idx Index in the global memory array.
- * @param IC Instruction counter.
- * @param DC Data counter.
- * @param error Pointer to an Error variable for error handling.
- * @param num_line The current line number.
- * @param is_print Indicates whether to create output files.
+ * @param file_name - The name of the output file.
+ * @param memory - Pointer to the global memory array.
+ * @param memory_idx - Index in the global memory array.
+ * @param IC - Instruction counter.
+ * @param DC - Data counter.
+ * @param error - Pointer to an Error variable for error handling.
+ * @param num_line - The current line number.
+ * @param is_print - Indicates whether to create output files.
  */
-void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error,  int num_line, bool* is_print) {
-    FILE *fptr;
-    int i;
-    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
-    char base64[3];
+void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error,
+int num_line, bool* is_print) {
+    FILE *fptr; /* File pointer for writing output */
+    int i; /* Loop index */
+    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION]; /* Holds the name of the output file */
+    char base64[3]; /* Temporary buffer for base64 conversion */
 
     cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
     strcat(output_file_name, "output/");
     strcat(output_file_name, file_name);
     strcat(output_file_name, ".ob");
 
+    /* Open the output file for writing */
     fptr = fopen(output_file_name, "w");
 
+    /* Check if the file was opened successfully */
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
         handleError(error, num_line, is_print);
         return;
     }
+
+    /* Write the values of IC and DC to the file */
     fprintf(fptr, "%d %d\n", IC, DC);
+
+    /* Adjust the memory index if DC is 0 */
     if (DC == 0) {
         (*memory_idx)--;
     }
+
+    /* Loop through the memory array and write values to the file */
     for (i = DEFAULT_MEMORY_INDEX; i < *memory_idx; i++) {
-        convertToBase64(memory[i], base64);
+        convertToBase64(memory[i], base64); /* Convert memory value to base64 */
         fprintf(fptr, "%s\n", base64);
     }
+
+    /* Close the output file */
     fclose(fptr);
 }
+
 
 /**
  * @brief Creates an output file with the specified label type (entry or extern).
  * 
- * @param file_name The name of the output file.
- * @param labels Pointer to the labels linked list.
- * @param label_type The type of label (entry or extern).
- * @param error Pointer to an Error variable for error handling.
+ * @param file_name - The name of the output file.
+ * @param labels - Pointer to the labels linked list.
+ * @param label_type - The type of label (entry or extern).
+ * @param is_print - Indicates whether to create output files.
+ * @param error - Pointer to an Error variable for error handling.
  */
 void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label_type, bool* is_print, Error* error) {
-    FILE *fptr;
-    bool is_entry = false;
-    LabelNode* temp = labels;
-    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
+    FILE *fptr; /* File pointer for writing output */
+    bool is_entry = false; /* Flag to check if entry label is present */
+    LabelNode* temp = labels; /* Temporary label node for traversing the list */
+    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION]; /* Holds the name of the output file */
     
     cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
 
+    /* Construct the output file name based on the label type */
     strcat(output_file_name, "output/");
     strcat(output_file_name, file_name);
     switch (label_type) {
         case LABEL_TYPE_ENTRY:
             strcat(output_file_name, ".ent");
+
+            /* Check if there is an entry label */
             while (temp) {
                 if (temp->label_type == LABEL_TYPE_ENTRY) {
                     is_entry = true;
@@ -764,69 +939,82 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
                 temp = temp->next;
             }
             if (!is_entry) {
-                return;
+                return; /* No entry labels, no need to create the file */
             }
             break;
         case LABEL_TYPE_EXTERNAL:
             strcat(output_file_name, ".ext");
             if (!labels) {
-                return;
+                return; /* No external labels, no need to create the file */
             }
             break;
         default:
             *error = ERROR_UNRECOGNIZED_LABEL;
-            return;
+            return; /* Unrecognized label type */
     }
+    
+    /* Open the output file for writing */
     fptr = fopen(output_file_name, "w");
 
+    /* Check if the file was opened successfully */
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
         handleError(error, DEFAULT_LINE_NUMER, is_print);
         return;
     }
 
-    /* write all of the labels into the corresponding output file type */
+    /* Write the labels into the corresponding output file type */
     while (labels) {
         if (labels->label_type == label_type) {
             fprintf(fptr, "%s %d\n", labels->label_name, labels->memory_adress);
         }
         labels = labels->next;
     }
+    
+    /* Close the output file */
     fclose(fptr);
 }
+
 
 /**
  * @brief Creates the file with the code after pasting macros
  * 
- * @param file_name Contains the name of the line
- * @param code pointer to the head
- * @param is_print Indicates whether to create output files.
- * @param error Pointer to an Error variable for error handling.
+ * @param file_name - Contains the name of the input file
+ * @param code - Pointer to the head of the code linked list
+ * @param is_print - Indicates whether to create output files
+ * @param error - Pointer to an Error variable for error handling
  */
 void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print, Error* error) {
-    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION];
-    FILE *fptr;
+    char output_file_name[MAX_FILE_NAME_WITH_EXTENSION]; /* Holds the name of the output file */
+    FILE *fptr; /* File pointer for writing output */
     
     cleanLine(output_file_name, MAX_FILE_NAME_WITH_EXTENSION);
 
+    /* Construct the output file name */
     strcat(output_file_name, "output/");
     strcat(output_file_name, file_name);
     strcat(output_file_name, ".am");
 
+    /* Open the output file for writing */
     fptr = fopen(output_file_name, "w");
 
+    /* Check if the file was opened successfully */
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
         handleError(error, DEFAULT_LINE_NUMER, is_print);
         return;
     }
 
+    /* Write the code rows to the output file */
     while (code) {
         fprintf(fptr, "%s\n", code->code_row);
         code = code->next;
     }
+    
+    /* Close the output file */
     fclose(fptr);
 }
+
 
 /**
  * @brief checks if the string is a label
@@ -836,7 +1024,7 @@ void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print
  * @return boolean that indicates whether the word is a legal label name
  */
 bool isLabel(char* word, bool colon){
-    int i = 0;
+    int i = 0; /* index used for going throught the word */
 
     if (!isalpha(word[i++])) {
         return false;
@@ -899,21 +1087,24 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
 }
 
 /**
- * @brief checks if a line is a correct data line or not
+ * @brief Checks if a line is a correct data line or not
  * 
- * @param tokens 
- * @param num_tokens 
- * @param isLabel - a boolean that says if the 1st token is a label or not
- * @return true - if it is a data line and its correct
- * @return false - when its not a data line or an incorrect one 
+ * @param tokens - Array of tokens in the line
+ * @param num_tokens - Number of tokens in the line
+ * @param label - Boolean indicating if the first token is a label
+ * @param error - Pointer to an Error enum that indicates any errors that occur
+ * @return true - If it is a correct data line
+ * @return false - When it's not a data line or an incorrect one
  */
 bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
-    int token_index = 1;
-    
+    int token_index = 1; 
+
+    /* Check for missing data argument */
     if (num_tokens < (2 + label)) {
         *error = ERROR_MISSING_DATA_ARGUMENT;
         return false;
     }
+
     /* checks .string line */
     if (getDotType(tokens[FIRST_WORD + label], error) == DOT_STRING) {
         if (isString(tokens, num_tokens, label)) {
@@ -975,21 +1166,22 @@ void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* erro
 }
 
 /**
- * @brief Inserts a new label into the label list.
+ * @brief Inserts a new label node into the linked list of labels
  * 
- * @param labels Pointer to the labels linked list.
- * @param label_name The name of the label.
- * @param label_type The type of the label.
- * @param memory_idx Index in the global memory array.
- * @param is_print Pointer to a boolean indicating whether to create output files
- * @param error Pointer to an Error variable for error handling.
- * @param is_first_itteration_flag Flag indicating the first iteration.
+ * @param labels - Pointer to the head of the label linked list
+ * @param label_name - Name of the label to be inserted
+ * @param label_type - Type of the label (DATA, CODE, etc.)
+ * @param memory_idx - Pointer to the memory index in the global memory array.
+ * @param is_print - Pointer to a boolean flag indicating whether to create output files
+ * @param error - Pointer to an Error enum that indicates for error handling
+ * @param is_first_iteration_flag - Flag indicating if it's the first iteration 
  */
 void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error, bool is_first_itteration_flag) {
-    LabelNode* temp_label;
-    LabelNode* new_label;
-    temp_label = *labels;
+    LabelNode* temp_label; /* Temporary pointer for traversing the linked list */
+    LabelNode* new_label; /* New label node to be inserted */
+    temp_label = *labels; /* Initialize temp_label to the head of the linked list */
 
+    /* Check for duplicated label and handle it */
     if (isDuplicatedLabel(labels, label_name, label_type, error, is_first_itteration_flag))
     {
         return;
@@ -1023,39 +1215,48 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
 }
 
 /**
- * @brief takes a line of code with command, and checks if its legal
+ * @brief Takes a line of code with a command and checks if it's legal
  * 
- * @param tokens 
- * @param num_tokens 
- * @param label - Is the line starts with a label ? 
- * @return int  - > returns L = the number of memory words in the command line , -1 otherwise
+ * @param word - The command word to be checked
+ * 
+ * @return short - Returns the opcode of the command if found, otherwise DEFAULT_ERROR_VALUE
  */
-short checkCommand(char* word){
-    int i;
+short checkCommand(char* word) {
+    int i; /* Index used in for loop */
 
+    /* Iterate through the list of commands to find a match */
     for (i = 0; i < NUM_OF_COMMANDS; i++) {
         if (!strcmp((char*)commands[i].command, word)) {
-            return commands[i].opcode;
+            return commands[i].opcode; /* Return the opcode if the command is found */
         }
     }
-    return DEFAULT_ERROR_VALUE;
+    return DEFAULT_ERROR_VALUE; /* Return DEFAULT_ERROR_VALUE if the command is not found */
 }
 
+
 /**
- * @brief takes a line of code with command, and checks if its legal
+ * @brief Takes a line of code with a command and checks if it's legal
  * 
- * @param tokens 
- * @param num_tokens 
- * @param label - Is the line starts with a label ? 
- * @return int  - > returns L = the number of memory words in the command line , -1 otherwise
+ * @param tokens - Array of tokenized strings from the line of code
+ * @param num_tokens - Number of tokens in the array
+ * @param label - Indicates if the line starts with a label
+ * @param LabelPtr - Pointer to a linked list of label nodes
+ * @param error - Pointer to the error flag
+ * @param is_first_iteration - Flag indicating if it's the first iteration
+ * @param stop_flag - Flag indicating if a stop command is encountered
+ * @param is_print - Flag indicating if printing is enabled
+ * @param num_line - Current line number
+ * 
+ * @return int - Returns L = the number of memory words in the command line, -1 otherwise
  */
-int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag, bool* is_print, int num_line) {
+int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error,
+bool is_first_iteration, bool* stop_flag, bool* is_print, int num_line) {
     short opcode = checkCommand(tokens[label]);
 
-    int count = DEFAULT_VALUE;
-    int operand_index = label+1; /*operand index*/
-    OperandType operand_result;
-    bool register_flag = false;
+    int count = DEFAULT_VALUE; /* used as help for counting the index of operands */
+    int operand_index = label+1; /* operand index */
+    OperandType operand_result; /* stores the operand type */
+    bool register_flag = false; /* flag that checks if there was an operand argument , that is a register (used for knowing if there are 2 register type operands ) */
     bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
     int L = 1;
 
@@ -1110,7 +1311,8 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                 }
 
                 /* checks the commands that require 2 operands, for correctness of arguments type*/
-                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])) {
+                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL])
+                || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR;
                 }
@@ -1129,7 +1331,8 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                     }
                 }
                 /* checks the commands that require 2 operands, for correctness of arguments type*/
-                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])) {
+                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_REGISTER])
+                || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_REGISTER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
                 }
@@ -1156,7 +1359,8 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                 }
                 
                 /* checks the commands that require 2 operands, for correctness of arguments type*/
-                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])) {
+                if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_NUMBER])
+                || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
                     return COMMAND_LINE_ERROR; 
                 }
@@ -1185,8 +1389,8 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
  * @return boolean that indicates whether the word is a legal label name
  */
 OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool is_first_iteration){    
-    const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"};
-    int i;
+    const char* registers[] = {"@r0", "@r1", "@r2", "@r3", "@r4", "@r5", "@r6", "@r7"}; /* declaring an array with registers as strings */
+    int i; /* index that is used for loops */
 
     /* Check if the operand is one of the registers */
     for (i = 0; i < NUM_OF_REGISTERS; i++) {
@@ -1272,8 +1476,8 @@ void moveToNextCodeLine(CodeNode** temp_code, int* num_line){
  * @return false - if it is a incorrect line
  */
 bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration){
-    int operand_index = FIRST_ARGUMENT;
-    bool entryLine = false;
+    int operand_index = FIRST_ARGUMENT; /* index of the operand */
+    bool entryLine = false; /* flag that says if the line is an .entry line */
 
     if (label_type == LABEL_TYPE_ENTRY) {
         entryLine = true;
@@ -1333,7 +1537,7 @@ bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNo
  * @return Returns true if the label already exists
  */
 bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration){
-    LabelType argument_label_type = LABEL_TYPE_NOT_FOUND;
+    LabelType argument_label_type = LABEL_TYPE_NOT_FOUND; /* the label type to be compared to ( checks if the label already exists in the linked list ) */
     argument_label_type =  getLabelType(label_name, *labels, error); /* gets the label type from the labels linked list */
 
     /*checks if entry label exists in other label types*/
