@@ -687,8 +687,8 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
     return LABEL_TYPE_NOT_FOUND;
 }
 
-bool isString( char** tokens, int num_tokens, bool label){
-    /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add 
+bool isString(char** tokens, int num_tokens, bool label) {
+    /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add
     an outside loop. */
     int char_index = 0;
     int string_index = label + 1;
@@ -699,17 +699,17 @@ bool isString( char** tokens, int num_tokens, bool label){
     if (tokens[string_index][char_index++] != '"') {
         return false;
     }
-    for ( ; string_index < num_tokens; string_index++)
+    for (; string_index < num_tokens; string_index++)
     {
         len = strlen(tokens[string_index]);
-        for ( ; char_index < len; char_index++) {
+        for (; char_index < len; char_index++) {
             if (quote) return false;
 
-            if (tokens[string_index][char_index] == '"' ) quote = true;
+            if (tokens[string_index][char_index] == '"') quote = true;
         }
-        char_index = 0;  
+        char_index = 0;
     }
-    
+
     /* returns false if 2nd quote isn't the last character */
     return quote;
 }
@@ -748,7 +748,7 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
             return false;
         }
         */
-        if (isString( tokens, num_tokens, label)) {
+        if (isString(tokens, num_tokens, label)) {
             return true;
         }
         
