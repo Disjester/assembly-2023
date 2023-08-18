@@ -1,2 +1,0 @@
-K: .data 23.3
-A: stop

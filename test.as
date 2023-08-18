@@ -16,8 +16,6 @@ L1:     inc K
 END:    stop
 
 STR:    .string "abcdef"
-
-STR2: .string "hello world"
 LENGTH:     .data 6,-9,15
 K:          .data 22
 .extern L3

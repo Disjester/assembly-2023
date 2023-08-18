@@ -9,6 +9,8 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
     FILE* fptr;
     char** tokens;
     int num_tokens = DEFAULT_VALUE;
+    unsigned int path_length;
+    char* full_path;
 
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     allocateMemoryTokens(tokens, is_print, error);
@@ -17,7 +19,14 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
         return NULL;
     }
 
-    fptr = fopen(file_name, "r");
+    path_length = strlen(file_name) + strlen(".as");
+    full_path = allocateMemory(path_length * sizeof(char), is_print, error);
+    cleanLine(full_path, path_length);
+    strcpy(full_path, file_name);
+    strcat(full_path, ".as");
+
+    fptr = fopen(full_path, "r");
+    free(full_path);
     if (!fptr) {
         *error = ERROR_FILE_HANDLE;
         handleError(error, DEFAULT_LINE_NUMER, is_print);
@@ -119,9 +128,6 @@ int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) 
             continue;
         }
         
-        if (i != 0 && line[i-1] == ':' && x != ' ') {
-            line[i++] = ' ';
-        }
         /*removing of duplications of whitespaces*/
         if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
             continue;
