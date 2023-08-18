@@ -1,2 +1,6 @@
-sub A , B
+A: sub A , A
+L: sub L , L:das
+
+
+
 stop
