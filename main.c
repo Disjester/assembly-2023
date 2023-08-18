@@ -5,15 +5,15 @@
 #include "libs.h"
  
 int main (int argc, char** argv) {
-    CodeNode* code;
-    Error error;
-    LabelNode* labels;
-    LabelNode* externals;
-    short memory[MAX_MEMORY_SIZE];
-    int memory_idx;
-    int DC, IC;
-    int i;
-    bool is_print;
+    CodeNode* code; /*Head of the code*/
+    Error error;    /*Error variable for error handling*/
+    LabelNode* labels; /*Head to linked list of labels*/
+    LabelNode* externals; /*Head to linked list of externals*/
+    short memory[MAX_MEMORY_SIZE]; /*Array that represents memory*/
+    int memory_idx; /*Index to the last element in the memory*/
+    int DC, IC; /*Data counter and Instructions counter*/
+    int i; /*Index*/
+    bool is_print; /*Flag if the program will create output files or not*/
     
     /* prints an error message, if no argument have been provided to the programm */
     
