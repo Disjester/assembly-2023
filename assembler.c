@@ -36,11 +36,11 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
  * @param error Pointer to an Error variable for error handling.
  */
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error) {
-    bool is_first_itteration_flag = true; /*Flag if it is the first iteration*/
+    bool is_first_itteration_flag = true;
     bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
-    CodeNode* temp_code; /*Temporal CodeNode*/
-    LabelNode* temp_label_node; /*tmeporal LabelNode*/
-    bool label_flag = false; /*Flag if there is a label in current line*/
+    CodeNode* temp_code;
+    LabelNode* temp_label_node;
+    bool label_flag = false;
     int data_memory_idx = DEFAULT_MEMORY_INDEX; 
     int operand_num = 0;
     int i;
