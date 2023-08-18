@@ -284,10 +284,8 @@ bool* is_print, Error* error) {
             case LABEL_TYPE_CODE:
             case LABEL_TYPE_ENTRY:
                 temp_label_node->memory_adress += DEFAULT_MEMORY_INDEX;
-                break;
             case LABEL_TYPE_EXTERNAL:
             case LABEL_TYPE_NOT_FOUND:
-                /* *error = ERROR_UNRECOGNIZED_LABEL; */
                 break;
         }
         temp_label_node = temp_label_node->next;
