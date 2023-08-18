@@ -218,6 +218,7 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
     bool macro_found = false; /* Flag to track if a macro is found */
     bool first_connection = true;
     bool prev_code_changed = false;
+    bool code_not_points_to_start = true;
 
     /* Initialize variables */
     current_code = *code;
@@ -336,6 +337,12 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
         prev_code = current_code;
         prev_code_changed = true;
         current_code = current_code->next;
+        if (code_not_points_to_start && prev_code_changed)
+        {
+            *code = prev_code;
+            code_not_points_to_start = false;
+        }
+        
     }
     if (prev_code_changed)
     {
