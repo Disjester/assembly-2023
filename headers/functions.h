@@ -77,7 +77,17 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
  */
 short checkCommand(char* word);
 
+/**
+ * @brief Returns type of the operand that it recieves
+ * 
+ * @param operand - string that contains the operand that should be checked
+ * @param LabelPtr - Pointer to the list of labels
+ * @param error pointer to error, for handlaing errors
+ * @param is_first_iteration - flag if the function is called out of the first iteration
+ * @return boolean that indicates whether the word is a legal label name
+ */
 OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool is_first_iteration);
+
 /**
  * @brief checks if the string is a label
  * 
@@ -113,7 +123,6 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
  * @param num_line the line number on which the function is performed ( part of the error handling mechanism )
  */
 void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* memory_idx, int IC, int DC, LabelNode* externals, bool* is_print, Error* error, int num_line);
-
 
 /**
  * @brief Creates a binary word based on the operand type and stores it in memory.
@@ -212,14 +221,6 @@ void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* erro
  * @return int The number of operands.
  */
 int getOperandsNumberByOpcode(short opcode);
-
-/**
- * Validates a variable name according to specific rules.
- *
- * @param name The variable name to validate.
- * @return true if the variable name is valid, false otherwise.
- */
-bool validateVariableName (char *name);
 
 /**
  * @brief Creates the binary word for a command and its operands.
@@ -372,6 +373,14 @@ void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print
 /*UTILITIES SECTION*/
 
 /**
+ * Validates a variable name according to specific rules.
+ *
+ * @param name The variable name to validate.
+ * @return true if the variable name is valid, false otherwise.
+ */
+bool validateVariableName (char *name);
+
+/**
  * @brief Clears the memory by setting it to zero.
  * 
  * @param memory Global memory array.
@@ -470,7 +479,6 @@ bool isNumber(char* word);
  * @return true if the string is a valid string, false otherwise.
  */
 bool isString( char** tokens, int num_tokens, bool label);
-
 
 /** 
  * Frees memory allocated for tokens, code nodes, macro nodes, and label nodes.
