@@ -193,6 +193,7 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
     bool is_first_mcro_line = true;
     bool macro_found = false; /* Flag to track if a macro is found */
     bool first_connection = true;
+    bool prev_code_changed = false;
 
     /* Initialize variables */
     current_code = *code;
@@ -309,8 +310,12 @@ void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int
         }
         /* go to the next line and save the latest line in prev_code */
         prev_code = current_code;
+        prev_code_changed = true;
         current_code = current_code->next;
     }
-    free(temp_to_delete->code_row);
-    free(temp_to_delete);
+    if (prev_code_changed)
+    {
+        free(temp_to_delete->code_row);
+        free(temp_to_delete);
+    }
 }
