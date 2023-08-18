@@ -1044,7 +1044,6 @@ bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNo
         entryLine = true;
     }
     
-
     /* Check if there are enough tokens */
     if (num_tokens < 2)
     {
