@@ -12,13 +12,13 @@
  * @return A linked list of CodeNode representing the preprocessed code.
  */
 CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
-    /* variable declarations */
-    CodeNode* code = NULL;
-    MacroNode* macros = NULL;
-    FILE* fptr;
-    char** tokens;
-    int num_tokens = DEFAULT_VALUE;
-    char full_path[MAX_FILE_NAME_WITH_EXTENSION];
+    /* Variable declarations */
+    CodeNode* code = NULL; /* Linked list to hold preprocessed code */
+    MacroNode* macros = NULL; /* Linked list to hold macro definitions */
+    FILE* fptr; /* File pointer for reading the source file */
+    char** tokens; /* Array of strings to hold tokens */
+    int num_tokens = DEFAULT_VALUE; /* Number of tokens in a line of code */
+    char full_path[MAX_FILE_NAME_WITH_EXTENSION]; /* Full path of the source file */
 
     tokens = allocateMemory(MAX_TOKENS * sizeof(char *), is_print, error);
     allocateMemoryTokens(tokens, is_print, error);
@@ -79,8 +79,11 @@ CodeNode* preproccessor(char* file_name, bool* is_print, Error* error) {
  */
 CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens, bool* is_print, Error* error) {
     char buffer[MAX_LINE_LENGTH]; 
-    CodeNode *head = NULL, *temp = NULL, *code_node = NULL;
-    int num_line = STARTING_LINE;
+    CodeNode *head = NULL, *temp = NULL, *code_node = NULL; /* declaring code node pointers to the first line of code (head of linked list)
+                                                            temporary code node to add nodes into the linked list,
+                                                            the original code node that is used to create a linked list 
+                                                            and a new assembly file after all of the changes to the code */
+    int num_line = STARTING_LINE; /* counts the line number, used for error handlaing purpose */
 
     /* go throught all of the lines of code (of assembly file ), and put them inside code nodes
     (each code node contains a line of text/code from the assembly file)*/
@@ -133,13 +136,13 @@ CodeNode* createLinkedListFromFile(FILE* fptr, char *tokens[], int* pnum_tokens,
  * @param error Pointer to an Error variable for error handling.
  */
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, bool* is_print, Error* error) {
-    MacroNode* new_macro_node;
-    MacroNode* temp_macro_node;
-    MacroNode* test_macro_node;
-    CodeNode* new_code_node;
-    CodeNode* new_code_node_head;
-    CodeNode* curr_code_node;
-    int num_line = STARTING_LINE;
+    MacroNode* new_macro_node;      /* Stores a new macro node */
+    MacroNode* temp_macro_node;     /* Temporarily holds a macro node for iteration */
+    MacroNode* test_macro_node;     /* Used to test for duplicated macro definitions */
+    CodeNode* new_code_node;        /* Stores a new code node */
+    CodeNode* new_code_node_head;   /* Stores the head of the new code nodes linked list */
+    CodeNode* curr_code_node;       /* Iterates through the code nodes */
+    int num_line = STARTING_LINE;   /* Keeps track of the line number in the source file */
 
     temp_macro_node = NULL;
     curr_code_node = *code_node;
@@ -243,20 +246,20 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
  */
 void insertMacrosToCode(CodeNode **code, MacroNode **macros, char *tokens[], int *pnum_tokens, bool* is_print, Error* error) {
     /* Declare variables */
-    MacroNode *current_macro;
-    CodeNode *current_code;
-    CodeNode *current_macro_code;
-    CodeNode *prev_code;
-    CodeNode *temp;
-    CodeNode* temp_to_delete;
-    CodeNode *first_macro_code_node;
-    CodeNode *latest_macro_code_node = NULL;
-    
-    bool is_first_mcro_line = true;
-    bool macro_found = false; /* Flag to track if a macro is found */
-    bool first_connection = true;
-    bool prev_code_changed = false;
-    bool code_not_points_to_start = true;
+    MacroNode *current_macro;            /* Current macro node being checked */
+    CodeNode *current_code;              /* Current code node being processed */
+    CodeNode *current_macro_code;        /* Current code node of a macro being inserted */
+    CodeNode *prev_code;                 /* Previous code node */
+    CodeNode *temp;                      /* Temporary code node pointer */
+    CodeNode* temp_to_delete;            /* Temporary code node pointer for deletion */
+    CodeNode *first_macro_code_node;     /* First code node of a macro being inserted */
+    CodeNode *latest_macro_code_node = NULL; /* Latest code node of a macro being inserted */
+
+    bool is_first_mcro_line = true;      /* Flag to track the first line of a macro */
+    bool macro_found = false;            /* Flag to track if a macro is found */
+    bool first_connection = true;        /* Flag to track the first connection of macro code nodes */
+    bool prev_code_changed = false;      /* Flag to track if the previous code node changed */
+    bool code_not_points_to_start = true; /* Flag to track if the code pointer doesn't point to the start */
 
     /* Initialize variables */
     current_code = *code;
