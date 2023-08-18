@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include "libs.h"
 
+static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
+
 void tokenizeInput(char *input, char **tokens, int *num_tokens, bool* is_print, Error* error) {
     size_t length = strlen(input);
     char *token = NULL;
@@ -204,4 +206,118 @@ void freeMemoryLabelNode(LabelNode* label_node) {
         free(label_node->label_name);
     }
     free(label_node);
+}
+
+void cleanMemory(short* memory) {
+    int i;
+
+    for (i = 0; i < MAX_MEMORY_SIZE; i++) {
+        memory[i] = DEFAULT_ERROR_VALUE;
+    }
+}
+
+char* removeColon(char* str) {
+    str[strlen(str)-1] = '\0';
+    return str;
+}
+
+void convertToBase64(short num, char* result) {
+    result[0] = base64_chars[(num >> 6) & MASK64];
+    result[1] = base64_chars[num & MASK64];
+    result[2] = '\0';
+}
+
+int getLine(char* line, Error* error, FILE* fptr, int num_line, bool* is_print) {
+    char x; /*current symbol in the input stream*/
+    int i = 0;
+    cleanLine(line, MAX_LINE_LENGTH);
+    while ((x = fgetc(fptr)) != '\n' && x != EOF) {
+        if (i == MAX_LINE_LENGTH) {
+            *error = ERROR_MAXED_OUT_LINE_LENGTH;
+            handleError(error, num_line, is_print);
+            /*skipping to the next line*/
+            while ((x = fgetc(fptr)) != '\n' && x != EOF) {
+                continue;
+            }
+            return i;
+        }
+        /*substitution of whitespaces instead of tabs*/
+        x = (x == '\t') ? ' ' : x;
+        /*removing whitespaces at the beggining of the line*/
+        if (i == 0 && x == ' ') {
+            continue;
+        }
+
+        if (i != 0 && x == ',') {
+            if (line[i-1] != ' ') {
+                line[i++] = ' ';
+            }
+            line[i++] = x;
+            line[i++] = ' ';
+            continue;
+        }
+        
+        /*removing of duplications of whitespaces*/
+        if ((i != 0) && line[i-1] == ' ' && (x == ' ')) {
+            continue;
+        }
+        /*putting a char to the string*/
+        line[i++] = x;
+    }
+    /*The case where the line is empty*/
+    if (i == 0 && x == '\n') {
+        line[FIRST_CHARACTER] = '\0';
+        return 1;
+    }
+    return i;
+}
+
+void cleanLine(char* line, int length) {
+    int i;
+    for (i = 0; i < length; i++) {
+        line[i] = '\0';
+    }
+}
+
+bool isNumber(char* word){
+    int i = 0;
+    int len = strlen(word);
+
+    /* Check for a minus sign at the beginning
+     Skip it if exists */
+    if (word[i] == '-') i++;  
+    
+    for ( ; i < len; i++) {
+        if (!isdigit(word[i])) {
+            return false; /* not a number*/
+        }
+    }
+    return true;
+}
+
+bool isString(char** tokens, int num_tokens, bool label) {
+    /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add
+    an outside loop. */
+    int char_index = 0;
+    int string_index = label + 1;
+    bool quote = false; /* a quote flag, that checks if found the 2nd (") character */
+    int len = 0;
+
+    /* checks the 1st character to be a quote */
+    if (tokens[string_index][char_index++] != '"') {
+        return false;
+    }
+    for (; string_index < num_tokens; string_index++)
+    {
+        len = strlen(tokens[string_index]);
+        for (; char_index < len; char_index++) {
+            if (quote) return false;
+
+            if (tokens[string_index][char_index] == '"') quote = true;
+        }
+        char_index = 0;
+    }
+
+    /* returns false if 2nd quote isn't the last character */
+    return quote;
 }

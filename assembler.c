@@ -23,8 +23,6 @@ static const Command commands[MAX_COMMAND_LENGTH] = {
     {"stop", 0xF, 0, {0, 0, 0}, {0, 0, 0}}
 };
 
-static const char base64_chars[64] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"};
-
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error) {
     bool is_first_itteration_flag = true;
     bool stop_flag = false; /* gives information , whether the code already got to a line with "stop" command, or not*/
@@ -88,7 +86,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     {
                         handleError(error, num_line, is_print);
                         *error = NO_ERROR;
-                        nextLine(&temp_code, &num_line);
+                        moveToNextCodeLine(&temp_code, &num_line);
                         continue;
                     }
                 }
@@ -104,7 +102,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    nextLine(&temp_code, &num_line);
+                    moveToNextCodeLine(&temp_code, &num_line);
                     continue;
                 }
                 break;
@@ -119,7 +117,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     {
                         handleError(error, num_line, is_print);
                         *error = NO_ERROR;
-                        nextLine(&temp_code, &num_line);                        
+                        moveToNextCodeLine(&temp_code, &num_line);                        
                         continue;
                     }                    
                 }
@@ -147,24 +145,12 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     pushToMemory(&data_memory_idx, data_memory, '\0', error, num_line, is_print);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
                     (*DC)++;
-                    /*
-                    for (i = 1; i < (strlen(tokens[token_idx])-1); i++) {
-                        pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][i], error, num_line, is_print);
-                        if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                        (*DC)++;
-                    }
-                    pushToMemory(&data_memory_idx, data_memory, '\0', error, num_line, is_print);
-                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    (*DC)++;
-                    */
-
-
                 }
                 /*handlaing Error*/
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    nextLine(&temp_code, &num_line);                    
+                    moveToNextCodeLine(&temp_code, &num_line);                    
                     continue;
                 }
                 break;
@@ -177,7 +163,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                         {
                             /*handleError(error, num_line, is_print);*/
                             *error = NO_ERROR;
-                            nextLine(&temp_code, &num_line);                            
+                            moveToNextCodeLine(&temp_code, &num_line);                            
                             continue;
                         }                        
                     }
@@ -203,16 +189,16 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                     {
                         handleError(error, num_line, is_print);
                         *error = NO_ERROR;
-                        nextLine(&temp_code, &num_line);                        
+                        moveToNextCodeLine(&temp_code, &num_line);                        
                         continue;
                     }                    
                 }
-                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag) != COMMAND_LINE_ERROR) {
+                if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag, is_print, num_line) != COMMAND_LINE_ERROR) {
                     
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag, *labels);
                     pushToMemory(memory_idx, memory, binary_word, error, num_line, is_print);
                     if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag);
+                    L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag, is_print, num_line);
                     if (num_tokens >= 4)
                     {
                         operand_num = 2;
@@ -244,7 +230,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    nextLine(&temp_code, &num_line);
+                    moveToNextCodeLine(&temp_code, &num_line);
                     continue;
                 }
                 *IC += L;
@@ -332,15 +318,15 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    nextLine(&temp_code, &num_line);
+                    moveToNextCodeLine(&temp_code, &num_line);
                     continue;
                 }
                 
                 updateEntryLabels(labels, tokens, num_tokens, token_idx);
                 break;
             case DOT_OTHER:
-                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag) != COMMAND_LINE_ERROR) {
-                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag);
+                if (checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag, is_print, num_line) != COMMAND_LINE_ERROR) {
+                    L = checkCommandLine(tokens, num_tokens, label_flag, labels, error, is_first_itteration_flag, &stop_flag, is_print, num_line);
                     check_counter = L;
                     curr_memory = memory[update_memory_idx];
                     /*Source*/
@@ -410,7 +396,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    nextLine(&temp_code, &num_line);
+                    moveToNextCodeLine(&temp_code, &num_line);
                     continue;
                 }
                 *IC += L;
@@ -423,7 +409,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
                 {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
-                    nextLine(&temp_code, &num_line);
+                    moveToNextCodeLine(&temp_code, &num_line);
                     continue;
                 }
                 break;
@@ -558,12 +544,6 @@ int getOperandsNumberByOpcode(short opcode) {
     return DEFAULT_ERROR_VALUE;
 }
 
-void convertToBase64(short num, char* result) {
-    result[0] = base64_chars[(num >> 6) & MASK64];
-    result[1] = base64_chars[num & MASK64];
-    result[2] = '\0';
-}
-
 int getAdressingMethodByOperandType(OperandType operand_type) {
     switch (operand_type) {
         case OPERAND_TYPE_NUMBER:   return 0x1; /*TO BE CHANGED TO CONSTANT*/
@@ -593,7 +573,6 @@ void incrementTokenCounter(int* token_idx, int num_tokens, int num_line, int ste
 
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx) {
     LabelNode* temp_label;
-    
     
     for (;token_idx < num_tokens; token_idx++) {
         if (isLabel(tokens[token_idx], false)) {
@@ -732,6 +711,9 @@ bool isLabel(char* word, bool colon){
         if (colon && word[i] == ':' && word[i+1] == '\0') {
             return true;
         }
+        if (!colon && word[i] == ':') {
+            return false;
+        }
         if (!isalpha(word[i]) && !isdigit(word[i])) {
             return false;
         }
@@ -758,67 +740,17 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
     return LABEL_TYPE_NOT_FOUND;
 }
 
-bool isString(char** tokens, int num_tokens, bool label) {
-    /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add
-    an outside loop. */
-    int char_index = 0;
-    int string_index = label + 1;
-    bool quote = false; /* a quote flag, that checks if found the 2nd (") character */
-    int len = 0;
-
-    /* checks the 1st character to be a quote */
-    if (tokens[string_index][char_index++] != '"') {
-        return false;
-    }
-    for (; string_index < num_tokens; string_index++)
-    {
-        len = strlen(tokens[string_index]);
-        for (; char_index < len; char_index++) {
-            if (quote) return false;
-
-            if (tokens[string_index][char_index] == '"') quote = true;
-        }
-        char_index = 0;
-    }
-
-    /* returns false if 2nd quote isn't the last character */
-    return quote;
-}
-
-bool isNumber(char* word){
-    int i = 0;
-    int len = strlen(word);
-
-    /* Check for a minus sign at the beginning
-     Skip it if exists */
-    if (word[i] == '-') i++;  
-    
-    for ( ; i < len; i++) {
-        if (!isdigit(word[i])) {
-            return false; /* not a number*/
-        }
-    }
-    return true;
-}
 
 bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     int token_index = 1;
     
-
     if (num_tokens < (2 + label)) {
         *error = ERROR_MISSING_DATA_ARGUMENT;
         return false;
     }
     
-
     /* checks .string line */
     if (getDotType(tokens[FIRST_WORD + label], error) == DOT_STRING) {
-        /*
-        if (num_tokens > (2 + label)) {
-            *error = ERROR_EXTRANEOS_TEXT;
-            return false;
-        }
-        */
         if (isString(tokens, num_tokens, label)) {
             return true;
         }
@@ -829,7 +761,6 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
             *error = ERROR_WRONG_ARGUMENT_FORMAT;
             return false;
         }
-        
     }
     
     /* check .data line */
@@ -871,14 +802,6 @@ void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* erro
     memory[(*memory_idx)++] = memoryField;
 }
 
-void cleanMemory(short* memory) {
-    int i;
-
-    for (i = 0; i < MAX_MEMORY_SIZE; i++) {
-        memory[i] = DEFAULT_ERROR_VALUE;
-    }
-}
-
 void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, int* memory_idx, bool* is_print, Error* error, bool is_first_itteration_flag) {
     LabelNode* temp_label;
     LabelNode* new_label;
@@ -916,11 +839,6 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
     }
 }
 
-char* removeColon(char* str) {
-    str[strlen(str)-1] = '\0';
-    return str;
-}
-
 short checkCommand(char* word){
     int i;
 
@@ -932,7 +850,7 @@ short checkCommand(char* word){
     return DEFAULT_ERROR_VALUE;
 }
 
-int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag) {
+int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* LabelPtr, Error* error, bool is_first_iteration, bool* stop_flag, bool* is_print, int num_line) {
     short opcode = checkCommand(tokens[label]);
 
     int count = DEFAULT_VALUE;
@@ -965,7 +883,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
         return COMMAND_LINE_ERROR;
     }
     
-    /* checks the number of operands for command that require 2 operands*/
+    /* checks the number of operands for command that requires 2 operands*/
     if ((num_tokens > 2 + label) && (num_tokens - label - 2) != commands[opcode].number_of_operands) {
         *error = ERROR_WRONG_AMOUNT_OF_OPERANDS;
         return COMMAND_LINE_ERROR;
@@ -980,7 +898,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
             operand_result = checkOperand(tokens[operand_index + count], LabelPtr, error, is_first_iteration);
         }
         
-
         switch (operand_result) {
             case OPERAND_TYPE_LABEL:
                 L++;
@@ -997,7 +914,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                 /* checks the commands that require 2 operands, for correctness of arguments type*/
                 if ((source_flag && !commands[opcode].sourceAddresingMethod[ADDRESING_LABEL]) || (!source_flag && !commands[opcode].destinationAddresingMethod[ADDRESING_LABEL])) {
                     *error = ERROR_INCORRECT_OPERAND_TYPE;
-                    return COMMAND_LINE_ERROR; 
+                    return COMMAND_LINE_ERROR;
                 }
                 break;
             case OPERAND_TYPE_REGISTER:
@@ -1051,6 +968,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                 break;
             case OPERAND_TYPE_OTHER:
                 *error = ERROR_ILLEGAL_OPERAND_TYPE;
+                handleError(error, num_line, is_print);
                 *error = NO_ERROR;
                 return COMMAND_LINE_ERROR;
             }
@@ -1115,7 +1033,7 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
     }
 }
 
-void nextLine(CodeNode** temp_code, int* num_line){
+void moveToNextCodeLine(CodeNode** temp_code, int* num_line){
     /* Move to the next CodeNode and increment the line number */
     *temp_code =  (*temp_code)->next;
     (*num_line)++;

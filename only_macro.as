@@ -1,3 +1,5 @@
-K: .data 23
-sub LA, LA.:DAS:
-A: stop
+mcro m1
+    sub A, B
+endmcro
+m1
+stop
