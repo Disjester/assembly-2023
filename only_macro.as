@@ -1,5 +1,3 @@
-mcro m1
-    sub A, B
-endmcro
-m1
+A: sub A, B
+B: sub A, B
 stop
