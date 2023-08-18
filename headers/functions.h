@@ -13,7 +13,7 @@
  * @param fptr Pointer to the source file.
  * @param tokens An array of strings to hold tokens.
  * @param pnum_tokens Pointer to the number of tokens.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  * @param error Pointer to an Error variable for error handling.
  * @return A linked list of CodeNode representing the code from the file.
  */
@@ -23,7 +23,7 @@ CodeNode* createLinkedListFromFile(FILE* file, char *tokens[], int* pnum_tokens,
  * Preprocesses the source file, handling macros and replacing them with their definitions.
  *
  * @param file_name The name of the source file.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  * @param error Pointer to an Error variable for error handling.
  * @return A linked list of CodeNode representing the preprocessed code.
  */
@@ -36,7 +36,7 @@ CodeNode* preproccessor(char *file_name, bool* is_print, Error* error);
  * @param macro_node Pointer to the head of the macro linked list.
  * @param pnum_tokens Pointer to the number of tokens.
  * @param tokens An array of strings containing tokens.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  * @param error Pointer to an Error variable for error handling.
  */
 void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, int* pnum_tokens, char** tokens, bool* is_print, Error* error);
@@ -48,7 +48,7 @@ void scanCodeForMacroDefinitions(CodeNode** code_node, MacroNode** macro_node, i
  * @param macros Pointer to the head of the macro linked list.
  * @param tokens An array of strings containing tokens.
  * @param pnum_tokens Pointer to the number of tokens.
- * @param is_print Pointer to a boolean indicating whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  * @param error Pointer to an Error variable for error handling.
  */
 void insertMacrosToCode(CodeNode** code, MacroNode** macros, char *tokens[], int* pnum_tokens, bool* is_print, Error* error);
@@ -73,7 +73,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
  * @brief returns opcode of a command if it is, otherwise returns -1
  * 
  * @param word 
- * @return short 
+ * @return opcode of the operation or -1 if doesn't exist
  */
 short checkCommand(char* word);
 
@@ -81,10 +81,9 @@ OperandType checkOperand(char* operand, LabelNode* LabelPtr, Error* error, bool 
 /**
  * @brief checks if the string is a label
  * 
- * @param word 
+ * @param word - string that should be checked
  * @param colon - if the end of label has to have ":" - put true, otherwise false
- * @return true 
- * @return false 
+ * @return boolean that indicates whether the word is a legal label name
  */
 bool isLabel(char* word, bool colon);
 
@@ -109,7 +108,7 @@ void moveDataToMemory(short* data_memory, int* data_memory_idx, short* memory, i
  * @param IC Instruction counter
  * @param DC Data Counter
  * @param externals pointer to externals linked list
- * @param is_print is there a need to create and print information to the files
+ * @param is_print Pointer to a boolean indicating whether to create output files
  * @param error pointer to error, for handlaing errors
  * @param num_line the line number on which the function is performed ( part of the error handling mechanism )
  */
@@ -127,7 +126,7 @@ void createOutputFiles (char* file_name, LabelNode* labels, short* memory, int* 
  * @param is_first_iteration Flag indicating the first iteration.
  * @param error Pointer to an Error variable for error handling.
  * @param num_line The current line number.
- * @param is_print Indicates whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  */
 void createBinaryWordByType(LabelNode* labels, OperandType op_type, char* operand, short* memory, int* memory_idx, bool is_first_iteration, Error* error, int num_line, bool* is_print);
 
@@ -151,7 +150,6 @@ void createFileWithLabelType(char* file_name, LabelNode* labels, LabelType label
  */
 void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int token_idx);
 
-
 /**
  * @brief Inserts a new label into the label list.
  * 
@@ -159,7 +157,7 @@ void updateEntryLabels(LabelNode* labels, char** tokens, int num_tokens, int tok
  * @param label_name The name of the label.
  * @param label_type The type of the label.
  * @param memory_idx Index in the global memory array.
- * @param is_print Indicates whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  * @param error Pointer to an Error variable for error handling.
  * @param is_first_itteration_flag Flag indicating the first iteration.
  */
@@ -174,7 +172,7 @@ void insertNewLabel(LabelNode** labels, char* label_name, LabelType label_type, 
  * @param labels Pointer to the labels linked list.
  * @param DC Data Counter.
  * @param IC Instruction counter.
- * @param is_print Indicates whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  * @param error Pointer to an Error variable for error handling.
  */
 void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** labels, int* DC, int* IC, bool* is_print, Error* error);
@@ -191,7 +189,7 @@ void firstIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode** 
  * @param error Pointer to an Error variable for error handling.
  * @param file_name The name of the output file.
  * @param externals Pointer to externals linked list.
- * @param is_print Indicates whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  */
 void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* labels, int* DC, int* IC, Error* error, char* file_name, LabelNode* externals, bool* is_print);
 
@@ -203,7 +201,7 @@ void secondIteration(short* memory, int* memory_idx, CodeNode* code, LabelNode* 
  * @param memoryField The memory field value to push.
  * @param error Pointer to an Error variable for error handling.
  * @param num_line The current line number.
- * @param is_print Indicates whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  */
 void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* error, int num_line, bool* is_print);
 
@@ -215,7 +213,7 @@ void pushToMemory(int* memory_idx, short* memory, short memoryField, Error* erro
  */
 int getOperandsNumberByOpcode(short opcode);
 
-/** 
+/**
  * Validates a variable name according to specific rules.
  *
  * @param name The variable name to validate.
@@ -266,7 +264,7 @@ int getAdressingMethodByOperandType(OperandType operand_type);
  * @param memory Global memory array.
  * @param error Pointer to an Error variable for error handling.
  * @param num_line The current line number.
- * @param is_print Indicates whether to print error messages.
+ * @param is_print Pointer to a boolean indicating whether to create output files
  */
 void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, OperandType op_type_source, OperandType op_type_destination, char* operand1, char* operand2, int* memory_idx, short* memory, Error* error, int num_line, bool* is_print);
 
@@ -280,7 +278,7 @@ void createOperandBinaryWord(int L, LabelNode* labels, bool is_first_iteration, 
  * @param DC Data counter.
  * @param error Pointer to an Error variable for error handling.
  * @param num_line The current line number.
- * @param is_print Indicates whether to print error messages.
+ * @param is_print Indicates whether to create output files.
  */
 void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, int IC, int DC, Error* error, int num_line, bool* is_print);
 
@@ -289,12 +287,11 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, i
  * 
  * @param tokens 
  * @param num_tokens 
- * @param label - a boolean that says if the 1st token is a label or not
+ * @param isLabel - a boolean that says if the 1st token is a label or not
  * @return true - if it is a data line and its correct
  * @return false - when its not a data line or an incorrect one 
  */
-bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error);
-
+bool checkDataLine(char** tokens, int num_tokens, bool isLabel, Error* error);
 
 /**
  * @brief Determines the type of a dot command (e.g., .data, .string, .entry, .extern).
@@ -324,10 +321,42 @@ DotType getDotType(char* word, Error* error);
  */
 LabelType getLabelType(char* label, LabelNode* labels, Error* error);
 
+/**
+ * @brief Moves pointer to the next code line and increments num_line counter by 1
+ * 
+ * @param temp_code Pointer to the current code node
+ * @param num_line Pointer to the current number of line
+ */
 void moveToNextCodeLine(CodeNode** temp_code, int* num_line);
 
+/**
+ * @brief checks if a line is a correct .extern or .entry line or not
+ * 
+ * @param tokens - array of tokens
+ * @param num_tokens - number of tokens
+ * @param error - Pointer to an Error variable for error handling.
+ * @param labels - Array of labels
+ * @param label_type - Type of the 
+ * @param is_first_iteration - true if the function called from the first iteration
+ * @return true - if it is a correct line
+ * @return false - if it is a incorrect line
+ */
 bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration);
 
+/**
+ * @brief Determines if the label already exists in labels
+ * 
+ * @param labels Pointer to the head of the LabelNode linked list.
+ * @param label_name array that stores name of the label
+ * @param label_type stores type of the label
+ * @param error Pointer to an Error variable for error handling.
+ * @param is_first_itteration flag if the function is called from the first iteration
+ * @return The corresponding LabelType value:
+ *         - LABEL_EXTERNAL if it's an external label
+ *         - LABEL_ENTRY if it's an entry label
+ *         - LABEL_CODE if it's a regular label
+ *         - LABEL_OTHER if it's none of the above.
+ */
 bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration);
 
 void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print, Error* error);
