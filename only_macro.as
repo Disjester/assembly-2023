@@ -1,3 +1,9 @@
-A: sub A, B
-B: sub A, B
+A: sub A, A
+L: sub L, L
+
+mcro A
+    add L, A
+endmcro
+
+
 stop

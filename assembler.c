@@ -855,7 +855,7 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
 
     int count = DEFAULT_VALUE;
     int operand_index = label+1; /*operand index*/
-    int operand_result = DEFAULT_ERROR_VALUE;
+    OperandType operand_result;
     bool register_flag = false;
     bool source_flag = true; /* flag that looks after the operand if its a source or destination*/
     int L = 1;
@@ -897,7 +897,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
         else {           
             operand_result = checkOperand(tokens[operand_index + count], LabelPtr, error, is_first_iteration);
         }
-        
         switch (operand_result) {
             case OPERAND_TYPE_LABEL:
                 L++;
@@ -945,8 +944,6 @@ int checkCommandLine(char** tokens, int num_tokens, bool label, LabelNode* Label
                 }
                 break;
             case OPERAND_TYPE_NUMBER:
-
-
                 /*checks commands that require less then 2 operands, for correctness of arguments type*/
                 if (commands[opcode].number_of_operands < 2) {
                     if (!commands[opcode].destinationAddresingMethod[ADDRESING_NUMBER]) {
