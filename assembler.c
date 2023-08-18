@@ -65,161 +65,203 @@ bool* is_print, Error* error) {
     cleanMemory(data_memory); /* Clear the data memory array */
     temp_code = code; /* Initialize temp_code to point to the beginning of the code linked list */
 
+    
     while(temp_code) {
-        token_idx = DEFAULT_VALUE;
-        end_of_string_flag = false;
-        char_index = 1;
-        label_flag = false;
+        token_idx = DEFAULT_VALUE; /* Reset the index of the current token */
+        end_of_string_flag = false; /* Reset the end of string flag */
+        char_index = 1; /* Reset the index of the current character in a string */
+        label_flag = false; /* Reset the label flag */
 
+        /* Check if the current line is empty or a comment, and skip to the next line if true */
         if (temp_code->code_row[FIRST_CHARACTER] == '\n' || temp_code->code_row[FIRST_CHARACTER] == '\0' 
         || temp_code->code_row[FIRST_CHARACTER] == '\r' || temp_code->code_row[FIRST_CHARACTER] == ';') {
-            temp_code = temp_code->next;
-            num_line++;
-            continue;
-        }
-        
-        tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
-        if (*error != NO_ERROR) {
-            freeMemory(tokens, code, NULL, NULL);
-            return;
+            temp_code = temp_code->next; /* Move to the next code line */
+            num_line++; /* Increment the line number */
+            continue; /* Skip the rest of the loop */
         }
 
+        /* Tokenize the current code line */
+        tokenizeInput(temp_code->code_row, tokens, &num_tokens, is_print, error);
+
+        /* Check for memory allocation error during tokenization */
+        if (*error != NO_ERROR) {
+            freeMemory(tokens, code, NULL, NULL); /* Free allocated memory */
+            return; /* Return from the function */
+        }
+
+        /* Check if the current token is a label */
         if(isLabel(tokens[token_idx], true)) {
-            label_flag = true;
-            token_idx++;
+            label_flag = true; /* Set the label flag to true */
+            token_idx++; /* Move to the next token */
         }
 
         switch (getDotType(tokens[token_idx], error)) {
             case DOT_DATA:
                 if (label_flag) {
+                    /* Insert a new data label into the labels linked list */
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print,
                     error, is_first_itteration_flag);
+                    /* Handle memory allocation error */
                     if (*error == ERROR_MEMORY_ALLOCATION) {
                         handleError(error, num_line, is_print);
-                        return;
+                        return; /* Return from the function */
                     }
+                    /* Handle duplicate label error */
                     if (*error == ERROR_DUPLICATE_LABEL)
                     {
                         handleError(error, num_line, is_print);
                         *error = NO_ERROR;
                         moveToNextCodeLine(&temp_code, &num_line);
-                        continue;
+                        continue; /* Skip the rest of the loop iteration */
                     }
                 }
+                /* Check and process the data tokens */
                 if (checkDataLine(tokens, num_tokens, label_flag, error)) {
                     token_idx++;
                     for (i = token_idx; i < num_tokens; i += 2) {
+                        /* Convert and push the data value to the data memory */
                         pushToMemory(&data_memory_idx, data_memory, atoi(tokens[i]), error, num_line, is_print);
-                        if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                        (*DC)++;
+                        /* Handle memory usage reaching its limit */
+                        if (*error == ERROR_MAXED_OUT_MEMORY) return; /* Return from the function */
+                        (*DC)++; /* Increment the Data Counter */
                     }
                 }
-                /*errr handaling*/
+                /* Handle data-related errors */
                 if (*error != NO_ERROR) {
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
                     moveToNextCodeLine(&temp_code, &num_line);
-                    continue;
+                    continue; /* Skip the rest of the loop iteration */
                 }
                 break;
-            case DOT_STRING:
-                if (label_flag) {
-                    insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print,
-                    error, is_first_itteration_flag);
-                    if (*error == ERROR_MEMORY_ALLOCATION) {
+        
+                case DOT_STRING:
+                    if (label_flag) {
+                        /* Insert a new data label into the labels linked list */
+                        insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_DATA, DC, is_print,
+                        error, is_first_itteration_flag);
+                        /* Handle memory allocation error */
+                        if (*error == ERROR_MEMORY_ALLOCATION) {
                             handleError(error, num_line, is_print);
-                            return;
-                    }
-                    if (*error == ERROR_DUPLICATE_LABEL)
-                    {
-                        handleError(error, num_line, is_print);
-                        *error = NO_ERROR;
-                        moveToNextCodeLine(&temp_code, &num_line);                        
-                        continue;
-                    }                    
-                }
-                if (checkDataLine(tokens, num_tokens, label_flag, error)) {
-                    token_idx++;
-                    for (; token_idx < num_tokens; token_idx++)
-                    {
-                        token_len = strlen(tokens[token_idx])+1;
-                        for (; char_index < token_len; char_index++) {
-                            if (tokens[token_idx][char_index] == '"'){
-                                end_of_string_flag = true;
-                                break;
-                            }
-                            else if (tokens[token_idx][char_index] == '\0')
-                            {
-                                tokens[token_idx][char_index] = ' ';
-                            }
-                            pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][char_index], error,
-                            num_line, is_print);
-                            if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                            (*DC)++;
+                            return; /* Return from the function */
                         }
-                        if (end_of_string_flag) break;
-                        char_index = 0;
-                    }
-                    pushToMemory(&data_memory_idx, data_memory, '\0', error, num_line, is_print);
-                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
-                    (*DC)++;
-                }
-                /*handlaing Error*/
-                if (*error != NO_ERROR) {
-                    handleError(error, num_line, is_print);
-                    *error = NO_ERROR;
-                    moveToNextCodeLine(&temp_code, &num_line);                    
-                    continue;
-                }
-                break;
-            case DOT_EXTERN:
-                for (i = 1; i < num_tokens; i++) {
-                    if (isLabel(tokens[i], false)) {
-                        insertNewLabel(labels, tokens[i], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error,
-                        is_first_itteration_flag);
-                        if (*error == ERROR_MEMORY_ALLOCATION) return;
+                        /* Handle duplicate label error */
                         if (*error == ERROR_DUPLICATE_LABEL)
                         {
-                            /*handleError(error, num_line, is_print);*/
+                            handleError(error, num_line, is_print);
                             *error = NO_ERROR;
-                            moveToNextCodeLine(&temp_code, &num_line);                            
-                            continue;
+                            moveToNextCodeLine(&temp_code, &num_line);
+                            continue; /* Skip the rest of the loop iteration */
+                        }                    
+                    }
+                    /* Check and process the data tokens as a string */
+                    if (checkDataLine(tokens, num_tokens, label_flag, error)) {
+                        token_idx++;
+                        for (; token_idx < num_tokens; token_idx++)
+                        {
+                            token_len = strlen(tokens[token_idx]) + 1;
+                            for (; char_index < token_len; char_index++) {
+                                /* Check for the end of the string */
+                                if (tokens[token_idx][char_index] == '"'){
+                                    end_of_string_flag = true;
+                                    break; /* Exit the inner loop */
+                                }
+                                /* Replace null terminators with spaces */
+                                else if (tokens[token_idx][char_index] == '\0')
+                                {
+                                    tokens[token_idx][char_index] = ' ';
+                                }
+                                /* Push each character to the data memory */
+                                pushToMemory(&data_memory_idx, data_memory, tokens[token_idx][char_index], error,
+                                num_line, is_print);
+                                /* Handle memory usage reaching its limit */
+                                if (*error == ERROR_MAXED_OUT_MEMORY) return; /* Return from the function */
+                                (*DC)++; /* Increment the Data Counter */
+                            }
+                            /* Exit the outer loop if the end of the string is encountered */
+                            if (end_of_string_flag) break;
+                            char_index = 0; /* Reset char_index for the next token */
+                        }
+                        /* Push null terminator to mark the end of the string */
+                        pushToMemory(&data_memory_idx, data_memory, '\0', error, num_line, is_print);
+                        /* Handle memory usage reaching its limit */
+                        if (*error == ERROR_MAXED_OUT_MEMORY) return; /* Return from the function */
+                        (*DC)++; /* Increment the Data Counter */
+                    }
+                    /* Handle data-related errors */
+                    if (*error != NO_ERROR) {
+                        handleError(error, num_line, is_print);
+                        *error = NO_ERROR;
+                        moveToNextCodeLine(&temp_code, &num_line);
+                        continue; /* Skip the rest of the loop iteration */
+                    }
+                    break; /* End of case DOT_STRING */
+
+            case DOT_EXTERN:
+                /* Iterate through tokens starting from index 1 */
+                for (i = 1; i < num_tokens; i++) {
+                    /* Check if the token is a label */
+                    if (isLabel(tokens[i], false)) {
+                        /* Insert a new external label into the labels linked list */
+                        insertNewLabel(labels, tokens[i], LABEL_TYPE_EXTERNAL, &def_extern_mem, is_print, error,
+                        is_first_itteration_flag);
+                        /* Handle memory allocation error */
+                        if (*error == ERROR_MEMORY_ALLOCATION) return; /* Return from the function */
+                        /* Handle duplicate label error */
+                        if (*error == ERROR_DUPLICATE_LABEL)
+                        {
+                            /* Clear the error and skip the rest of the loop iteration */
+                            /* handleError(error, num_line, is_print); */
+                            *error = NO_ERROR;
+                            moveToNextCodeLine(&temp_code, &num_line);
+                            continue; /* Skip the rest of the loop iteration */
                         }                        
                     }
                     else {
-                        break;
+                        break; /* Exit the loop if a non-label token is encountered */
                     }
                 }
-                break;
+                break; /* End of case DOT_EXTERN */
+
             case DOT_ENTRY:
-                break;
+                break; /* End of case DOT_ENTRY */
+
             case DOT_OTHER:
+                /* Check if stop_flag is set */
                 if (stop_flag) {
+                    /* Set error and handle it */
                     *error = ERROR_CODE_AFTER_STOP;
                     handleError(error, num_line, is_print);
                 }
+                /* Check if there is a label */
                 if (label_flag) {
+                    /* Insert a new label into the labels linked list with LABEL_TYPE_CODE */
                     insertNewLabel(labels, removeColon(tokens[token_idx-1]), LABEL_TYPE_CODE, IC, is_print, error,
                     is_first_itteration_flag);
+                    /* Handle memory allocation error */
                     if (*error == ERROR_MEMORY_ALLOCATION){
                         handleError(error, num_line, is_print);
-                        return;
+                        return; /* Return from the function */
                     }
+                    /* Handle duplicate label error */
                     if (*error == ERROR_DUPLICATE_LABEL)
                     {
                         handleError(error, num_line, is_print);
                         *error = NO_ERROR;
                         moveToNextCodeLine(&temp_code, &num_line);                        
-                        continue;
+                        continue; /* Skip the rest of the loop iteration */
                     }                    
                 }
+                /* Check the command line and get L value */
                 if (checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag,
                 is_print, num_line) != COMMAND_LINE_ERROR) {
-                    
+                    /* Create the binary word and push it to memory */
                     binary_word = createCommandBinaryWord(tokens, num_tokens, token_idx, error, is_first_itteration_flag,
                     *labels);
                     pushToMemory(memory_idx, memory, binary_word, error, num_line, is_print);
-                    if (*error == ERROR_MAXED_OUT_MEMORY) return;
+                    /* Handle memory allocation error */
+                    if (*error == ERROR_MAXED_OUT_MEMORY) return; /* Return from the function */
+                    /* Get L value and calculate operand_num */
                     L = checkCommandLine(tokens, num_tokens, label_flag, *labels, error, is_first_itteration_flag, &stop_flag,
                     is_print, num_line);
                     if (num_tokens >= 4)
@@ -230,21 +272,23 @@ bool* is_print, Error* error) {
                     {
                         operand_num = L-1;
                     }
-                    
-                    /* L-1 = operand_num*/
+                    /* Calculate operand_num and create operand binary word */
                     switch (operand_num)
                     {
                     case 0:
+                        /* No operands */
                         createOperandBinaryWord(L, *labels, true, OPERAND_TYPE_OTHER, OPERAND_TYPE_OTHER, (char*) NULL,
                         (char*) NULL,
                         memory_idx, memory, error, num_line, is_print);
                         break;
                     case 1:
+                        /* One operand */
                         createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error,
                         is_first_itteration_flag),
                         OPERAND_TYPE_OTHER, tokens[token_idx + 1], (char*) NULL, memory_idx, memory, error, num_line, is_print);
                         break;
                     case 2:
+                        /* Two operands */
                         createOperandBinaryWord(L, *labels, true, checkOperand(tokens[token_idx + 1], *labels, error,
                         is_first_itteration_flag),
                         checkOperand(tokens[token_idx + 3], *labels, error, is_first_itteration_flag), tokens[token_idx + 1],
@@ -252,30 +296,41 @@ bool* is_print, Error* error) {
                         break;
                     }
                 }
-                /*handle error*/
+                /* Handle error */
                 if (*error != NO_ERROR) {
+                    /* Handle error and reset error state */
                     handleError(error, num_line, is_print);
                     *error = NO_ERROR;
+                    /* Move to the next code line and continue loop */
                     moveToNextCodeLine(&temp_code, &num_line);
-                    continue;
+                    continue; /* Skip the rest of the loop iteration */
                 }
+                /* Update IC and reset L value */
                 *IC += L;
                 L = DEFAULT_VALUE;
-                break;
+                break; /* End of case DOT_OTHER */
         }
-        num_line++;
-        temp_code = temp_code->next;
+        num_line++; /* update the line number */
+        temp_code = temp_code->next; /* go to the next line */
     }
 
+    /* Move data from data_memory to memory array */
     moveDataToMemory(data_memory, &data_memory_idx, memory, memory_idx, error);
-    if (!stop_flag)
-    {
+    
+    /* Check if there was no stop command */
+    if (!stop_flag) {
+        /* Set error and handle it */
         *error = ERROR_NO_STOP_COMMAND;
         handleError(error, num_line, is_print);
-        *error = NO_ERROR;
+        *error = NO_ERROR; /* Reset error state */
     }
-    if (*error == ERROR_MAXED_OUT_MEMORY || is_print == false) return;
-
+    
+    /* Check if there's a memory allocation error or is_print is false */
+    if (*error == ERROR_MAXED_OUT_MEMORY || is_print == false) {
+        return; /* Return from the function */
+    }
+    
+    /* Update memory addresses for labels */
     temp_label_node = *labels;
     while (temp_label_node) {
         switch (temp_label_node->label_type) {
@@ -284,13 +339,17 @@ bool* is_print, Error* error) {
             case LABEL_TYPE_CODE:
             case LABEL_TYPE_ENTRY:
                 temp_label_node->memory_adress += DEFAULT_MEMORY_INDEX;
+            /* Skip LABEL_TYPE_EXTERNAL and LABEL_TYPE_NOT_FOUND */
             case LABEL_TYPE_EXTERNAL:
             case LABEL_TYPE_NOT_FOUND:
                 break;
         }
         temp_label_node = temp_label_node->next;
     }
+    
+    /* Free memory allocated for tokens */
     freeMemory(tokens, NULL, NULL, NULL);
+
 }
 
 /**
