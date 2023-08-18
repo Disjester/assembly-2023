@@ -296,6 +296,44 @@ void createFileWithMemoryDump(char* file_name, short* memory, int* memory_idx, i
 bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error);
 
 
+/**
+ * @brief Determines the type of a dot command (e.g., .data, .string, .entry, .extern).
+ * 
+ * @param word The dot command string.
+ * @param error Pointer to an Error variable for error handling.
+ * @return The corresponding DotType value:
+ *         - DOT_EXTERN if it's ".extern"
+ *         - DOT_ENTRY if it's ".entry"
+ *         - DOT_STRING if it's ".string"
+ *         - DOT_DATA if it's ".data"
+ *         - DOT_OTHER if it's none of the above.
+ */
+DotType getDotType(char* word, Error* error);
+
+/**
+ * @brief Determines the type of a label (external, entry, code) based on its name.
+ * 
+ * @param label The label name to be checked.
+ * @param labels Pointer to the head of the LabelNode linked list.
+ * @param error Pointer to an Error variable for error handling.
+ * @return The corresponding LabelType value:
+ *         - LABEL_EXTERNAL if it's an external label
+ *         - LABEL_ENTRY if it's an entry label
+ *         - LABEL_CODE if it's a regular label
+ *         - LABEL_OTHER if it's none of the above.
+ */
+LabelType getLabelType(char* label, LabelNode* labels, Error* error);
+
+void moveToNextCodeLine(CodeNode** temp_code, int* num_line);
+
+bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration);
+
+bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration);
+
+void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print, Error* error);
+
+
+
 
 
 /*UTILITIES SECTION*/
@@ -384,25 +422,6 @@ void* allocateMemory(size_t size, bool* is_print ,Error* error);
  */
 bool handleError(Error* error, int num_line, bool* is_print);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * @brief Checks if a string represents a valid integer number.
  * 
@@ -419,33 +438,6 @@ bool isNumber(char* word);
  */
 bool isString( char** tokens, int num_tokens, bool label);
 
-/**
- * @brief Determines the type of a dot command (e.g., .data, .string, .entry, .extern).
- * 
- * @param word The dot command string.
- * @param error Pointer to an Error variable for error handling.
- * @return The corresponding DotType value:
- *         - DOT_EXTERN if it's ".extern"
- *         - DOT_ENTRY if it's ".entry"
- *         - DOT_STRING if it's ".string"
- *         - DOT_DATA if it's ".data"
- *         - DOT_OTHER if it's none of the above.
- */
-DotType getDotType(char* word, Error* error);
-
-/**
- * @brief Determines the type of a label (external, entry, code) based on its name.
- * 
- * @param label The label name to be checked.
- * @param labels Pointer to the head of the LabelNode linked list.
- * @param error Pointer to an Error variable for error handling.
- * @return The corresponding LabelType value:
- *         - LABEL_EXTERNAL if it's an external label
- *         - LABEL_ENTRY if it's an entry label
- *         - LABEL_CODE if it's a regular label
- *         - LABEL_OTHER if it's none of the above.
- */
-LabelType getLabelType(char* label, LabelNode* labels, Error* error);
 
 /** 
  * Frees memory allocated for tokens, code nodes, macro nodes, and label nodes.
@@ -480,14 +472,7 @@ void freeMemoryMacroNode(MacroNode* macro_node);
  */
 void freeMemoryLabelNode(LabelNode* label_node);
 
-void moveToNextCodeLine(CodeNode** temp_code, int* num_line);
-
-bool checkExternalEntryLine(char** tokens, int num_tokens, Error* error, LabelNode** labels, LabelType label_type, bool is_first_itteration);
-
-bool isDuplicatedLabel(LabelNode** labels, char* label_name, LabelType label_type, Error* error, bool is_first_itteration);
-
 void allocateMemoryTokens(char** tokens, bool* is_print, Error* error);
 
-void createCodeFileWithoutMacros(char* file_name, CodeNode* code, bool* is_print, Error* error);
 
 #endif

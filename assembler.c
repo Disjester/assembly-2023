@@ -740,67 +740,17 @@ LabelType getLabelType(char* label, LabelNode* LabelPtr, Error* error){
     return LABEL_TYPE_NOT_FOUND;
 }
 
-bool isString(char** tokens, int num_tokens, bool label) {
-    /*an idea for taking in  tokens , and then going through all of the tokens characters. basically just add
-    an outside loop. */
-    int char_index = 0;
-    int string_index = label + 1;
-    bool quote = false; /* a quote flag, that checks if found the 2nd (") character */
-    int len = 0;
-
-    /* checks the 1st character to be a quote */
-    if (tokens[string_index][char_index++] != '"') {
-        return false;
-    }
-    for (; string_index < num_tokens; string_index++)
-    {
-        len = strlen(tokens[string_index]);
-        for (; char_index < len; char_index++) {
-            if (quote) return false;
-
-            if (tokens[string_index][char_index] == '"') quote = true;
-        }
-        char_index = 0;
-    }
-
-    /* returns false if 2nd quote isn't the last character */
-    return quote;
-}
-
-bool isNumber(char* word){
-    int i = 0;
-    int len = strlen(word);
-
-    /* Check for a minus sign at the beginning
-     Skip it if exists */
-    if (word[i] == '-') i++;  
-    
-    for ( ; i < len; i++) {
-        if (!isdigit(word[i])) {
-            return false; /* not a number*/
-        }
-    }
-    return true;
-}
 
 bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
     int token_index = 1;
     
-
     if (num_tokens < (2 + label)) {
         *error = ERROR_MISSING_DATA_ARGUMENT;
         return false;
     }
     
-
     /* checks .string line */
     if (getDotType(tokens[FIRST_WORD + label], error) == DOT_STRING) {
-        /*
-        if (num_tokens > (2 + label)) {
-            *error = ERROR_EXTRANEOS_TEXT;
-            return false;
-        }
-        */
         if (isString(tokens, num_tokens, label)) {
             return true;
         }
@@ -811,7 +761,6 @@ bool checkDataLine(char** tokens, int num_tokens, bool label, Error* error){
             *error = ERROR_WRONG_ARGUMENT_FORMAT;
             return false;
         }
-        
     }
     
     /* check .data line */
